@@ -19,11 +19,9 @@ namespace Presentacion
                 ArticulosNegocio negocio = new ArticulosNegocio();
 
                 try
-                {
-                    // 1. Obtener la lista de artículos desde la capa de negocio
+                {              
                     List<Articulo> lista = negocio.listar();
-
-                    // 2. Asignar la lista al GridView (usando el ID correcto: gvProductos)
+   
                     gvProductos.DataSource = lista;
 
                     // 3. Enlazar los datos

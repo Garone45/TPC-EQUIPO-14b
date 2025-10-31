@@ -13,46 +13,49 @@ namespace Negocio
         public List<Articulo> listar()
         {
             List<Articulo> lista = new List<Articulo>();
-            AccesoDatos datos = new AccesoDatos(); 
-            SqlDataReader lector = null;
+            AccesoDatos datos = new AccesoDatos();
 
             try
             {
-               
+                
                 datos.setearConsulta(
-                  "SELECT " +
-                    "A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.StockActual, " +
-                    "A.PrecioCostoActual, A.PorcentajeGanancia, " + // Necesarios para calcular PrecioVenta
-                    "M.IdMarca, M.Descripcion AS MarcaDescripcion " +
-                    "FROM dbo.Articulos A " + // Incluye dbo. para evitar error de objeto no válido
+                    "SELECT " +
+                    "A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, " +
+                    "A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, " +
+                    "M.IdMarca, M.Descripcion AS MarcaDescripcion, " +
+                    "C.IdCategoria, C.Descripcion AS CategoriaDescripcion " + 
+                    "FROM dbo.Articulos A " +
                     "INNER JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca " +
+                    "INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " + 
                     "WHERE A.Activo = 1"
                 );
 
                 datos.ejecutarLectura();
 
+                // 2. MAPEO (Corregido para incluir Categorías)
                 while (datos.Lector.Read())
                 {
                     Articulo aux = new Articulo();
                     aux.Marca = new Marca();
+                    aux.Categorias = new Categoria(); 
 
-                    // Mapeo de campos solicitados
+                    // ... (Mapeo de IdArticulo, Descripcion, Codigo, Stock, Precios...)
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
-                    aux.StockActual = (int)datos.Lector["StockActual"];
-
                     if (datos.Lector["CodigoArticulo"] != DBNull.Value)
                         aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
-
-                    // Mapeo de Lógica (Insumos para PrecioVenta)
+                    aux.StockActual = (int)datos.Lector["StockActual"];
                     aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
                     aux.PorcentajeGanancia = (decimal)datos.Lector["PorcentajeGanancia"];
+                    aux.Activo = (bool)datos.Lector["Activo"];
 
-                    // Mapeo de la Marca
+                    // Mapeo de Marca
                     aux.Marca.IDMarca = (int)datos.Lector["IdMarca"];
                     aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
 
-                    // El PrecioVenta se calcula automáticamente en la propiedad de la clase Articulo
+                    // Mapeo de Categoría
+                    aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"]; 
+                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"]; 
 
                     lista.Add(aux);
                 }
@@ -61,10 +64,38 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                string errorSQL = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                throw new Exception("Error al listar artículos: ", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+        public void agregar(Articulo nuevoArticulo)
+        {
+            AccesoDatos datos = new AccesoDatos();
 
-                // Cambia el mensaje para que la alerta muestre la causa REAL en la web
-                throw new Exception("ERROR CRÍTICO SQL: " + errorSQL);
+            try
+            {
+                
+                datos.setearProcedimiento("SP_AgregarArticulo");
+
+                
+                datos.setearParametro("@Descripcion", nuevoArticulo.Descripcion);
+                datos.setearParametro("@CodigoArticulo", nuevoArticulo.CodigoArticulo);
+                datos.setearParametro("@IdMarca", nuevoArticulo.Marca.IDMarca);
+                datos.setearParametro("@IdCategoria", nuevoArticulo.Categorias.IDCategoria); 
+                datos.setearParametro("@PrecioCostoActual", nuevoArticulo.PrecioCostoActual);
+                datos.setearParametro("@PorcentajeGanancia", nuevoArticulo.PorcentajeGanancia);
+                datos.setearParametro("@StockActual", nuevoArticulo.StockActual);
+                datos.setearParametro("@StockMinimo", nuevoArticulo.StockMinimo);
+
+                
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al agregar artículo en Capa de Negocio.", ex);
             }
             finally
             {

@@ -23,7 +23,7 @@ namespace Negocio
             comando = new SqlCommand();
         }
 
-        public void setearConsulta(string consulta) // Para SELECT
+        public void setearConsulta(string consulta) 
         {
             comando.Parameters.Clear();
             comando.CommandType = System.Data.CommandType.Text;
@@ -34,6 +34,16 @@ namespace Negocio
         {
             // Usamos ?? DBNull.Value para manejar valores nulos en C#
             comando.Parameters.AddWithValue(nombre, valor ?? DBNull.Value);
+        }
+        public void setearProcedimiento(string sp)
+        {
+            // Limpia parámetros de cualquier consulta anterior
+            comando.Parameters.Clear();
+
+            
+            comando.CommandType = System.Data.CommandType.StoredProcedure;
+
+            comando.CommandText = sp;
         }
 
         public void ejecutarLectura() 
@@ -50,14 +60,13 @@ namespace Negocio
             }
         }
 
-        public void ejecutarAccion() 
+        public void ejecutarAccion() // Para INSERT, UPDATE, DELETE
         {
             comando.Connection = conexion;
             try
             {
                 conexion.Open();
-                
-                comando.ExecuteNonQuery();
+                comando.ExecuteNonQuery(); 
             }
             catch (Exception ex)
             {
@@ -65,19 +74,18 @@ namespace Negocio
             }
             finally
             {
-                
+                // Cerramos la conexión acá mismo por seguridad
                 if (conexion.State == System.Data.ConnectionState.Open)
                     conexion.Close();
             }
         }
-
-        public void cerrarConexion() 
+        public void cerrarConexion()
         {
-            // Asegurar que el lector se cierre si fue abierto
+            // Cierra el lector si está abierto
             if (lector != null && !lector.IsClosed)
                 lector.Close();
 
-            // Asegurar que la conexión se cierre
+            // Cierra la conexión si está abierta
             if (conexion != null && conexion.State == System.Data.ConnectionState.Open)
                 conexion.Close();
         }
