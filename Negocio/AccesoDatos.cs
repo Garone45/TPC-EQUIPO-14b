@@ -38,9 +38,7 @@ namespace Negocio
         public void setearProcedimiento(string sp)
         {
             // Limpia parámetros de cualquier consulta anterior
-            comando.Parameters.Clear();
-
-            
+            comando.Parameters.Clear();         
             comando.CommandType = System.Data.CommandType.StoredProcedure;
 
             comando.CommandText = sp;

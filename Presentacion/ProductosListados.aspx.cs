@@ -14,26 +14,25 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+
             if (!IsPostBack)
+
             {
-                ArticulosNegocio negocio = new ArticulosNegocio();
+                List<Articulo> lista = negocio.listar();
+                gvProductos.DataSource = lista;
+                gvProductos.DataBind();
 
-                try
-                {              
-                    List<Articulo> lista = negocio.listar();
-   
-                    gvProductos.DataSource = lista;
-
-                    // 3. Enlazar los datos
-                    gvProductos.DataBind();
-                }
-                catch (Exception ex)
+                if (Session["msg"] != null)
                 {
-                    // Manejo básico de error si falla la conexión/consulta a BD
-                    // Muestra el error en una alerta para fines de prueba
-                    Response.Write($"<script>alert('Error al cargar listado: {ex.Message}');</script>");
+                    string mensaje = Session["msg"].ToString();
+                    Session["msg"] = null;
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    $"alert('{mensaje}');", true);
                 }
             }
+
         }
+     
     }
 }

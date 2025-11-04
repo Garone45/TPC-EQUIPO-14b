@@ -14,32 +14,31 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack) 
+            if (!IsPostBack)
             {
-                
                 MarcaNegocio marcaNegocio = new MarcaNegocio();
                 CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
 
                 try
                 {
-                    // Cargar DDL de Marcas
+                 
                     ddlMarca.DataSource = marcaNegocio.listar();
-                    ddlMarca.DataValueField = "IdMarca";     // El 'Value' del ListItem (el ID)
+                    ddlMarca.DataValueField = "IDMarca";
                     ddlMarca.DataTextField = "Descripcion"; 
                     ddlMarca.DataBind();
-                    
                     ddlMarca.Items.Insert(0, new ListItem("-- Seleccionar Marca --", "0"));
 
                     // Cargar DDL de Categorías
                     ddlCategoria.DataSource = categoriaNegocio.listar();
-                    ddlCategoria.DataValueField = "IdCategoria";
-                    ddlCategoria.DataTextField = "Descripcion";
+                    ddlCategoria.DataValueField = "IDCategoria";
+                    ddlCategoria.DataTextField = "descripcion"; 
                     ddlCategoria.DataBind();
                     ddlCategoria.Items.Insert(0, new ListItem("-- Seleccionar Categoría --", "0"));
                 }
                 catch (Exception ex)
                 {
-                    Response.Write($"<script>alert('Error al cargar desplegables: {ex.Message}');</script>");
+                    
+                    Response.Write($"<script>alert('Error crítico al cargar página: {ex.Message}');</script>");
                 }
             }
         }
@@ -48,37 +47,51 @@ namespace Presentacion
         {
             try
             {
-               
-                ArticulosNegocio negocio = new ArticulosNegocio();
+                // Validaciones de DropDownList
+                if (ddlMarca.SelectedValue == "0")
+                {
+                    Response.Write("<script>alert('Debe seleccionar una marca');</script>");
+                    return;
+                }
+
+                if (ddlCategoria.SelectedValue == "0")
+                {
+                    Response.Write("<script>alert('Debe seleccionar una categoría');</script>");
+                    return;
+                }
+
+                ArticuloNegocio negocio = new ArticuloNegocio();
                 Articulo nuevo = new Articulo();
 
-                //  Cargamos el objeto 'nuevo' con los datos del formulario 
-
-                
                 nuevo.Descripcion = txtDescripcion.Text;
-                nuevo.CodigoArticulo = txtSKU.Text; // Asumimos que vas a habilitar este campo
+
+                // Generar código si viene vacío
+                if (string.IsNullOrWhiteSpace(txtSKU.Text))
+                    nuevo.CodigoArticulo = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
+                else
+                    nuevo.CodigoArticulo = txtSKU.Text;
+
                 nuevo.PrecioCostoActual = decimal.Parse(txtPrecioCompra.Text);
-                nuevo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text); 
+                nuevo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text);
                 nuevo.StockActual = int.Parse(txtStockActual.Text);
                 nuevo.StockMinimo = int.Parse(txtStockMinimo.Text);
                 nuevo.Activo = true;
 
-                // DropDownLists
+                // Marca
                 nuevo.Marca = new Marca();
                 nuevo.Marca.IDMarca = int.Parse(ddlMarca.SelectedValue);
 
+                // Categoría
                 nuevo.Categorias = new Categoria();
                 nuevo.Categorias.IDCategoria = int.Parse(ddlCategoria.SelectedValue);
 
-                
                 negocio.agregar(nuevo);
 
-                //  Redirigimos de vuelta al listado
-                Response.Redirect("ProductosListados.aspx", false);
+                Session["msg"] = "Artículo agregado correctamente";
+                Response.Redirect("ProductosListados.aspx");
             }
             catch (Exception ex)
             {
-           
                 Response.Write($"<script>alert('Error al guardar: {ex.Message}');</script>");
             }
         }

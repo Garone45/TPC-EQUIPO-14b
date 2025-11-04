@@ -14,7 +14,9 @@ namespace Dominio.Articulos
         public string Descripcion { get; set; }       // Nombre/Descripción del artículo
         public bool Activo { get; set; }
 
-     
+        public string MarcaNombre => Marca?.Descripcion ?? "Sin marca";
+        public string CategoriaNombre => Categorias?.descripcion ?? "Sin categoría";
+
         public decimal PrecioCostoActual { get; set; } // Último costo de compra (insumo para el cálculo)
         public decimal PorcentajeGanancia { get; set; } // Margen para calcular Precio Venta
         public int StockActual { get; set; }          // Cantidad disponible (para la validación)
