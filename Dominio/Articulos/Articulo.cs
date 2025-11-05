@@ -10,8 +10,8 @@ namespace Dominio.Articulos
     {
     
         public int IDArticulo { get; set; }           // Clave Primaria (PK)
-        public string CodigoArticulo { get; set; }    // Agregado por UPDATE
-        public string Descripcion { get; set; }       // Nombre/Descripción del artículo
+        public string CodigoArticulo { get; set; }    
+        public string Descripcion { get; set; }       
         public bool Activo { get; set; }
 
         public string MarcaNombre => Marca?.Descripcion ?? "Sin marca";
@@ -20,8 +20,7 @@ namespace Dominio.Articulos
         public decimal PrecioCostoActual { get; set; } // Último costo de compra (insumo para el cálculo)
         public decimal PorcentajeGanancia { get; set; } // Margen para calcular Precio Venta
         public int StockActual { get; set; }          // Cantidad disponible (para la validación)
-        public int StockMinimo { get; set; }          // Umbral de alerta
-
+        public int StockMinimo { get; set; }          
         //  COMPOSICIÓN 
         public Marca Marca { get; set; }
         public Categoria Categorias { get; set; }
