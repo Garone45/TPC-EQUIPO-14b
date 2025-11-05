@@ -59,3 +59,24 @@ VALUES
     ('Silla de Oficina Ergonómica', 'SILL-ERG-X02', 3, 3, 8500.50, 0.40, 20, 3), 
     ('Licuadora 1.5L', 'LIC-HPRO-03', 1, 2, 3200.00, 0.30, 100, 10);
 GO
+
+CREATE TABLE Cliente (
+    IDCliente INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100) NOT NULL,
+    Apellido NVARCHAR(100) NOT NULL,
+    Dni NVARCHAR(20) NOT NULL UNIQUE,
+    Telefono NVARCHAR(20),
+    Email NVARCHAR(100),
+    Direccion NVARCHAR(200),
+    Activo BIT NOT NULL DEFAULT 1
+);
+USE TPC_GRUPO_14b;
+GO
+
+INSERT INTO Cliente (Nombre, Apellido, Dni, Telefono, Email, Direccion, Activo)
+VALUES
+('Lucas', 'Pérez', '35842123', '11-4521-9874', 'lucas.perez@mail.com', 'Calle 123', 1),
+('Martina', 'Gómez', '42781562', '11-3587-1425', 'martina.gomez@mail.com', 'Av. Rivadavia 4567', 1),
+('Diego', 'Fernández', '40123548', '11-7894-2563', 'diego.fernandez@mail.com', 'San Martín 985', 0),
+('Sofía', 'Rodríguez', '38965412', '11-2147-3698', 'sofia.rodriguez@mail.com', 'Belgrano 1770', 1),
+('Valentina', 'López', '45123987', '11-6325-8741', 'valentina.lopez@mail.com', 'Mitre 320', 1);
