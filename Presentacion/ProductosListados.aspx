@@ -53,8 +53,10 @@
                         <asp:BoundField DataField="Descripcion" HeaderText="Descripción"
                             HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
 
-                        <asp:BoundField DataField="MarcaNombre" HeaderText="Marca" />
-                        <asp:BoundField DataField="CategoriaNombre" HeaderText="Categoría" />
+                        <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+
+                        <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+
                         <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
 
                         <asp:BoundField DataField="StockActual" HeaderText="Stock" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center font-bold" />
@@ -66,15 +68,15 @@
                                     <asp:HyperLink ID="lnkEditarStock" runat="server"
                                         NavigateUrl='<%# "~/GestionStock.aspx?id=" + Eval("IDArticulo") %>'
                                         CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
-                        <span class="material-symbols-outlined text-lg">edit</span>
-                                    </asp:HyperLink>
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                </asp:HyperLink>
 
                                     <asp:LinkButton ID="btnEliminar" runat="server"
                                         CommandName="EliminarProducto" CommandArgument='<%# Eval("IDArticulo") %>'
                                         CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20"
                                         OnClientClick="return confirm('¿Está seguro de que desea eliminar este producto?');">
-                        <span class="material-symbols-outlined text-lg">delete</span>
-                                    </asp:LinkButton>
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                </asp:LinkButton>
                                 </div>
                             </ItemTemplate>
                         </asp:TemplateField>

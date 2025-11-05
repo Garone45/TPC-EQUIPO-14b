@@ -25,8 +25,8 @@ namespace Negocio
                 "C.IdCategoria, C.Descripcion AS CategoriaDescripcion " +
                 "FROM dbo.Articulos A " +
                 "LEFT JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca " +
-                "LEFT JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " + // ← espacio acá
-                "WHERE A.Activo = 1" // ← ya queda bien
+                "LEFT JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " + 
+                "WHERE A.Activo = 1" 
                 );
 
                 datos.ejecutarLectura();
@@ -108,7 +108,7 @@ namespace Negocio
                 datos.setearParametro("@PorcentajeGanancia", nuevoArticulo.PorcentajeGanancia);
                 datos.setearParametro("@StockActual", nuevoArticulo.StockActual);
                 datos.setearParametro("@StockMinimo", nuevoArticulo.StockMinimo);
-                //  datos.setearParametro("@Activo", nuevoArticulo.Activo);
+                datos.setearParametro("@Activo", nuevoArticulo.Activo);
 
                 datos.ejecutarAccion();
             }
