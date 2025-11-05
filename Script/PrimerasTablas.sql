@@ -1,6 +1,6 @@
 
-GO
 USE TPC_GRUPO_14b;
+GO
 CREATE PROCEDURE SP_AgregarArticulo
     
     @Descripcion VARCHAR(255),
