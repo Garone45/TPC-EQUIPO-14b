@@ -15,32 +15,74 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-                CargarGrilla();
+                cargarGrilla();
 
             }
 
         }
-        private void CargarGrilla()
+        private List<Cliente> Clientes
         {
+            get
+            {
+                // Si ViewState "Clientes" existe, devuelve la lista. Si no, devuelve una lista vacía.
+                if (ViewState["Clientes"] == null)
+                    ViewState["Clientes"] = new List<Cliente>();
+                return (List<Cliente>)ViewState["Clientes"];
+            }
+            set
+            {
+                ViewState["Clientes"] = value;
+            }
+        }
+        private void cargarGrilla()
+        {
+            ClienteNegocio negocio = new ClienteNegocio();
+
             try
             {
-                // 1. Instanciamos la capa de negocio
-                ClienteNegocio negocio = new ClienteNegocio();
+                // 1. Obtener el texto del filtro
+                string filtro = txtBuscar.Text.Trim();
 
-                // 2. Obtenemos la lista
-                List<Cliente> listaClientes = negocio.listar();
+                if (string.IsNullOrEmpty(filtro))
+                {
+                    // Si el filtro está vacío, cargamos todos los clientes activos.
+                    Clientes = negocio.listar();
+                }
+                else
+                {
+                    // Si hay filtro, usamos el nuevo método de negocio.
+                    // *** NOTA: Este método necesita ser implementado en ClienteNegocio.cs (Paso 3) ***
+                    Clientes = negocio.filtrar(filtro);
+                }
 
-                // 3. Asignamos la lista al DataSource del GridView
-                gvClientes.DataSource = listaClientes;
-
-                // 4. Ejecutamos el enlace de datos
+                // 2. Vincular la lista (filtrada o completa) a la GridView
+                gvClientes.DataSource = Clientes;
                 gvClientes.DataBind();
             }
             catch (Exception ex)
             {
-                // Manejo de errores
-                Response.Write($"<script>alert('Error al cargar los clientes: {ex.Message}');</script>");
+                // Manejo de errores 
+                Response.Write($"<script>alert('Error al cargar clientes: {ex.Message}');</script>");
             }
+        }
+
+        protected void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            // Recargamos la grilla aplicando el filtro ingresado.
+            // Esto también reseteará el índice de la paginación si hubiera uno.
+            gvClientes.PageIndex = 0;
+            cargarGrilla();
+        }
+
+        protected void gvClientes_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            // 1. Cambiamos la página actual de la GridView
+            gvClientes.PageIndex = e.NewPageIndex;
+
+            // 2. Re-vinculamos la GridView usando la lista guardada en ViewState
+            // Esto es crucial para que la paginación funcione sin ir a la BD de nuevo.
+            gvClientes.DataSource = Clientes;
+            gvClientes.DataBind();
         }
 
         protected void gvClientes_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -65,7 +107,7 @@ namespace Presentacion
                     // 4. Volvemos a cargar la grilla para que refleje el cambio
                     // (Necesitarás tener un método para cargar la grilla,
                     // probablemente el mismo que usas en el Page_Load)
-                    CargarGrilla();
+                    cargarGrilla();
                 }
                 catch (Exception ex)
                 {
@@ -73,5 +115,7 @@ namespace Presentacion
                 }
             }
         }
+
+       
     }
 }

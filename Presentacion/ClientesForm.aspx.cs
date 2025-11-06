@@ -33,6 +33,9 @@ namespace Presentacion
                         txtTelefono.Text = seleccionado.Telefono;
                         txtEmail.Text = seleccionado.Email;
                         txtDireccion.Text = seleccionado.Direccion;
+                        txtAltura.Text = seleccionado.Altura;
+                        txtLocalidad.Text = seleccionado.Localidad;
+                        
 
                         // lblTitulo.Text = "Modificar Cliente";
                     }
@@ -59,6 +62,8 @@ namespace Presentacion
                 cliente.Telefono = txtTelefono.Text;
                 cliente.Email = txtEmail.Text;
                 cliente.Direccion = txtDireccion.Text;
+                cliente.Altura = txtAltura.Text;
+                cliente.Localidad = txtLocalidad.Text;
 
                 // Comprobamos si estamos en modo Edición o Nuevo
                 if (Request.QueryString["id"] != null)
