@@ -184,7 +184,7 @@ namespace Negocio
                         Dni = @Dni,
                         Telefono = @Telefono,
                         Email = @Email,
-                        Direccion = @Direccion
+                        Direccion = @Direccion,
                         Altura = @Altura,
                         Localidad = @Localidad
                     WHERE IDCliente = @IDCliente";
@@ -226,6 +226,57 @@ namespace Negocio
                 datos.setearConsulta(consulta);
                 datos.setearParametro("@IDCliente", id);
                 datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public List<Cliente> filtrar(string filtro)
+        {
+            List<Cliente> lista = new List<Cliente>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string consulta = @"
+                    SELECT IDCliente, Nombre, Apellido, Dni, Telefono, Email, Direccion,Altura,Localidad, Activo 
+                    FROM Cliente 
+                    WHERE Activo = 1 AND (
+                        Nombre LIKE @filtro OR 
+                        Apellido LIKE @filtro OR
+                        Dni LIKE @filtro OR 
+                        Telefono LIKE @filtro
+                    )";
+
+                datos.setearConsulta(consulta);
+                // Usamos el wildcard % al inicio y final para buscar coincidencias parciales
+                datos.setearParametro("@filtro", "%" + filtro + "%");
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Cliente aux = new Cliente();
+                    aux.IDCliente = (int)datos.Lector["IDCliente"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    aux.Dni = (string)datos.Lector["Dni"];
+                    aux.Telefono = datos.Lector["Telefono"] != DBNull.Value ? (string)datos.Lector["Telefono"] : "";
+                    aux.Email = datos.Lector["Email"] != DBNull.Value ? (string)datos.Lector["Email"] : "";
+                    aux.Direccion = datos.Lector["Direccion"] != DBNull.Value ? (string)datos.Lector["Direccion"] : "";
+                    aux.Altura = datos.Lector["Altura"] != DBNull.Value ? (string)datos.Lector["Altura"] : "";
+                    aux.Localidad = datos.Lector["Localidad"] != DBNull.Value ? (string)datos.Lector["Localidad"] : "";
+                    aux.Activo = (bool)datos.Lector["Activo"];
+                    
+
+                    lista.Add(aux);
+                }
+                return lista;
             }
             catch (Exception ex)
             {
