@@ -77,7 +77,7 @@ namespace Negocio
             try
             {
                 // Consulta SQL para el INSERT
-                // IMPORTANTE: Los nombres de las columnas deben coincidir con tu BD.
+                
                 string consulta = @"
                     INSERT INTO Cliente (
                         Nombre, 

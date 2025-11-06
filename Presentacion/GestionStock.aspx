@@ -22,7 +22,8 @@
                 <h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Información del Producto</h3>
                  <asp:Button ID="btnEditarAtributos" runat="server" Text="✏️ Editar Atributos" 
                     CausesValidation="false"
-                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-200 dark:hover:bg-blue-800" />
+                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-200 dark:hover:bg-blue-800" 
+                    OnClick="btnEditarAtributos_Click" />
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <!-- SKU (Bloqueado) -->

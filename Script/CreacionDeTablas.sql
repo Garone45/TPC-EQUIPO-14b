@@ -80,3 +80,7 @@ VALUES
 ('Diego', 'Fernández', '40123548', '11-7894-2563', 'diego.fernandez@mail.com', 'San Martín 985', 0),
 ('Sofía', 'Rodríguez', '38965412', '11-2147-3698', 'sofia.rodriguez@mail.com', 'Belgrano 1770', 1),
 ('Valentina', 'López', '45123987', '11-6325-8741', 'valentina.lopez@mail.com', 'Mitre 320', 1);
+
+ALTER TABLE Cliente
+ADD Altura NVARCHAR(10) NOT NULL DEFAULT '0',
+    Localidad NVARCHAR(100) NOT NULL DEFAULT 'Desconocida';

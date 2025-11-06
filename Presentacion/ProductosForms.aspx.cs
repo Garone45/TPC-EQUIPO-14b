@@ -2,44 +2,75 @@
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
 
 namespace Presentacion
 {
     public partial class ProductosForms : System.Web.UI.Page
     {
+        // Propiedad para saber si estamos en modo Edición
+        public bool EsModoEdicion { get; set; }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Verificamos si la URL trae un ID ANTES del IsPostBack
+            EsModoEdicion = Request.QueryString["id"] != null;
+
             if (!IsPostBack)
             {
+                // 1. Cargar DropDownLists (Esto ya lo tenías)
                 MarcaNegocio marcaNegocio = new MarcaNegocio();
                 CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
-
                 try
                 {
-
                     ddlMarca.DataSource = marcaNegocio.listar();
                     ddlMarca.DataValueField = "IDMarca";
-                    ddlMarca.DataTextField = "Descripcion"; 
+                    ddlMarca.DataTextField = "Descripcion";
                     ddlMarca.DataBind();
                     ddlMarca.Items.Insert(0, new ListItem("-- Seleccionar Marca --", "0"));
 
-                    // Cargar DDL de Categorías
                     ddlCategoria.DataSource = categoriaNegocio.listar();
                     ddlCategoria.DataValueField = "IDCategoria";
-                    ddlCategoria.DataTextField = "descripcion"; 
+                    ddlCategoria.DataTextField = "descripcion";
                     ddlCategoria.DataBind();
                     ddlCategoria.Items.Insert(0, new ListItem("-- Seleccionar Categoría --", "0"));
                 }
                 catch (Exception ex)
                 {
-                    
                     Response.Write($"<script>alert('Error crítico al cargar página: {ex.Message}');</script>");
+                    return;
                 }
+
+                // --- INICIO DE LÓGICA DE MODIFICAR ---
+                // 2. Si EsModoEdicion (si la URL trae ?id=...), cargamos los datos
+                if (EsModoEdicion)
+                {
+                    // Cambiamos el título
+                    // (Si tu h1 tiene runat="server" e ID="tituloPagina")
+                    // tituloPagina.InnerText = "Modificar Producto"; 
+
+                    int id = int.Parse(Request.QueryString["id"]);
+
+                    // Necesitamos un método para traer UN solo artículo
+                    ArticuloNegocio negocio = new ArticuloNegocio();
+                    // ¡OJO! Asumo que ya agregaste 'obtenerPorId' a ArticuloNegocio
+                    Articulo seleccionado = negocio.obtenerPorId(id);
+
+                    // Rellenamos el formulario con los datos
+                    txtSKU.Text = seleccionado.CodigoArticulo;
+                    txtSKU.ReadOnly = true; // El SKU no debería cambiarse al editar
+                    txtDescripcion.Text = seleccionado.Descripcion;
+                    txtPrecioCompra.Text = seleccionado.PrecioCostoActual.ToString("F2");
+                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F2");
+                    txtStockActual.Text = seleccionado.StockActual.ToString();
+                    txtStockMinimo.Text = seleccionado.StockMinimo.ToString();
+
+                    // Seleccionamos los DropDownLists
+                    ddlMarca.SelectedValue = seleccionado.Marca.IDMarca.ToString();
+                    ddlCategoria.SelectedValue = seleccionado.Categorias.IDCategoria.ToString();
+                }
+                // --- FIN LÓGICA DE MODIFICAR ---
             }
         }
 
@@ -47,47 +78,46 @@ namespace Presentacion
         {
             try
             {
-                // Validaciones de DropDownList
-                if (ddlMarca.SelectedValue == "0")
+                // (Validaciones de DDLs - Ya las tenías)
+                if (ddlMarca.SelectedValue == "0" || ddlCategoria.SelectedValue == "0")
                 {
-                    Response.Write("<script>alert('Debe seleccionar una marca');</script>");
-                    return;
-                }
-
-                if (ddlCategoria.SelectedValue == "0")
-                {
-                    Response.Write("<script>alert('Debe seleccionar una categoría');</script>");
+                    Response.Write("<script>alert('Debe seleccionar marca y categoría');</script>");
                     return;
                 }
 
                 ArticuloNegocio negocio = new ArticuloNegocio();
-                Articulo nuevo = new Articulo();
+                Articulo articulo = new Articulo();
 
-                nuevo.Descripcion = txtDescripcion.Text;
+                // 1. Cargar el objeto (igual que antes)
+                articulo.Descripcion = txtDescripcion.Text;
+                articulo.CodigoArticulo = txtSKU.Text;
+                articulo.PrecioCostoActual = decimal.Parse(txtPrecioCompra.Text);
+                articulo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text);
+                articulo.StockActual = int.Parse(txtStockActual.Text);
+                articulo.StockMinimo = int.Parse(txtStockMinimo.Text);
+                articulo.Activo = true;
 
-                // Generar código si viene vacío
-                if (string.IsNullOrWhiteSpace(txtSKU.Text))
-                    nuevo.CodigoArticulo = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
-                else
-                    nuevo.CodigoArticulo = txtSKU.Text;
+                articulo.Marca = new Marca();
+                articulo.Marca.IDMarca = int.Parse(ddlMarca.SelectedValue);
 
-                nuevo.PrecioCostoActual = decimal.Parse(txtPrecioCompra.Text);
-                nuevo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text);
-                nuevo.StockActual = int.Parse(txtStockActual.Text);
-                nuevo.StockMinimo = int.Parse(txtStockMinimo.Text);
-                nuevo.Activo = true;
+                articulo.Categorias = new Categoria();
+                articulo.Categorias.IDCategoria = int.Parse(ddlCategoria.SelectedValue);
 
-                // Marca
-                nuevo.Marca = new Marca();
-                nuevo.Marca.IDMarca = int.Parse(ddlMarca.SelectedValue);
+                // 2. Decidir si AGREGAR o MODIFICAR
+                if (EsModoEdicion) // Si la página cargó con un ID...
+                {
+                    // Obtenemos el ID de la URL
+                    articulo.IDArticulo = int.Parse(Request.QueryString["id"]);
+                    negocio.modificar(articulo); // ¡Llamamos al método MODIFICAR!
+                    Session["msg"] = "Artículo modificado correctamente";
+                }
+                else // Si la página cargó sin ID...
+                {
+                    negocio.agregar(articulo); // ¡Llamamos al método AGREGAR!
+                    Session["msg"] = "Artículo agregado correctamente";
+                }
 
-                // Categoría
-                nuevo.Categorias = new Categoria();
-                nuevo.Categorias.IDCategoria = int.Parse(ddlCategoria.SelectedValue);
-
-                negocio.agregar(nuevo);
-
-                Session["msg"] = "Artículo agregado correctamente";
+                // 3. Redirigir al listado
                 Response.Redirect("ProductosListados.aspx");
             }
             catch (Exception ex)
