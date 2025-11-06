@@ -13,35 +13,74 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
+                // Verificamos si hay un 'id' en la URL
+                if (Request.QueryString["id"] != null)
+                {
+                    // --- MODO EDICIÓN ---
+                    int id = int.Parse(Request.QueryString["id"]);
+
+                    ClienteNegocio negocio = new ClienteNegocio();
+                    Cliente seleccionado = negocio.listar(id);
+
+                    // Esta lógica SÍ debe estar dentro del !IsPostBack
+                    if (seleccionado != null) // Buena práctica: chequear que exista
+                    {
+                        txtNombre.Text = seleccionado.Nombre;
+                        txtApellido.Text = seleccionado.Apellido;
+                        txtDni.Text = seleccionado.Dni;
+                        txtTelefono.Text = seleccionado.Telefono;
+                        txtEmail.Text = seleccionado.Email;
+                        txtDireccion.Text = seleccionado.Direccion;
+
+                        // lblTitulo.Text = "Modificar Cliente";
+                    }
+                }
+                else
+                {
+                    // --- MODO NUEVO ---
+                    // lblTitulo.Text = "Nuevo Cliente";
+                }
+            }
 
         }
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             try
             {
-                // 1. Creamos el objeto Cliente
-                Cliente nuevoCliente = new Cliente();
-
-                // 2. Mapeamos los datos de los TextBox al objeto
-                nuevoCliente.Nombre = txtNombre.Text;
-                nuevoCliente.Apellido = txtApellido.Text;
-                nuevoCliente.Dni = txtDni.Text;
-                nuevoCliente.Telefono = txtTelefono.Text;
-                nuevoCliente.Email = txtEmail.Text;
-                nuevoCliente.Direccion = txtDireccion.Text;
-
-                // 3. Llamamos al método de negocio
                 ClienteNegocio negocio = new ClienteNegocio();
-                negocio.agregar(nuevoCliente);
+                Cliente cliente = new Cliente();
 
-                // 4. Redirigimos al listado
-                // Podrías usar Session["Mensaje"] para mostrar un aviso de éxito en el listado
+                // Cargamos el objeto cliente con los datos del formulario
+                cliente.Nombre = txtNombre.Text;
+                cliente.Apellido = txtApellido.Text;
+                cliente.Dni = txtDni.Text;
+                cliente.Telefono = txtTelefono.Text;
+                cliente.Email = txtEmail.Text;
+                cliente.Direccion = txtDireccion.Text;
+
+                // Comprobamos si estamos en modo Edición o Nuevo
+                if (Request.QueryString["id"] != null)
+                {
+                    // --- MODO EDICIÓN ---
+                    cliente.IDCliente = int.Parse(Request.QueryString["id"]);
+                    negocio.modificar(cliente); // Llamamos al nuevo método
+                }
+                else
+                {
+                    // --- MODO NUEVO ---
+                    negocio.agregar(cliente); // Llamamos al método que ya tenías
+                }
+
+                // Redirigimos de vuelta al listado
                 Response.Redirect("ClientesListado.aspx");
             }
             catch (Exception ex)
             {
-                // Manejo de errores
-                Response.Write($"<script>alert('Error al guardar el cliente: {ex.Message}');</script>");
+                // Manejar el error (por ejemplo, mostrar un mensaje)
+                // Session["error"] = ex.Message;
+                // Response.Redirect("Error.aspx");
             }
         }
     }

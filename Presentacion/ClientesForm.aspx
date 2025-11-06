@@ -42,13 +42,39 @@
                     <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Correo Electrónico</p>
                     <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 h-11 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 text-sm font-normal leading-normal" placeholder="ejemplo@correo.com"></asp:TextBox>
                 </label>
-                <!-- SE ELIMINÓ EL DROPDOWNLIST ddlTipoCliente -->
                 
-                <label class="flex flex-col">
-                    <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Dirección</p>
-                    <asp:TextBox ID="txtDireccion" runat="server" TextMode="MultiLine" Rows="4" CssClass="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 min-h-24 placeholder:text-slate-400 dark:placeholder:text-slate-500 p-3 text-sm font-normal leading-normal" placeholder="Av. Principal, Edificio..."></asp:TextBox>
-                </label>
-                <div class="flex items-center justify-end gap-3 mt-4">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            
+                    <!-- Campo Dirección (Calle) - Ocupa 2 de 3 columnas -->
+                    <label class="flex flex-col flex-1 sm:col-span-2">
+                        <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Dirección (Calle)</p>
+                        <!-- 
+                          CAMBIOS: 
+                          1. Quitado TextMode="MultiLine" y Rows="4"
+                          2. Cambiado CssClass de "form-textarea..." a "form-input..."
+                          3. Copiado el estilo de h-11 y px-3 de los otros inputs
+                        -->
+                        <asp:TextBox ID="txtDireccion" runat="server" 
+                            CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 h-11 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 text-sm font-normal leading-normal" 
+                            placeholder="Ej: Av. Corrientes"></asp:TextBox>
+                    </label>
+
+                    <!-- Campo Altura (Nro) - Ocupa 1 de 3 columnas -->
+                    <label class="flex flex-col flex-1 sm:col-span-1">
+                        <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Altura (Nro)</p>
+                        <!-- 
+                          CAMPO NUEVO:
+                          1. Nuevo ID "txtAltura"
+                          2. Mismos estilos de CSS que los otros inputs.
+                          3. Agregado TextMode="Number" para mejor UX en móviles.
+                        -->
+                        <asp:TextBox ID="txtAltura" runat="server" TextMode="Number"
+                            CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 h-11 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 text-sm font-normal leading-normal" 
+                            placeholder="Ej: 1234"></asp:TextBox>
+                    </label>
+
+                </div>
                     
                     <!-- Este HyperLink (botón Cancelar) te devuelve al listado -->
                     <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/ClientesListado.aspx"

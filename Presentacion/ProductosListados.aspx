@@ -9,7 +9,7 @@
         <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div class="flex flex-col gap-1">
                 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Listado de Productos</h1>
-                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Busca, visualiza y administra tus productos.</p>
+                
             </div>
             <!-- Botón + (Nuevo) -->
             <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"

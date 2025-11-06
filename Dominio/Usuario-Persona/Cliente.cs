@@ -15,6 +15,8 @@ namespace Dominio.Usuario_Persona
         public string Telefono { get; set; }
         public string Email { get; set; }
         public string Direccion { get; set; }
+        public string Altura { get; set; }
+        public string Localidad { get; set; }
         public bool Activo { get; set; }
         public string NombreCompleto => Apellido + ", " + Nombre;
     }

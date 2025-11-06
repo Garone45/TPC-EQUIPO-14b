@@ -21,7 +21,7 @@ namespace Presentacion
 
                 try
                 {
-                 
+
                     ddlMarca.DataSource = marcaNegocio.listar();
                     ddlMarca.DataValueField = "IDMarca";
                     ddlMarca.DataTextField = "Descripcion"; 

@@ -9,7 +9,7 @@
         <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div class="flex flex-col gap-1">
                 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Gestión de Clientes</h1>
-                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Busca y administra los clientes de tu negocio.</p>
+                
             </div>
             <div class="flex items-center gap-4">
                 <!-- Este HyperLink nos lleva a la página del formulario (en modo "nuevo") -->
@@ -43,6 +43,7 @@
                     CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
                     GridLines="None" 
                     AllowPaging="True" PageSize="10" 
+                    OnRowCommand="gvClientes_RowCommand"
                     >
                     
                     <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50" />
@@ -51,8 +52,11 @@
 
                     <Columns>
                         <asp:BoundField DataField="NombreCompleto" HeaderText="Nombre" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
-                        <asp:BoundField DataField="Dni" HeaderText="Identificación" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                        <asp:BoundField DataField="Dni" HeaderText="Dni" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                         <asp:BoundField DataField="Telefono" HeaderText="Teléfono" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                        <asp:BoundField DataField="Direccion" HeaderText="Direccion" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                        <asp:BoundField DataField="Altura" HeaderText="Altura" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                        <asp:BoundField DataField="Localidad" HeaderText="Localidad" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                         <asp:BoundField DataField="Email" HeaderText="Email" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                         
                         <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
@@ -62,13 +66,18 @@
                                     <!-- ESTE ES EL CAMBIO CLAVE: Es un link que navega a la otra página -->
                                     <asp:HyperLink ID="btnEditar" runat="server" 
                                         NavigateUrl='<%# Eval("IDCliente", "ClientesForm.aspx?id={0}") %>'
-                                        CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
+                                        CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20"
+                                        >
                                         <span class="material-symbols-outlined text-lg">edit</span>
                                     </asp:HyperLink>
                                     
                                     <asp:LinkButton ID="btnEliminar" runat="server" 
                                         CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20"
-                                        OnClientClick="return confirm('¿Está seguro de que desea eliminar este cliente?');">
+                                        OnClientClick="return confirm('¿Está seguro de que desea eliminar este cliente?');"
+                                        CommandName="Eliminar"
+                                        CommandArgument='<%# Container.DataItemIndex %>'
+                                        >
+
                                         <span class="material-symbols-outlined text-lg">delete</span>
                                     </asp:LinkButton>
                                 </div>
