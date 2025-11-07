@@ -40,6 +40,33 @@ CREATE TABLE Articulos (
 );
 GO
 
+CREATE TABLE dbo.Pedidos
+(
+    IDPedido INT IDENTITY(1,1) PRIMARY KEY,
+    IDCliente INT NOT NULL,
+    IDVendedor INT NOT NULL,
+    FechaCreacion DATETIME NOT NULL DEFAULT GETDATE(),
+    FechaEntrega DATETIME NULL,
+    MetodoPago VARCHAR(50) NOT NULL,
+    Estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
+    Descuento DECIMAL(5,2) NOT NULL DEFAULT 0.00
+);
+
+GO
+
+CREATE TABLE dbo.DetallesPedido
+(
+    IDDetalle INT IDENTITY(1,1) PRIMARY KEY,
+    IDPedido INT NOT NULL,
+    IDArticulo INT NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10,2) NOT NULL,  
+    PorcentajeDescuento DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT FK_Detalles_Pedidos FOREIGN KEY (IDPedido) REFERENCES dbo.Pedidos (IDPedido)
+);
+
+GO
+
 -- 5. ESTABLECER RELACIONES (Foreign Keys)
 ALTER TABLE Articulos
 ADD CONSTRAINT FK_Articulo_Marca FOREIGN KEY (IdMarca) REFERENCES Marcas(IdMarca);
