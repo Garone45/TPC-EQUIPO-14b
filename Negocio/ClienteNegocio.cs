@@ -16,8 +16,7 @@ namespace Negocio
 
             try
             {
-                // NOTA: Asumo que tu tabla se llama 'Clientes' y tu PK es 'IDCliente'.
-                // ¡Ajusta esta consulta a tu base de datos real!
+               
                 string consulta = @"
                     SELECT 
                         IDCliente, 
