@@ -9,15 +9,16 @@ namespace Dominio.Ventas
 {
     public class DetallePedido
     {
-        public int IDDetallePedido { get; set; }
-        // Relación con el Artículo que se vendió
-        public int IDArticulo { get; set; }
+        public int IDDetalle { get; set; }
+        public int IDPedido { get; set; }      // Relación con Pedido
+        public int IDArticulo { get; set; }    // Relación con Producto
+
+
         public int Cantidad { get; set; }
         // CRÍTICO: Este es el precio de venta calculado en ese momento.
         public decimal PrecioUnitario { get; set; }
-        public decimal Subtotal
-        {
-            get { return Cantidad * PrecioUnitario; }
-        }
+        public decimal Subtotal => (Cantidad * PrecioUnitario) * (1 - Descuento / 100);
+
+        public decimal Descuento { get; set; }
     }
 }

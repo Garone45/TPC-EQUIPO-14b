@@ -81,16 +81,18 @@
                         <asp:TextBox ID="txtLocalidad" runat="server" CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 h-11 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 text-sm font-normal leading-normal" placeholder="Ej: San Fernando"></asp:TextBox>
                     </label>
                 </div>
-                
+
+
+                <div class="flex justify-end gap-4 mt-6">
                     <!-- Este HyperLink (botón Cancelar) te devuelve al listado -->
                     <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/ClientesListado.aspx"
                         CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 dark:hover:bg-slate-600">
                         <span class="truncate">Cancelar</span>
                     </asp:HyperLink>
-                    
+
                     <asp:Button ID="btnGuardar" runat="server" Text="Guardar" OnClick="btnGuardar_Click" CausesValidation="false"
-                        CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" 
-                          />
+                        CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />
+                </div>
                 </div>
             </div>
         </div>

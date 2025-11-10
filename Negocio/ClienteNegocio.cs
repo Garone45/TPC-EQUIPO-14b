@@ -16,7 +16,11 @@ namespace Negocio
 
             try
             {
+<<<<<<< HEAD
                
+=======
+                
+>>>>>>> fd5358229fcef5a9347998e83f9ed8960da0bff0
                 string consulta = @"
                     SELECT 
                         IDCliente, 
