@@ -16,7 +16,7 @@ namespace Negocio
 
             try
             {
-                // 1. Consulta SQL base (la que ya tenías)
+                
                 string consulta = "SELECT " +
                     "A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, " +
                     "A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo, " +
@@ -27,7 +27,7 @@ namespace Negocio
                     "INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " +
                     "WHERE A.Activo = 1";
 
-                // 2. ✅ LÓGICA DE BÚSQUEDA (El AND se agrega si 'busqueda' no está vacía)
+                
                 if (!string.IsNullOrEmpty(busqueda))
                 {
                     // Busca en Descripción O en CodigoArticulo

@@ -1,63 +1,57 @@
-﻿using Dominio.Ventas;
+﻿using Dominio.Usuario_Persona;
+using Dominio.Ventas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Dominio.Ventas.Pedido;
 
 namespace Negocio
 {
     public class VentasNegocio
     {
-        // Método para obtener la lista de todos los pedidos (sin filtros por ahora)
-        public List<Pedido> ListarTodos()
+        // 
+        public List<Pedido> ListarPedidos()
         {
             List<Pedido> lista = new List<Pedido>();
-            AccesoDatos datos = new AccesoDatos(); // Usamos tu clase de acceso a datos
+            AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                // Consulta SQL que obtiene todos los campos necesarios para el listado
                 string consulta = @"
                 SELECT 
-                    P.IDPedido,
-                    C.Nombre + ' ' + C.Apellido AS Cliente,
-                    P.IDCliente, 
-                    P.IDVendedor,
-                    P.FechaCreacion,
-                    P.FechaEntrega,
-                    P.MetodoPago,
-                    P.Estado,
-                    P.Total
+                    P.IDPedido, P.IDCliente, P.IDVendedor, P.FechaCreacion, P.FechaEntrega,
+                    P.MetodoPago, P.Estado, P.Total,
+                    C.Nombre + ' ' + C.Apellido AS NombreCliente  
                 FROM dbo.Pedidos P
                 INNER JOIN dbo.Cliente C ON P.IDCliente = C.IDCliente
-                ORDER BY P.FechaCreacion DESC";
+                ";
+
 
                 datos.setearConsulta(consulta);
-                datos.ejecutarLectura(); // Abre la conexión y ejecuta la consulta
+                datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Pedido pedido = new Pedido();
-
-                    // Mapeo de datos del lector al objeto Pedido
+                    // Mapeo de datos
                     pedido.IDPedido = (int)datos.Lector["IDPedido"];
-                    pedido.IDCliente = (int)datos.Lector["IDCliente"];
-                    pedido.IDVendedor = (int)datos.Lector["IDVendedor"];
-
-                    pedido.NombreCliente = datos.Lector["Cliente"].ToString();
-
-                    // Conversión segura de tipos
+                    pedido.NombreCliente = datos.Lector["NombreCliente"].ToString();
                     pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
-                    pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
-                    pedido.Total = (decimal)datos.Lector["Total"];
-                    pedido.MetodoPago = datos.Lector["MetodoPago"].ToString();
 
-                    // Convertir la columna 'Estado' de la DB (string) a tu Enum de Dominio
+                    if (!(datos.Lector["FechaEntrega"] is DBNull))
+                        pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+
+                    // Manejo de NULL para Total (para evitar excepciones)
+                    if (!(datos.Lector["Total"] is DBNull))
+                        pedido.Total = (decimal)datos.Lector["Total"];
+                    else
+                        pedido.Total = 0;
+
+                    pedido.MetodoPago = datos.Lector["MetodoPago"].ToString();
                     string estadoStr = datos.Lector["Estado"].ToString();
                     pedido.Estado = (Pedido.EstadoPedido)Enum.Parse(typeof(Pedido.EstadoPedido), estadoStr);
-
-                    pedido.Detalles = new List<DetallePedido>(); // Inicializar lista de detalles (vacía para el listado)
 
                     lista.Add(pedido);
                 }
@@ -66,14 +60,88 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                // Propagar la excepción o manejarla (log)
-                throw new Exception("Error en la capa de datos al listar pedidos.", ex);
+                throw new Exception("Error al listar pedidos.", ex);
             }
             finally
             {
-                // Usamos tu método para cerrar la conexión y el lector
                 datos.cerrarConexion();
             }
         }
+
+
+
+
+           public List<Pedido> Filtrar(string filtro)
+        {
+            List<Pedido> lista = new List<Pedido>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string consulta = @"
+            SELECT 
+                P.IDPedido, 
+                P.IDCliente, 
+                P.IDVendedor, 
+                P.FechaCreacion, 
+                P.FechaEntrega,
+                P.MetodoPago, 
+                P.Estado, 
+                P.Total,
+                C.Nombre + ' ' + C.Apellido AS NombreCliente
+            FROM dbo.Pedidos P
+            INNER JOIN dbo.Cliente C ON P.IDCliente = C.IDCliente
+            WHERE 
+                (@Filtro IS NULL OR @Filtro = '' OR 
+                 CAST(P.IDPedido AS VARCHAR) LIKE '%' + @Filtro + '%' OR 
+                 (C.Nombre + ' ' + C.Apellido) LIKE '%' + @Filtro + '%' OR 
+                 P.Estado LIKE '%' + @Filtro + '%')
+            ORDER BY P.FechaCreacion DESC;";
+
+                datos.setearConsulta(consulta);
+                datos.setearParametro("@Filtro", filtro);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Pedido aux = new Pedido();
+                    aux.IDPedido = (int)datos.Lector["IDPedido"];
+                    aux.IDCliente = (int)datos.Lector["IDCliente"];
+                    aux.IDVendedor = (int)datos.Lector["IDVendedor"];
+                    aux.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
+                    aux.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+                    aux.MetodoPago = datos.Lector["MetodoPago"].ToString();
+                    string estadoStr = datos.Lector["Estado"].ToString().Trim();
+                    EstadoPedido estadoParseado;
+                    if (!Enum.TryParse(estadoStr, true, out estadoParseado))
+                        estadoParseado = EstadoPedido.Pendiente; // valor por defecto
+                    aux.Estado = estadoParseado;
+                    aux.Total = (decimal)datos.Lector["Total"];
+                    aux.NombreCliente = datos.Lector["NombreCliente"].ToString();
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+
+
+
+
     }
 }
+
+
+
+

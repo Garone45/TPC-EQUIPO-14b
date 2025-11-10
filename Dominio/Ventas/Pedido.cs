@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dominio.Ventas
 {
+    [Serializable]
     public class Pedido
     {
         public int IDPedido { get; set; }
