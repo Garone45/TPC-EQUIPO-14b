@@ -11,8 +11,17 @@ namespace Presentacion
 {
 
 
-    public partial class ProveedoresForms
+    public partial class ProveedoresForm
     {
+
+        /// <summary>
+        /// Control lblTitulo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTitulo;
 
         /// <summary>
         /// Control txtRazonSocial.
@@ -24,6 +33,15 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtRazonSocial;
 
         /// <summary>
+        /// Control rfvRazonSocial.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvRazonSocial;
+
+        /// <summary>
         /// Control txtSeudonimo.
         /// </summary>
         /// <remarks>
@@ -33,13 +51,22 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtSeudonimo;
 
         /// <summary>
-        /// Control txtCuit.
+        /// Control txtCUIT.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCuit;
+        protected global::System.Web.UI.WebControls.TextBox txtCUIT;
+
+        /// <summary>
+        /// Control rfvCUIT.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvCUIT;
 
         /// <summary>
         /// Control txtTelefono.

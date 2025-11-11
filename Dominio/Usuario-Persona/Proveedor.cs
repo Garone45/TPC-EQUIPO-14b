@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace Dominio.Usuario_Persona
 {
-    public class Proveedor : Entidad
+    public class Proveedor
     {
-        public string Seudonimo { get; set; } // O RazonSocial
+        public int ID { get; set; } // El IDProveedor
+
+        // Atributos de Proveedor
+        public string RazonSocial { get; set; }
         public string Cuit { get; set; }
+        public string Seudonimo { get; set; } // (Este estaba en tu DER)
+
+        // Atributos de Entidad (los "heredados")
+        public string Telefono { get; set; }
+        public string Email { get; set; }
+        public string Direccion { get; set; }
+        public bool Activo { get; set; }
     }
 }

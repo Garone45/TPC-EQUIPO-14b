@@ -11,7 +11,7 @@ namespace Presentacion
 {
 
 
-    public partial class CategoriaListado
+    public partial class CategoriasListado
     {
 
         /// <summary>

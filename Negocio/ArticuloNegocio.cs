@@ -118,7 +118,7 @@ namespace Negocio
             {
                 datos.setearProcedimiento("SP_ModificarArticulo");
 
-                // Seteamos TODOS los parámetros, incluyendo el ID
+               
                 datos.setearParametro("@IdArticulo", articuloModificado.IDArticulo);
                 datos.setearParametro("@Descripcion", articuloModificado.Descripcion);
                 datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
@@ -146,14 +146,13 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // 1. Seteamos el SP y el parámetro de entrada
+            
                 datos.setearProcedimiento("SP_ObtenerArticuloPorID");
                 datos.setearParametro("@IdArticulo", id);
 
-                // 2. Ejecutamos la lectura
                 datos.ejecutarLectura();
 
-                // 3. Mapeamos el resultado (solo esperamos una fila)
+              
                 if (datos.Lector.Read())
                 {
                     Articulo aux = new Articulo();
@@ -175,12 +174,12 @@ namespace Negocio
                     aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
 
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
-                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"]; // 'd' minúscula
+                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"]; 
 
-                    return aux; // Devuelve el artículo encontrado
+                    return aux; 
                 }
 
-                return null; // Si el 'if' no se cumple, no lo encontró
+                return null; 
             }
             catch (Exception ex)
             {

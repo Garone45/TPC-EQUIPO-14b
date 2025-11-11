@@ -3,7 +3,7 @@ GO
 USE TPC_GRUPO_14b;
 
 GO
--- 2. TABLA MARCAS (Maestra 1)
+-- TABLA MARCAS (Maestra 1)
 CREATE TABLE Marcas (
     IdMarca INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(50) NOT NULL UNIQUE,
@@ -11,7 +11,7 @@ CREATE TABLE Marcas (
 );
 GO
 
--- 3. TABLA CATEGORIAS (Maestra 2)
+-- TABLA CATEGORIAS (Maestra 2)
 CREATE TABLE Categorias (
     IdCategoria INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(50) NOT NULL UNIQUE,
@@ -19,7 +19,7 @@ CREATE TABLE Categorias (
 );
 GO
 
--- 4. TABLA ARTICULOS (La tabla principal)
+--  TABLA ARTICULOS (La tabla principal)
 CREATE TABLE Articulos (
     -- Renombramos a IdArticulo para consistencia con C#
     IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE Articulos (
     Activo BIT NOT NULL DEFAULT 1
 );
 GO
-
+-- TABLA PEDIDOS
 CREATE TABLE dbo.Pedidos
 (
     IDPedido INT IDENTITY(1,1) PRIMARY KEY,
@@ -53,7 +53,7 @@ CREATE TABLE dbo.Pedidos
 );
 
 GO
-
+-- TABLA DETALLES DE PEDIDOS
 CREATE TABLE dbo.DetallesPedido
 (
     IDDetalle INT IDENTITY(1,1) PRIMARY KEY,
@@ -67,7 +67,7 @@ CREATE TABLE dbo.DetallesPedido
 
 GO
 
--- 5. ESTABLECER RELACIONES (Foreign Keys)
+-- ESTABLECER RELACIONES (Foreign Keys)
 ALTER TABLE Articulos
 ADD CONSTRAINT FK_Articulo_Marca FOREIGN KEY (IdMarca) REFERENCES Marcas(IdMarca);
 
@@ -75,10 +75,9 @@ ALTER TABLE Articulos
 ADD CONSTRAINT FK_Articulo_Categoria FOREIGN KEY (IdCategoria) REFERENCES Categorias(IdCategoria);
 GO
 
--- 6. INSERCIÓN DE DATOS DE PRUEBA
+--  INSERCIÓN DE DATOS DE PRUEBA
 INSERT INTO Marcas (Descripcion) VALUES ('View Sonic'), ('Tec-x'), ('Hogar Pro');
 INSERT INTO Categorias (Descripcion) VALUES ('Electrónica'), ('Accesorios'), ('Limpieza');
-
 -- Insertar Artículos (IdMarca=2, IdCategoria=1, etc. según el orden de arriba)
 INSERT INTO Articulos (Descripcion, CodigoArticulo, IdMarca, IdCategoria, PrecioCostoActual, PorcentajeGanancia, StockActual, StockMinimo)
 VALUES 
@@ -87,6 +86,7 @@ VALUES
     ('Licuadora 1.5L', 'LIC-HPRO-03', 1, 2, 3200.00, 0.30, 100, 10);
 GO
 
+-- TABLA CLIENTES 
 CREATE TABLE Cliente (
     IDCliente INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100) NOT NULL,
@@ -97,8 +97,6 @@ CREATE TABLE Cliente (
     Direccion NVARCHAR(200),
     Activo BIT NOT NULL DEFAULT 1
 );
-USE TPC_GRUPO_14b;
-GO
 
 INSERT INTO Cliente (Nombre, Apellido, Dni, Telefono, Email, Direccion, Activo)
 VALUES
@@ -111,3 +109,25 @@ VALUES
 ALTER TABLE Cliente
 ADD Altura NVARCHAR(10) NOT NULL DEFAULT '0',
     Localidad NVARCHAR(100) NOT NULL DEFAULT 'Desconocida';
+
+-- TABLA PROVEEDORES 
+GO
+CREATE TABLE dbo.Proveedores (
+    IDProveedor INT IDENTITY(1,1) PRIMARY KEY,
+    
+
+    RazonSocial VARCHAR(150) NOT NULL,
+    Seudonimo VARCHAR(100) NULL,
+    CUIT VARCHAR(20) UNIQUE NOT NULL,
+ 
+    Telefono VARCHAR(50) NULL,
+    Email VARCHAR(100) NULL,
+    Direccion VARCHAR(200) NULL,
+    
+    Activo BIT NOT NULL DEFAULT 1
+);
+GO
+-- Insertar un proveedor de prueba
+INSERT INTO dbo.Proveedores (RazonSocial, CUIT, Telefono, Email, Direccion)
+VALUES ('Proveedor de Prueba S.A.', '30-12345678-9', '11-4444-5555', 'contacto@proveedor.com', 'Calle Falsa 123');
+GO

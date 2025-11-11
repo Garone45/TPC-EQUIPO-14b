@@ -11,7 +11,7 @@ namespace Presentacion
 {
 
 
-    public partial class ProveedoresListados
+    public partial class ProveedoresListado
     {
 
         /// <summary>

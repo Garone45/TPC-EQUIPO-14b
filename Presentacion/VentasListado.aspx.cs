@@ -46,16 +46,16 @@ namespace Presentacion
             {
                 if (string.IsNullOrEmpty(filtroTexto))
                 {
-                    // Si el filtro está vacío, listar todo (Lógica de Clientes)
+                  
                     listaPedidos = negocio.ListarPedidos();
                 }
                 else
                 {
-                    // Si hay filtro, usamos el método de filtro (Lógica de Clientes)
+            
                     listaPedidos = negocio.Filtrar(filtroTexto);
                 }
 
-                // Guardamos la lista en la propiedad (ViewState) para uso futuro (ej: paginación)
+                
                 gvPedidos.DataSource = listaPedidos;
                 gvPedidos.DataBind();
                 ListaPedidos = listaPedidos;

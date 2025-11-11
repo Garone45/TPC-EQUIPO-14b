@@ -1,7 +1,10 @@
 USE TPC_GRUPO_14b;
 GO
+
+
+--ARTICULOS
+
 CREATE PROCEDURE SP_AgregarArticulo
-  
     @Descripcion VARCHAR(255),
     @CodigoArticulo VARCHAR(50),
     @IdMarca INT,
@@ -37,11 +40,10 @@ BEGIN
     );
 END
 GO
+
 CREATE PROCEDURE SP_ModificarArticulo
     -- ID para saber cuál modificar
     @IdArticulo INT, 
-    
-    -- El resto de los parámetros (igual que el SP_AgregarArticulo)
     @Descripcion VARCHAR(255),
     @CodigoArticulo VARCHAR(50),
     @IdMarca INT,
@@ -93,6 +95,7 @@ BEGIN
         A.IdArticulo = @IdArticulo; -- El filtro clave
 END
 GO
+
 CREATE PROCEDURE SP_EliminarLogicoArticulo
     @IdArticulo INT
 AS
@@ -103,3 +106,146 @@ BEGIN
     WHERE 
         IdArticulo = @IdArticulo;
 END
+
+
+-- MARCAS
+
+CREATE PROCEDURE SP_AgregarMarca
+   @Descripcion VARCHAR(100)
+AS
+BEGIN
+    INSERT INTO dbo.Marcas (Descripcion, Activo)
+    VALUES (@Descripcion, 1);
+	END
+	GO
+	CREATE PROCEDURE SP_ModificarMarca
+    @IdMarca INT,
+    @Descripcion VARCHAR(100)
+AS
+BEGIN
+    UPDATE dbo.Marcas
+    SET Descripcion = @Descripcion
+    WHERE IDMarca = @IdMarca;
+END
+GO
+
+CREATE PROCEDURE SP_EliminarLogicoMarca
+    @IdMarca INT
+AS
+BEGIN
+    UPDATE dbo.Marcas
+    SET 
+        Activo = 0 -- Baja Lógica
+    WHERE 
+        IDMarca = @IdMarca;
+END
+GO
+
+CREATE PROCEDURE SP_ObtenerMarcaPorID
+    @IdMarca INT
+AS
+BEGIN
+    SELECT 
+        IDMarca, 
+        Descripcion, 
+        Activo
+    FROM 
+        dbo.Marcas
+    WHERE 
+        IDMarca = @IdMarca;
+END
+GO
+
+-- CATEGORIAS
+
+GO
+
+-- 1. SP para Agregar (CREATE)
+
+CREATE PROCEDURE SP_AgregarProveedor
+    @RazonSocial VARCHAR(150),
+    @Seudonimo VARCHAR(100),
+    @CUIT VARCHAR(20),
+    @Telefono VARCHAR(50),
+    @Email VARCHAR(100),
+    @Direccion VARCHAR(200)
+AS
+BEGIN
+    INSERT INTO dbo.Proveedores (
+        RazonSocial, Seudonimo, CUIT, Telefono, Email, Direccion, Activo
+    )
+    VALUES (
+        @RazonSocial, @Seudonimo, @CUIT, @Telefono, @Email, @Direccion, 1
+    );
+END
+GO
+
+-- 2. SP para Modificar (UPDATE)
+IF OBJECT_ID('SP_ModificarProveedor', 'P') IS NOT NULL
+    DROP PROCEDURE SP_ModificarProveedor;
+GO
+
+CREATE PROCEDURE SP_ModificarProveedor
+    @IDProveedor INT,
+    @RazonSocial VARCHAR(150),
+    @Seudonimo VARCHAR(100),
+    @CUIT VARCHAR(20),
+    @Telefono VARCHAR(50),
+    @Email VARCHAR(100),
+    @Direccion VARCHAR(200)
+AS
+BEGIN
+    UPDATE dbo.Proveedores
+    SET 
+        RazonSocial = @RazonSocial,
+        Seudonimo = @Seudonimo,
+        CUIT = @CUIT,
+        Telefono = @Telefono,
+        Email = @Email,
+        Direccion = @Direccion
+    WHERE 
+        IDProveedor = @IDProveedor;
+END
+GO
+
+-- 3. SP para Eliminar (DELETE Lógico)
+IF OBJECT_ID('SP_EliminarLogicoProveedor', 'P') IS NOT NULL
+    DROP PROCEDURE SP_EliminarLogicoProveedor;
+GO
+
+CREATE PROCEDURE SP_EliminarLogicoProveedor
+    @IDProveedor INT
+AS
+BEGIN
+    UPDATE dbo.Proveedores
+    SET 
+        Activo = 0 -- Baja Lógica
+    WHERE 
+        IDProveedor = @IDProveedor;
+END
+GO
+
+-- 4. SP para Obtener por ID (Para el Modificar)
+IF OBJECT_ID('SP_ObtenerProveedorPorID', 'P') IS NOT NULL
+    DROP PROCEDURE SP_ObtenerProveedorPorID;
+GO
+
+CREATE PROCEDURE SP_ObtenerProveedorPorID
+    @IDProveedor INT
+AS
+BEGIN
+    SELECT 
+        IDProveedor, 
+        RazonSocial, 
+        Seudonimo, 
+        CUIT, 
+        Telefono, 
+        Email, 
+        Direccion, 
+        Activo
+    FROM 
+        dbo.Proveedores
+    WHERE 
+        IDProveedor = @IDProveedor;
+END
+GO
