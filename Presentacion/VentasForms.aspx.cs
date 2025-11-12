@@ -1,4 +1,5 @@
-﻿using Negocio;
+﻿using Dominio.Usuario_Persona;
+using Negocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,79 +11,70 @@ namespace Presentacion
 {
     public partial class VentasForms : System.Web.UI.Page
     {
-        private ClienteNegocio negocioCliente = new ClienteNegocio();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                gvClientes.Visible = false;
+                // La primera vez que carga la página, mostramos todos los clientes
+                BindGridClientes(null);
             }
-            
-
         }
-
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
         {
             string filtro = txtBuscarCliente.Text.Trim();
-
-            if (string.IsNullOrEmpty(filtro))
-            {
-                gvClientes.Visible = false;
-                return;
-            }
-
-            try
-            {
-                // Busca por nombre, apellido o CUIT
-                var lista = negocioCliente.listar()
-                    .Where(c =>
-                        c.Nombre.ToLower().Contains(filtro.ToLower()) ||
-                        c.Apellido.ToLower().Contains(filtro.ToLower()) ||
-                        c.Dni.ToLower().Contains(filtro.ToLower()) ||
-                        c.IDCliente.ToString().Contains(filtro))
-                    .Select(c => new
-                    {
-                        c.IDCliente,
-                        NombreCompleto = c.Nombre + " " + c.Apellido,
-                        c.Dni
-                    })
-                    .ToList();
-
-                gvClientes.DataSource = lista;
-                gvClientes.DataBind();
-
-                gvClientes.Visible = lista.Any();
-            }
-            catch (Exception ex)
-            {
-                // Log o manejo de errores
-                gvClientes.Visible = false;
-                Console.WriteLine("Error al buscar clientes: " + ex.Message);
-            }
+            BindGridClientes(filtro);
+            
         }
 
         protected void gvClientes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            try
+            // 1. Obtenemos el ID del cliente seleccionado
+            // (DataKeyNames="ID" que definimos en el GridView es crucial aquí)
+            int selectedId = (int)gvClientes.SelectedDataKey.Value;
+
+            // 2. Buscamos el cliente completo usando tu capa de negocio
+            ClienteNegocio negocio = new ClienteNegocio();
+
+            // Asumo que tienes un método para buscar por ID.
+            // Si tu método de "buscarCliente" puede recibir un ID, úsalo.
+            // Por ejemplo: Cliente clienteSeleccionado = negocio.buscarCliente(selectedId);
+            // O si tienes uno específico:
+            Cliente clienteSeleccionado = negocio.listar(selectedId); // <-- ¡CAMBIADO!
+
+            // 3. ¡PRECARGAMOS LOS DATOS! (Esta es la magia)
+            if (clienteSeleccionado != null)
             {
-                GridViewRow fila = gvClientes.SelectedRow;
-
-                string idCliente = fila.Cells[0].Text;
-                string nombreCliente = fila.Cells[1].Text;
-
-                // Cargar el cliente seleccionado en el TextBox
-                txtBuscarCliente.Text = nombreCliente;
-
-                // Guardarlo en sesión (útil para cuando confirmes la venta)
-                Session["ClienteSeleccionado"] = idCliente;
-
-                // Ocultar el grid después de seleccionar
-                gvClientes.Visible = false;
+                txtClientName.Text = clienteSeleccionado.Nombre;
+                txtClientAddress.Text = clienteSeleccionado.Direccion;
+                txtClientCity.Text = clienteSeleccionado.Localidad;
+                txtClientDNI.Text = clienteSeleccionado.Dni;
+                txtClientPhone.Text = clienteSeleccionado.Telefono;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al seleccionar cliente: " + ex.Message);
-            }
+
+            // 4. Limpiamos la búsqueda y el grid para que no molesten
+            txtBuscarCliente.Text = string.Empty;
+            BindGridClientes(null);
         }
+
+        private void BindGridClientes(string filtro)
+        {
+            // 1. Obtenemos TODOS los clientes de tu capa de negocio
+            ClienteNegocio negocio = new ClienteNegocio();
+            List<Cliente> clientes = negocio.listar(); // 
+
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                // Filtramos la lista si hay un texto de búsqueda
+                // (Compara en minúsculas para que no sea sensible)
+                clientes = clientes.Where(c =>
+                    c.Nombre.ToLower().Contains(filtro.ToLower()) ||
+                    c.Dni.Contains(filtro)
+                ).ToList();
+            }
+
+            gvClientes.DataSource = clientes;
+            gvClientes.DataBind();
+        }
+
     }
 }

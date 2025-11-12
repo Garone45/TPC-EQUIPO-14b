@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Dominio;
 
 namespace Presentacion
 {
@@ -20,7 +21,7 @@ namespace Presentacion
                     Response.Redirect("ProductosListados.aspx", false);
                     return;
                 }
-
+                
                 // 2. Cargar datos del producto
                 try
                 {
@@ -35,11 +36,15 @@ namespace Presentacion
                     }
 
                     // 3. Rellenar los campos bloqueados del formulario
-                    txtSKU.Text = seleccionado.CodigoArticulo;
+                    txtSKU.Text = seleccionado.IDArticulo.ToString();
                     txtDescripcion.Text = seleccionado.Descripcion;
                     txtStockActual.Text = seleccionado.StockActual.ToString();
+                    txtMarca.Text = seleccionado.Marca.Descripcion;           // si tu clase Articulo tiene una relación con Marca
+                    txtCategoria.Text = seleccionado.Categorias.descripcion;   // igual para Categoría
+                    txtPrecioCostoActual.Text = seleccionado.PrecioCostoActual.ToString("F2");
+                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F2");
 
-                    // (Opcional) Guardar el ID para usarlo en el botón de Editar Atributos
+                 
                     ViewState["IDArticulo"] = id;
                 }
                 catch (Exception ex)

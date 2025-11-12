@@ -140,7 +140,7 @@ namespace Negocio
                 datos.setearParametro("@IDCliente", id);
                 datos.ejecutarLectura();
 
-                if (datos.Lector.Read()) // Si encontró el cliente
+                if (datos.Lector.Read()) 
                 {
                     Cliente aux = new Cliente();
                     aux.IDCliente = (int)datos.Lector["IDCliente"];
@@ -156,7 +156,7 @@ namespace Negocio
                     return aux;
                 }
 
-                return null; // Si no lo encontró
+                return null; 
             }
             catch (Exception ex)
             {
@@ -168,7 +168,7 @@ namespace Negocio
             }
         }
 
-        // ---- NUEVO MÉTODO ----
+      
         public void modificar(Cliente cliente)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -212,7 +212,6 @@ namespace Negocio
             }
         }
 
-        // ---- NUEVO MÉTODO ----
         public void eliminarLogico(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -253,7 +252,7 @@ namespace Negocio
                     )";
 
                 datos.setearConsulta(consulta);
-                // Usamos el wildcard % al inicio y final para buscar coincidencias parciales
+               
                 datos.setearParametro("@filtro", "%" + filtro + "%");
                 datos.ejecutarLectura();
 

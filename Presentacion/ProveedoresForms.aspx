@@ -68,7 +68,7 @@
                 </label>
 
                 <div class="flex items-center justify-end gap-3 mt-4">
-                    <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/ProveedoresListado.aspx"
+                    <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/ProveedoresListados"
                         CssClass="flex min-w-[84px] ... bg-slate-200 ...">
                         <span class="truncate">Cancelar</span>
                     </asp:HyperLink>

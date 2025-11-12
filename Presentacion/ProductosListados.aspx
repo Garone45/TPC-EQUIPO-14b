@@ -51,7 +51,7 @@
 
                             <Columns>
 
-                                <asp:BoundField DataField="CodigoArticulo" HeaderText="Código SKU"
+                                <asp:BoundField DataField="IDArticulo" HeaderText=" SKU"
                                     HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
 
                                 <asp:BoundField DataField="Descripcion" HeaderText="Descripción"

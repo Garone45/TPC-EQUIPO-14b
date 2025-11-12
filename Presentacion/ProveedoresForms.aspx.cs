@@ -74,7 +74,7 @@ namespace Presentacion
                 }
 
            
-                Response.Redirect("ProveedoresListado.aspx");
+                Response.Redirect("ProveedoresListados.aspx");
             }
             catch (Exception ex)
             {

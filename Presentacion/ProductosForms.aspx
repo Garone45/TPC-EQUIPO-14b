@@ -67,12 +67,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <label class="flex flex-col flex-1">
                         <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Precio de Compra ($)</p>
-                        <asp:TextBox ID="txtPrecioCompra" runat="server" TextMode="Number" step="0.01"
+                        <asp:TextBox ID="txtPrecioCostoActual" runat="server" step="0.01"
                             CssClass="form-input flex w-full ... h-11" placeholder="0.00"></asp:TextBox>
                     </label>
                     <label class="flex flex-col flex-1">
                         <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Porcentaje Ganancia (%)</p>
-                        <asp:TextBox ID="txtPorcentajeGanancia" runat="server" TextMode="Number" step="0.01"
+                        <asp:TextBox ID="txtPorcentajeGanancia" runat="server" step="0.01"
                             CssClass="form-input flex w-full ... h-11" placeholder="0.00"></asp:TextBox>
                     </label>
                     <label class="flex flex-col flex-1">
@@ -100,7 +100,7 @@
                 <!-- Botones -->
                 <div class="flex items-center justify-end gap-3 mt-4">
                     <asp:Button ID="btnCancelar" runat="server" Text="Cancelar"
-                        PostBackUrl="~/ProductosListado.aspx" CausesValidation="false"
+                        PostBackUrl="~/ProductosListados" CausesValidation="false"
                         CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 dark:hover:bg-slate-600" />
                     <asp:Button ID="btnGuardar" runat="server" Text="Guardar"
                         CssClass="flex min-w-[84px] max-w-[480px] ..."

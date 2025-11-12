@@ -21,12 +21,11 @@ GO
 
 --  TABLA ARTICULOS (La tabla principal)
 CREATE TABLE Articulos (
-    -- Renombramos a IdArticulo para consistencia con C#
-    IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
     
+    IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(255) NOT NULL,
     CodigoArticulo VARCHAR(50) NULL, 
-    
+   
     -- Claves Foráneas
     IdMarca INT NOT NULL,       
     IdCategoria INT NOT NULL,   
@@ -53,6 +52,17 @@ CREATE TABLE dbo.Pedidos
 );
 
 GO
+INSERT INTO dbo.Pedidos (IDCliente, IDVendedor, FechaCreacion, FechaEntrega, MetodoPago, Estado, Descuento)
+VALUES
+(3, 1, '2025-10-29', '2025-11-13', 'Efectivo', 'Pendiente', 5.00),
+(7, 2, '2025-10-31', '2025-11-14', 'Tarjeta', 'En preparación', 0.00),
+(5, 3, '2025-11-01', '2025-11-15', 'Transferencia', 'Entregado', 10.00),
+(11, 4, '2025-11-03', '2025-11-17', 'Efectivo', 'Pendiente', 0.00),
+(2, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'En preparación', 3.50),
+(9, 2, '2025-11-06', '2025-11-20', 'Transferencia', 'Pendiente', 7.00),
+(1, 4, '2025-11-08', '2025-11-22', 'Efectivo', 'Pendiente', 0.00);
+
+GO
 -- TABLA DETALLES DE PEDIDOS
 CREATE TABLE dbo.DetallesPedido
 (
@@ -66,6 +76,24 @@ CREATE TABLE dbo.DetallesPedido
 );
 
 GO
+-- TABLA USUARIOS 
+CREATE TABLE Usuario (
+    IDUsuario INT IDENTITY(1,1) PRIMARY KEY,
+    NombreUser VARCHAR(100) NOT NULL,
+    Contraseña VARCHAR(100) NOT NULL,
+    Rol VARCHAR(50) NOT NULL,  -- 'Administrador', 'Vendedor', 'Cliente'
+    Activo BIT NOT NULL DEFAULT 1
+);
+
+INSERT INTO Usuario (NombreUser, Contraseña, Rol, Activo)
+VALUES 
+('mramirez', '1234', 'Vendedor', 1),
+('jperez', 'abcd', 'Vendedor', 1),
+('lfernandez', 'pass123', 'Vendedor', 1),
+('cgomez', 'test567', 'Vendedor', 1),
+('arodriguez', 'qwerty', 'Vendedor', 1),
+('jtato', 'admin123', 'Administrador', 1),
+('fgarone', 'root321', 'Administrador', 1);
 
 -- ESTABLECER RELACIONES (Foreign Keys)
 ALTER TABLE Articulos

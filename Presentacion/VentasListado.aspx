@@ -59,7 +59,7 @@
                         <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Listado de Ventas</h1>
                         <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Administra, filtra y busca todas las ventas de tu negocio.</p>
                     </div>
-                    <asp:HyperLink ID="lnkNuevaVenta" runat="server" NavigateUrl="~/VentaForm.aspx" CssClass="flex items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold gap-2">
+                    <asp:HyperLink ID="lnkNuevaVenta" runat="server" NavigateUrl="~/VentasForms" CssClass="flex items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold gap-2">
                         <span class="material-symbols-outlined">add_circle</span>
                         <span class="truncate">Nueva Venta</span>
                     </asp:HyperLink>

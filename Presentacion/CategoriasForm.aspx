@@ -32,7 +32,7 @@
                 
                 <div class="flex items-center justify-end gap-3 mt-4">
                     
-                    <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/CategoriasListado.aspx"
+                    <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/CategoriaListado"
                         CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 dark:hover:bg-slate-600">
                         <span class="truncate">Cancelar</span>
                     </asp:HyperLink>

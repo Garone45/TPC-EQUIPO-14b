@@ -72,7 +72,7 @@
                                 <div class="flex justify-center gap-2">
                                     
                                     <asp:HyperLink ID="btnEditar" runat="server"
-                                        NavigateUrl='<%# "~/ProveedoresForm.aspx?id=" + Eval("ID") %>'
+                                        NavigateUrl='<%# "~/ProveedoresForms.aspx?id=" + Eval("ID") %>'
                                         CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
                                         <span class="material-symbols-outlined text-lg">edit</span>
                                     </asp:HyperLink>

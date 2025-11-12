@@ -206,5 +206,27 @@ namespace Negocio
            
         }
 
+        public int obtenerProximoId()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT ISNULL(MAX(IDArticulo), 0) + 1 AS ProximoID FROM Articulos");
+                datos.ejecutarLectura();
+                if (datos.Lector.Read())
+                    return (int)datos.Lector["ProximoID"];
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el próximo ID: " + ex.Message);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 }

@@ -109,6 +109,7 @@ END
 
 
 -- MARCAS
+go
 
 CREATE PROCEDURE SP_AgregarMarca
    @Descripcion VARCHAR(100)

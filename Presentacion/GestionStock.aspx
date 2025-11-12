@@ -12,7 +12,7 @@
             </div>
              <!-- Botón para volver al listado -->
             <asp:Button ID="btnVolver" runat="server" Text="⬅️ Volver al Listado" 
-                PostBackUrl="~/ProductosListado.aspx" CausesValidation="false"
+                PostBackUrl="~/ProductosListados" CausesValidation="false"
                 CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 dark:hover:bg-slate-600" />
         </div>
 
@@ -28,7 +28,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <!-- SKU (Bloqueado) -->
                 <label class="flex flex-col flex-1 sm:col-span-1">
-                    <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">SKU (Código)</p>
+                    <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">SKU </p>
                     <asp:TextBox ID="txtSKU" runat="server" 
                         CssClass="form-input flex w-full ... h-11 bg-slate-100 dark:bg-slate-700/50" 
                         placeholder="SKU-00123" ReadOnly="true"></asp:TextBox>
@@ -47,6 +47,37 @@
                         CssClass="form-input flex w-full ... h-11 bg-slate-100 dark:bg-slate-700/50 font-bold text-center" 
                         placeholder="150" ReadOnly="true"></asp:TextBox>
                 </label>
+                 <!-- Marca -->
+        <label class="flex flex-col flex-1 sm:col-span-1">
+            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Marca</p>
+            <asp:TextBox ID="txtMarca" runat="server"
+                CssClass="form-input flex w-full h-11 bg-slate-100 dark:bg-slate-700/50"
+                ReadOnly="true"></asp:TextBox>
+        </label>
+
+        <!-- Categoría -->
+        <label class="flex flex-col flex-1 sm:col-span-1">
+            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Categoría</p>
+            <asp:TextBox ID="txtCategoria" runat="server"
+                CssClass="form-input flex w-full h-11 bg-slate-100 dark:bg-slate-700/50"
+                ReadOnly="true"></asp:TextBox>
+        </label>
+
+        <!-- Precio Costo Actual -->
+        <label class="flex flex-col flex-1 sm:col-span-1">
+            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Precio Costo Actual</p>
+            <asp:TextBox ID="txtPrecioCostoActual" runat="server"
+                CssClass="form-input flex w-full h-11 bg-slate-100 dark:bg-slate-700/50 text-right"
+                ReadOnly="true"></asp:TextBox>
+        </label>
+
+        <!-- Porcentaje de Ganancia -->
+        <label class="flex flex-col flex-1 sm:col-span-1">
+            <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">% Ganancia</p>
+            <asp:TextBox ID="txtPorcentajeGanancia" runat="server"
+                CssClass="form-input flex w-full h-11 bg-slate-100 dark:bg-slate-700/50 text-right"
+                ReadOnly="true"></asp:TextBox>
+        </label>
             </div>
         </div>
 
