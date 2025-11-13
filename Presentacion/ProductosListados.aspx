@@ -8,8 +8,8 @@
 
         <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
             <div class="flex flex-col gap-1">
-                <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Listado de Productos</h1>
-                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Busca, visualiza y administra tus productos.</p>
+                <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Gestión de Productos</h1>
+                
             </div>
             <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
                 PostBackUrl="~/ProductosForms.aspx"
@@ -61,7 +61,7 @@
 
                                 <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
 
-                                <asp:BoundField DataField="PrecioVenta" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
+                                <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
 
                                 <asp:BoundField DataField="StockActual" HeaderText="Stock" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center font-bold" />
 

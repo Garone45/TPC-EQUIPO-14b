@@ -42,57 +42,57 @@ END
 GO
 
 CREATE PROCEDURE SP_ModificarArticulo
-    -- ID para saber cuál modificar
-    @IdArticulo INT, 
-    @Descripcion VARCHAR(255),
-    @CodigoArticulo VARCHAR(50),
-    @IdMarca INT,
-    @IdCategoria INT,
-    @PrecioCostoActual DECIMAL(10, 2),
-    @PorcentajeGanancia DECIMAL(5, 2),
-    @StockActual INT,
-    @StockMinimo INT,
-    @Activo BIT
+-- ID para saber cuál modificar
+@IdArticulo INT, 
+@Descripcion VARCHAR(255),
+@CodigoArticulo VARCHAR(50),
+@IdMarca INT,
+@IdCategoria INT,
+@PrecioCostoActual DECIMAL(10, 2),
+@PorcentajeGanancia DECIMAL(5, 2),
+@StockActual INT,
+@StockMinimo INT,
+@Activo BIT
 AS
 BEGIN
-    UPDATE dbo.Articulos
-    SET 
-        Descripcion = @Descripcion,
-        CodigoArticulo = @CodigoArticulo,
-        IdMarca = @IdMarca,
-        IdCategoria = @IdCategoria,
-        PrecioCostoActual = @PrecioCostoActual,
-        PorcentajeGanancia = @PorcentajeGanancia,
-        StockActual = @StockActual,
-        StockMinimo = @StockMinimo,
-        Activo = @Activo
-    WHERE 
-        IdArticulo = @IdArticulo; -- La condición clave
+UPDATE dbo.Articulos
+SET 
+    Descripcion = @Descripcion,
+    CodigoArticulo = @CodigoArticulo,
+    IdMarca = @IdMarca,
+    IdCategoria = @IdCategoria,
+    PrecioCostoActual = @PrecioCostoActual,
+    PorcentajeGanancia = @PorcentajeGanancia,
+    StockActual = @StockActual,
+    StockMinimo = @StockMinimo,
+    Activo = @Activo
+WHERE 
+    IdArticulo = @IdArticulo; -- La condición clave
 END
 GO
 IF EXISTS (SELECT * FROM sys.procedures WHERE name = 'SP_ObtenerArticuloPorID')
-    DROP PROCEDURE SP_ObtenerArticuloPorID;
+DROP PROCEDURE SP_ObtenerArticuloPorID;
 GO
 
 CREATE PROCEDURE SP_ObtenerArticuloPorID
-    @IdArticulo INT
+@IdArticulo INT
 AS
 BEGIN
-    SELECT 
-        A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, 
-        A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo,
+SELECT 
+    A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, 
+    A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo,
         
-        -- Datos de las tablas unidas
-        M.IdMarca, M.Descripcion AS MarcaDescripcion,
-        C.IdCategoria, C.Descripcion AS CategoriaDescripcion
-    FROM 
-        dbo.Articulos A
-    INNER JOIN 
-        dbo.Marcas M ON M.IdMarca = A.IdMarca
-    INNER JOIN 
-        dbo.Categorias C ON C.IdCategoria = A.IdCategoria
-    WHERE 
-        A.IdArticulo = @IdArticulo; -- El filtro clave
+    -- Datos de las tablas unidas
+    M.IdMarca, M.Descripcion AS MarcaDescripcion,
+    C.IdCategoria, C.Descripcion AS CategoriaDescripcion
+FROM 
+    dbo.Articulos A
+INNER JOIN 
+    dbo.Marcas M ON M.IdMarca = A.IdMarca
+INNER JOIN 
+    dbo.Categorias C ON C.IdCategoria = A.IdCategoria
+WHERE 
+    A.IdArticulo = @IdArticulo; -- El filtro clave
 END
 GO
 
@@ -250,3 +250,21 @@ BEGIN
         IDProveedor = @IDProveedor;
 END
 GO
+
+CREATE PROCEDURE SP_AgregarCategoria
+    @Descripcion VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Validamos que no exista una categoría con la misma descripción (opcional pero recomendable)
+    IF EXISTS (SELECT 1 FROM Categorias WHERE Descripcion = @Descripcion)
+    BEGIN
+        RAISERROR('Ya existe una categoría con esa descripción.', 16, 1);
+        RETURN;
+    END;
+
+    -- Insertamos la nueva categoría
+    INSERT INTO Categorias (Descripcion)
+    VALUES (@Descripcion);
+END;

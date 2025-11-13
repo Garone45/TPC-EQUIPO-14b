@@ -3,7 +3,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript">
 
-        // --- Lógica de Debounce (de tu script) ---
+        // --- Lógica de Debounce ---
         var delayTimer;
 
         // Función que espera un momento antes de ejecutar el PostBack
@@ -35,13 +35,13 @@
           
             if (args.get_error() == null && postBackElementId === searchBoxClientID) {
                 
-                // Usamos $get (como en tu script)
+            
                 var focusedControl = $get(searchBoxClientID); 
                 
                 if (focusedControl) {
                     focusedControl.focus();
                     
-                    // Tu lógica para mover el cursor al final
+                 
                     var temp = focusedControl.value;
                     focusedControl.value = '';
                     focusedControl.value = temp;

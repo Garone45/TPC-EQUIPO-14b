@@ -1,6 +1,49 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductosForms.aspx.cs" Inherits="Presentacion.ProductosForms" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+     <script type="text/javascript">
+        
+        // Usamos pageLoad() para que se vuelva a "enganchar"
+        // cada vez que un UpdatePanel se refresque.
+        function pageLoad(sender, args) {
+            
+            // 1. Obtenemos los IDs de cliente de los TextBoxes
+            var costoID = '#<%= txtPrecioCostoActual.ClientID %>';
+            var gananciaID = '#<%= txtPorcentajeGanancia.ClientID %>';
+            var ventaID = '#<%= txtPrecioVenta.ClientID %>';
+
+            // 2. Creamos la función que hace la magia
+            function calcularPrecioVenta() {
+                // Obtenemos los valores, reemplazando la coma (,) por punto (.)
+                // por si el usuario usa coma decimal.
+                var costo = parseFloat($(costoID).val().replace(',', '.'));
+                var ganancia = parseFloat($(gananciaID).val().replace(',', '.'));
+
+                // Validamos que sean números
+                if (isNaN(costo) || isNaN(ganancia) || costo <= 0 || ganancia <= 0) {
+                    // Si no son números válidos, mostramos 0.00
+                    $(ventaID).val("0.00");
+                    return; 
+                }
+
+                // 3. ¡Hacemos el cálculo!
+                // Fórmula: Venta = Costo * (1 + (Porcentaje / 100))
+                var precioVenta = costo * (1 + (ganancia / 100));
+
+                // 4. Mostramos el resultado en el TextBox ReadOnly
+                // .toFixed(2) asegura que siempre tenga 2 decimales (ej: 150.50)
+                $(ventaID).val(precioVenta.toFixed(2));
+            }
+
+            // 5. Enganchamos la función a los eventos 'keyup' (al escribir)
+            //    y 'change' (al cambiar el valor y salir)
+            //    Usamos .off() primero para evitar engancharlo múltiples veces.
+            $(costoID).off('keyup change', calcularPrecioVenta).on('keyup change', calcularPrecioVenta);
+            $(gananciaID).off('keyup change', calcularPrecioVenta).on('keyup change', calcularPrecioVenta);
+        }
+
+     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 

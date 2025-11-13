@@ -41,10 +41,10 @@ namespace Presentacion
                     txtStockActual.Text = seleccionado.StockActual.ToString();
                     txtMarca.Text = seleccionado.Marca.Descripcion;           // si tu clase Articulo tiene una relación con Marca
                     txtCategoria.Text = seleccionado.Categorias.descripcion;   // igual para Categoría
-                    txtPrecioCostoActual.Text = seleccionado.PrecioCostoActual.ToString("F2");
-                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F2");
+                    txtPrecioCostoActual.Text = seleccionado.PrecioCostoActual.ToString("C0");
+                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F0") + " %";
 
-                 
+
                     ViewState["IDArticulo"] = id;
                 }
                 catch (Exception ex)

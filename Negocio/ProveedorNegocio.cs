@@ -9,9 +9,7 @@ namespace Negocio
 {
     public class ProveedorNegocio
     {
-        /// <summary>
-        /// Lista todos los proveedores activos, opcionalmente filtrados.
-        /// </summary>
+    
         /// <param name="busqueda">Filtra por RazonSocial o CUIT (opcional)</param>
         public List<Proveedor> listar(string busqueda = "")
         {
@@ -19,7 +17,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // 1. Consulta SQL (con filtro)
+                
                 string consulta = "SELECT IDProveedor, RazonSocial, Seudonimo, CUIT, Telefono, Email, Direccion, Activo " +
                                   "FROM dbo.Proveedores WHERE Activo = 1";
 
@@ -29,10 +27,10 @@ namespace Negocio
                 }
                 consulta += " ORDER BY RazonSocial";
 
-                // 2. Setear consulta ANTES de parámetros
+                
                 datos.setearConsulta(consulta);
 
-                // 3. Setear parámetro DESPUÉS
+                
                 if (!string.IsNullOrEmpty(busqueda))
                 {
                     datos.setearParametro("@busqueda", "%" + busqueda + "%");
@@ -43,10 +41,10 @@ namespace Negocio
                 while (datos.Lector.Read())
                 {
                     Proveedor aux = new Proveedor();
-                    aux.ID = (int)datos.Lector["IDProveedor"]; // Heredado de EntidadBase
+                    aux.ID = (int)datos.Lector["IDProveedor"]; 
                     aux.RazonSocial = (string)datos.Lector["RazonSocial"];
 
-                    // Manejo de Nulos (DBNull)
+                    // Manejo de Nulos 
                     aux.Seudonimo = datos.Lector["Seudonimo"] != DBNull.Value ? (string)datos.Lector["Seudonimo"] : null;
                     aux.Cuit = (string)datos.Lector["CUIT"];
                     aux.Telefono = datos.Lector["Telefono"] != DBNull.Value ? (string)datos.Lector["Telefono"] : null;
@@ -64,13 +62,11 @@ namespace Negocio
             }
             finally
             {
-                datos.cerrarConexion(); // Fundamental en Lectura
+                datos.cerrarConexion();
             }
         }
 
-        /// <summary>
-        /// Agrega un nuevo Proveedor usando el SP_AgregarProveedor.
-        /// </summary>
+       
         public void agregar(Proveedor nuevoProveedor)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -97,9 +93,7 @@ namespace Negocio
             }
         }
 
-        /// <summary>
-        /// Modifica un Proveedor existente usando el SP_ModificarProveedor.
-        /// </summary>
+    
         public void modificar(Proveedor proveedor)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -123,13 +117,11 @@ namespace Negocio
             }
             finally
             {
-                // No cerramos conexión aquí
+                
             }
         }
 
-        /// <summary>
-        /// Realiza una baja lógica del Proveedor (Activo = 0).
-        /// </summary>
+     
         public void eliminarLogico(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -149,9 +141,7 @@ namespace Negocio
             }
         }
 
-        /// <summary>
-        /// Obtiene un Proveedor por su ID (para el formulario de Modificar).
-        /// </summary>
+       
         public Proveedor obtenerPorId(int id)
         {
             AccesoDatos datos = new AccesoDatos();

@@ -125,7 +125,7 @@
 
                                                     <!-- ESTE ES EL CAMBIO CLAVE: Es un link que navega a la otra página -->
                                                     <asp:HyperLink ID="btnEditar" runat="server"
-                                                        NavigateUrl='<%# Eval("IDPedido", "ClientesForm.aspx?id={0}") %>'
+                                                        NavigateUrl='<%# Eval("IDPedido", "VentasForms.aspx?id={0}") %>'
                                                         CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
                                     <span class="material-symbols-outlined text-lg">edit</span>
                                                     </asp:HyperLink>

@@ -63,8 +63,9 @@ namespace Presentacion
                     txtSKU.Text = seleccionado.IDArticulo.ToString();
                     txtSKU.ReadOnly = true;
                     txtDescripcion.Text = seleccionado.Descripcion;
-                    txtPrecioCostoActual.Text = seleccionado.PrecioCostoActual.ToString("F2");
-                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F2");
+                    txtPrecioCostoActual.Text = seleccionado.PrecioCostoActual.ToString("F0");
+                    txtPorcentajeGanancia.Text = seleccionado.PorcentajeGanancia.ToString("F0");
+                    txtPrecioVenta.Text = seleccionado.PrecioVentaCalculado.ToString("C0");
                     txtStockActual.Text = seleccionado.StockActual.ToString();
                     txtStockMinimo.Text = seleccionado.StockMinimo.ToString();
 

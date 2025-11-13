@@ -23,10 +23,21 @@ namespace Dominio.Articulos
         public Marca Marca { get; set; }
         public Categoria Categorias { get; set; }
 
-        public decimal PrecioVenta
+        public decimal PrecioVentaCalculado
         {
-       
-            get { return PrecioCostoActual * (1 + PorcentajeGanancia); }
+            get
+            {
+                // Nos aseguramos de no dividir por cero o calcular sobre nada.
+                if (PrecioCostoActual > 0 && PorcentajeGanancia > 0)
+                {
+                    // Fórmula: Venta = Costo * (1 + (Porcentaje / 100))
+                    return PrecioCostoActual * (1 + (PorcentajeGanancia / 100));
+                }
+                // Si no hay costo o ganancia, el precio de venta es el costo.
+                return PrecioCostoActual;
+            }
+            // No tiene 'set' porque no queremos que se pueda asignar.
+            // Solo se calcula.
         }
 
     }

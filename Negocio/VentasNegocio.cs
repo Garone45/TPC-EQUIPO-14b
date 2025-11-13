@@ -43,7 +43,6 @@ namespace Negocio
                     if (!(datos.Lector["FechaEntrega"] is DBNull))
                         pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
 
-                    // Manejo de NULL para Total (para evitar excepciones)
                     if (!(datos.Lector["Total"] is DBNull))
                         pedido.Total = (decimal)datos.Lector["Total"];
                     else
@@ -114,7 +113,7 @@ namespace Negocio
                     string estadoStr = datos.Lector["Estado"].ToString().Trim();
                     EstadoPedido estadoParseado;
                     if (!Enum.TryParse(estadoStr, true, out estadoParseado))
-                        estadoParseado = EstadoPedido.Pendiente; // valor por defecto
+                        estadoParseado = EstadoPedido.Pendiente;
                     aux.Estado = estadoParseado;
                     aux.Total = (decimal)datos.Lector["Total"];
                     aux.NombreCliente = datos.Lector["NombreCliente"].ToString();
