@@ -15,9 +15,22 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-              
-                txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarGrilla();
+            }
+        }
+
+        private List<Marca> Marcas
+        {
+            get
+            {
+                // Si ViewState "Clientes" existe, devuelve la lista. Si no, devuelve una lista vacía.
+                if (ViewState["Marcas"] == null)
+                    ViewState["Marcas"] = new List<Marca>();
+                return (List<Marca>)ViewState["Marcas"];
+            }
+            set
+            {
+                ViewState["Marcas"] = value;
             }
         }
         private void CargarGrilla()
@@ -25,19 +38,30 @@ namespace Presentacion
             MarcaNegocio negocio = new MarcaNegocio();
             try
             {
-                // 1. Leemos el texto del TextBox
-                string filtro = txtBuscar.Text;
+                // 1. Obtener el texto del filtro
+                string filtro = txtBuscar.Text.Trim();
 
-                // 2. Llamamos a 'listar' pasándole el filtro
-                List<Marca> lista = negocio.listar(filtro);
+                if (string.IsNullOrEmpty(filtro))
+                {
+                    // Si el filtro está vacío, cargamos todos los clientes activos.
 
-                // 3. Cargamos la grilla
-                gvMarcas.DataSource = lista;
+                    Marcas = negocio.listar();
+                }
+                else
+                {
+                    // Si hay filtro, usamos el nuevo método de negocio.
+                    // *** NOTA: Este método necesita ser implementado en ClienteNegocio.cs (Paso 3) ***
+                    Marcas = negocio.listar(filtro);
+                }
+
+                // 2. Vincular la lista (filtrada o completa) a la GridView
+                gvMarcas.DataSource = Marcas;
                 gvMarcas.DataBind();
             }
             catch (Exception ex)
             {
-                Response.Write($"<script>alert('Error al cargar listado: {ex.Message}');</script>");
+                // Manejo de errores 
+                Response.Write($"<script>alert('Error al cargar clientes: {ex.Message}');</script>");
             }
         }
         protected void gvMarcas_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -65,7 +89,18 @@ namespace Presentacion
         }
         protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
+            gvMarcas.PageIndex = 0;
             CargarGrilla();
+        }
+        protected void gvMarcas_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            // 1. Cambiamos la página actual de la GridView
+            gvMarcas.PageIndex = e.NewPageIndex;
+
+            // 2. Re-vinculamos la GridView usando la lista guardada en ViewState
+            // Esto es crucial para que la paginación funcione sin ir a la BD de nuevo.
+            gvMarcas.DataSource = Marcas;
+            gvMarcas.DataBind();
         }
     }
 }
