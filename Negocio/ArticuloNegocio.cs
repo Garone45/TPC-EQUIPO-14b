@@ -9,7 +9,9 @@ namespace Negocio
 {
     public class ArticuloNegocio
     {
-        public List<Articulo> listar(string busqueda = "") // Parámetro opcional
+
+        // LISTAR, FILTRAR, OBTENER POR ID 
+        public List<Articulo> listar() 
         {
             List<Articulo> lista = new List<Articulo>();
             AccesoDatos datos = new AccesoDatos();
@@ -27,28 +29,13 @@ namespace Negocio
                     "INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " +
                     "WHERE A.Activo = 1";
 
-                
-                if (!string.IsNullOrEmpty(busqueda))
-                {
-                    // Busca en Descripción O en CodigoArticulo
-                    consulta += " AND (A.Descripcion LIKE @busqueda OR A.CodigoArticulo LIKE @busqueda)";
-                }
-
                 datos.setearConsulta(consulta);
-
-                // 3. Seteamos el parámetro (si es necesario)
-                if (!string.IsNullOrEmpty(busqueda))
-                {
-                    // Usamos '%' para que busque coincidencias parciales (ej: "Moni" trae "Monitor")
-                    datos.setearParametro("@busqueda", "%" + busqueda + "%");
-                }
-
                 datos.ejecutarLectura();
 
-                // 4. Mapeo (es el mismo que ya tenías)
+                 // Mapeo de daots  
                 while (datos.Lector.Read())
                 {
-                    // ... (Tu código de mapeo va aquí)
+                    
                     Articulo aux = new Articulo();
                     aux.Marca = new Marca();
                     aux.Categorias = new Categoria();
@@ -81,6 +68,139 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
+
+
+        public Articulo obtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+
+                datos.setearProcedimiento("SP_ObtenerArticuloPorID");
+                datos.setearParametro("@IdArticulo", id);
+
+                datos.ejecutarLectura();
+
+
+                if (datos.Lector.Read())
+                {
+                    Articulo aux = new Articulo();
+                    aux.Marca = new Marca();
+                    aux.Categorias = new Categoria();
+
+                    aux.IDArticulo = (int)datos.Lector["IdArticulo"];
+                    aux.Descripcion = (string)datos.Lector["Descripcion"];
+                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
+                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
+
+                    aux.StockActual = (int)datos.Lector["StockActual"];
+                    aux.StockMinimo = (int)datos.Lector["StockMinimo"];
+                    aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
+                    aux.PorcentajeGanancia = (decimal)datos.Lector["PorcentajeGanancia"];
+                    aux.Activo = (bool)datos.Lector["Activo"];
+
+                    aux.Marca.IDMarca = (int)datos.Lector["IdMarca"];
+                    aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
+
+                    aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
+                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
+
+                    return aux;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener artículo por ID en Capa de Negocio.", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+        public List<Articulo> filtrar(string filtro)
+        {
+            List<Articulo> lista = new List<Articulo>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+
+                string consulta = @"
+                SELECT 
+                    A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo,
+                    A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo,
+                    M.IdMarca, M.Descripcion AS MarcaDescripcion,
+                    C.IdCategoria, C.Descripcion AS CategoriaDescripcion
+                FROM dbo.Articulos A
+                INNER JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca
+                INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria
+                WHERE A.Activo = 1
+                  AND (
+                        A.Descripcion LIKE @filtro
+                        OR CAST(A.IdArticulo AS VARCHAR(10)) LIKE @filtro
+                )";
+
+                datos.setearConsulta(consulta);
+                datos.setearParametro("@filtro", "%" + filtro + "%");
+                datos.ejecutarLectura();
+
+                // Mapeo de daots  
+                while (datos.Lector.Read())
+                {
+
+                    Articulo aux = new Articulo();
+                    aux.Marca = new Marca();
+                    aux.Categorias = new Categoria();
+
+                    aux.IDArticulo = (int)datos.Lector["IdArticulo"];
+                    aux.Descripcion = (string)datos.Lector["Descripcion"];
+                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
+                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
+                    aux.StockActual = (int)datos.Lector["StockActual"];
+                    aux.StockMinimo = (int)datos.Lector["StockMinimo"];
+                    aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
+                    aux.PorcentajeGanancia = (decimal)datos.Lector["PorcentajeGanancia"];
+                    aux.Activo = (bool)datos.Lector["Activo"];
+                    aux.Marca.IDMarca = (int)datos.Lector["IdMarca"];
+                    aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
+                    aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
+                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar artículos: ", ex);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public void agregar(Articulo nuevoArticulo)
         {
@@ -141,55 +261,7 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
-        public Articulo obtenerPorId(int id)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            try
-            {
-            
-                datos.setearProcedimiento("SP_ObtenerArticuloPorID");
-                datos.setearParametro("@IdArticulo", id);
-
-                datos.ejecutarLectura();
-
-              
-                if (datos.Lector.Read())
-                {
-                    Articulo aux = new Articulo();
-                    aux.Marca = new Marca();
-                    aux.Categorias = new Categoria();
-
-                    aux.IDArticulo = (int)datos.Lector["IdArticulo"];
-                    aux.Descripcion = (string)datos.Lector["Descripcion"];
-                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
-                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
-
-                    aux.StockActual = (int)datos.Lector["StockActual"];
-                    aux.StockMinimo = (int)datos.Lector["StockMinimo"];
-                    aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
-                    aux.PorcentajeGanancia = (decimal)datos.Lector["PorcentajeGanancia"];
-                    aux.Activo = (bool)datos.Lector["Activo"];
-
-                    aux.Marca.IDMarca = (int)datos.Lector["IdMarca"];
-                    aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
-
-                    aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
-                    aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"]; 
-
-                    return aux; 
-                }
-
-                return null; 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener artículo por ID en Capa de Negocio.", ex);
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-        }
+        
         public void eliminarLogico(int id)
         {
             AccesoDatos datos = new AccesoDatos();

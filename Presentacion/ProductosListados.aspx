@@ -1,6 +1,46 @@
 ﻿<%@ Page Title="Listado de Productos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductosListados.aspx.cs" Inherits="Presentacion.ProductosListados" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    <script type="text/javascript">
+    var delayTimer;
+
+    // Función que espera un momento antes de ejecutar el PostBack
+    function delayPostback(source) {
+        clearTimeout(delayTimer);
+
+        delayTimer = setTimeout(function () {
+            // Ejecuta el PostBack asíncrono
+            __doPostBack(source.name, '');
+        }, 500); // Retraso de 500 milisegundos
+    }
+
+    // =========================================================
+    // AÑADIDO CLAVE: Función para mantener el foco después de AJAX
+    // =========================================================
+    function setFocusAfterUpdate() {
+        // El componente PageRequestManager maneja las peticiones AJAX
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+
+        // Suscribirse al evento que ocurre al finalizar la petición AJAX
+        prm.add_endRequest(function (sender, args) {
+            // Verificar si la petición no falló
+            if (args.get_error() == null) {
+                // Obtener el TextBox por su ID de cliente
+                var focusedControl = $get('<%= txtBuscar.ClientID %>');
+                if (focusedControl) {
+                    focusedControl.focus();
+                    // Opcional: Esto mueve el cursor al final del texto (para Chrome)
+                    var temp = focusedControl.value;
+                    focusedControl.value = '';
+                    focusedControl.value = temp;
+                }
+            }
+        });
+    }
+
+    // Llamar a la función al cargar la página (para que se suscriba al evento)
+    window.onload = setFocusAfterUpdate;
+</script>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
@@ -28,7 +68,7 @@
                         <asp:TextBox ID="txtBuscar" runat="server"
                             CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal"
                             placeholder="Buscar por SKU o Descripción..."
-                            AutoPostBack="true" 
+                            onkeyup="delayPostback(this);"
                             OnTextChanged="txtBuscar_TextChanged" />
                             <%-- Los atributos 'onfocus' y 'style' los agregamos desde el C# (CodeBehind) --%>
                     </div>
