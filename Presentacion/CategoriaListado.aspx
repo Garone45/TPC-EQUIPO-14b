@@ -1,6 +1,36 @@
 ﻿<%@ Page Title="Gestión de Categorías" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CategoriasListado.aspx.cs" Inherits="Presentacion.CategoriasListado" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery-3.7.0.min.js"></script>
+    <script src="Scripts/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+        // --- Scripts de Búsqueda (Conservados) ---
+        var delayTimer;
+        function delayPostback(source) {
+            clearTimeout(delayTimer);
+            delayTimer = setTimeout(function () {
+                __doPostBack(source.name, '');
+            }, 500);
+        }
+
+        function setFocusAfterUpdate() {
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+            prm.add_endRequest(function (sender, args) {
+                if (args.get_error() == null) {
+                    var focusedControl = $get('<%= txtBuscar.ClientID %>');
+                    if (focusedControl) {
+                        focusedControl.focus();
+                        var temp = focusedControl.value;
+                        focusedControl.value = '';
+                        focusedControl.value = temp;
+                    }
+                }
+            });
+        }
+        window.onload = setFocusAfterUpdate;
+    </script>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
@@ -13,70 +43,132 @@
             </div>
             <div class="flex items-center gap-4">
                 <asp:HyperLink ID="btnNuevaCategoria" runat="server" NavigateUrl="~/CategoriasForm.aspx"
-                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[-0.015em] hover:bg-primary/90 gap-2">
+                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 gap-2">
                     <span class="material-symbols-outlined text-base">add</span>
                     <span class="truncate">Nueva Categoría</span>
                 </asp:HyperLink>
             </div>
         </div>
 
-        <div class="flex justify-between items-center gap-4 mb-4">
-            <div class="relative w-full sm:max-w-xs">
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span class="material-symbols-outlined text-slate-400">search</span>
+        <asp:UpdatePanel ID="updCategorias" runat="server">
+            <ContentTemplate>
+
+                <asp:HiddenField ID="hfIdCategoria" runat="server" />
+                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" style="display:none;" ClientIDMode="Static" />
+
+                <div class="flex justify-between items-center gap-4 mb-4">
+                    <div class="relative w-full sm:max-w-xs">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="material-symbols-outlined text-slate-400">search</span>
+                        </div>
+                        <asp:TextBox ID="txtBuscar" runat="server"
+                            CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal" 
+                            placeholder="Buscar categoría..."
+                            onkeyup="delayPostback(this);"
+                            OnTextChanged="txtBuscar_TextChanged" />
+                    </div>
                 </div>
                 
-                <asp:TextBox ID="txtBuscar" runat="server"
-                    CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal" 
-                    placeholder="Buscar categoría..."
-                    AutoPostBack="true"
-                    OnTextChanged="txtBuscar_TextChanged" />
-            </div>
-        </div>
-        
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
-            <div class="overflow-x-auto">
-                
-                <asp:GridView ID="gvCategorias" runat="server" 
-                    AutoGenerateColumns="False" 
-                    DataKeyNames="IDCategoria" 
-                    CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
-                    GridLines="None" 
-                    AllowPaging="True" PageSize="10"
-                    OnRowCommand="gvCategorias_RowCommand" > 
-                    
-                    <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50" />
-                    <RowStyle CssClass="bg-white dark:bg-slate-800 border-b dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/40" />
-                    <PagerStyle CssClass="flex items-center justify-between p-4" />
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        
+                        <asp:GridView ID="gvCategorias" runat="server" 
+                            AutoGenerateColumns="False" 
+                            DataKeyNames="IDCategoria" 
+                            CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
+                            GridLines="None" 
+                            AllowPaging="True" PageSize="10"
+                            OnPageIndexChanging="gvCategorias_PageIndexChanging"> <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50" />
+                            <RowStyle CssClass="bg-white dark:bg-slate-800 border-b dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/40" />
+                            <PagerStyle CssClass="flex items-center justify-between p-4" />
 
-                    <Columns>
+                            <Columns>
+                                <asp:BoundField DataField="descripcion" HeaderText="Descripción" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
+                                
+                                <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
+                                    <ItemTemplate>
+                                        <div class="flex justify-center gap-2">
+                                            <asp:HyperLink ID="btnEditar" runat="server" 
+                                                NavigateUrl='<%# "~/CategoriasForm.aspx?id=" + Eval("IDCategoria") %>'
+                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </asp:HyperLink>
+                                            
+                                            <a href="javascript:void(0);" 
+                                               onclick="abrirModalEliminar(<%# Eval("IDCategoria") %>);"
+                                               class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
+                                                <span class="material-symbols-outlined text-lg">delete</span>
+                                            </a>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
                         
-                        <asp:BoundField DataField="descripcion" HeaderText="Descripción" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
-                        
-                        <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
-                            <ItemTemplate>
-                                <div class="flex justify-center gap-2">
-                                    
-                                    <asp:HyperLink ID="btnEditar" runat="server" 
-                                        NavigateUrl='<%# "~/CategoriasForm.aspx?id=" + Eval("IDCategoria") %>'
-                                        CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
-                                        <span class="material-symbols-outlined text-lg">edit</span>
-                                    </asp:HyperLink>
-                                    
-                                    <asp:LinkButton ID="btnEliminar" runat="server" 
-                                        CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20"
-                                        OnClientClick="return confirm('¿Está seguro de que desea eliminar esta categoría?');"
-                                        CommandName="EliminarCategoria"
-                                        CommandArgument='<%# Eval("IDCategoria") %>'>
-                                        <span class="material-symbols-outlined text-lg">delete</span>
-                                    </asp:LinkButton>
-                                </div>
-                            </ItemTemplate>
-                        </asp:TemplateField>
-                    </Columns>
-                </asp:GridView>
-                
+                    </div>
+                </div>
+            </ContentTemplate>
+            
+            <Triggers>
+                <asp:AsyncPostBackTrigger ControlID="txtBuscar" EventName="TextChanged" />
+            </Triggers>
+        </asp:UpdatePanel>
+
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold">Confirmar Eliminación</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <p class="mb-1 fs-5">¿Estás seguro de que deseas eliminar esta categoría?</p>
+                        <small class="text-muted">Esta acción realizará una baja lógica.</small>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Eliminar</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        function abrirModalEliminar(id) {
+            var hf = document.getElementById('<%= hfIdCategoria.ClientID %>');
+            if (hf) hf.value = id;
+
+            var el = document.getElementById('deleteModal');
+            
+            // Detección inteligente
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            } else if (window.jQuery) {
+                $('#deleteModal').modal('show');
+            } else {
+                // Fallback
+                if(confirm("¿Desea eliminar esta categoría?")) {
+                    document.getElementById('btnEliminarServer').click();
+                }
+            }
+        }
+
+        function confirmarEliminar() {
+            try {
+                // Cerrar modal
+                var el = document.getElementById('deleteModal');
+                if (window.bootstrap) {
+                    var myModal = bootstrap.Modal.getInstance(el);
+                    if(myModal) myModal.hide();
+                } else if (window.jQuery) {
+                    $('#deleteModal').modal('hide');
+                }
+            } catch(e) {}
+
+            // Disparar evento servidor
+            document.getElementById('btnEliminarServer').click();
+        }
+    </script>
 </asp:Content>

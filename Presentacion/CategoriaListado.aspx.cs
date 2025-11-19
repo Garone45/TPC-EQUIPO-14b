@@ -2,8 +2,6 @@
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -15,61 +13,61 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-                //txtBuscar.Attributes.Add("onfocus", "this.value = '';");
+                // Configuración inicial
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
-
                 CargarGrilla();
             }
         }
 
-        
         private void CargarGrilla()
         {
             CategoriaNegocio negocio = new CategoriaNegocio();
             try
             {
-              
-                string filtro = txtBuscar.Text;
+                string filtro = txtBuscar.Text.Trim();
+                // Asumo que tu método listar acepta el filtro string
                 List<Categoria> lista = negocio.listar(filtro);
-           
+
                 gvCategorias.DataSource = lista;
                 gvCategorias.DataBind();
             }
             catch (Exception ex)
             {
-                Response.Write($"<script>alert('Error al cargar listado: {ex.Message}');</script>");
+                System.Diagnostics.Debug.WriteLine("Error al cargar listado: " + ex.Message);
             }
         }
 
-        protected void gvCategorias_RowCommand(object sender, GridViewCommandEventArgs e)
+        protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            // Verificamos que sea nuestro comando "Eliminar"
-            if (e.CommandName == "EliminarCategoria")
-            {
-                try
-                {
-                    
-                    int id = Convert.ToInt32(e.CommandArgument);
+            gvCategorias.PageIndex = 0;
+            CargarGrilla();
+        }
 
-                    
+        // Este evento faltaba en tu código original, pero lo puse en el ASPX
+        protected void gvCategorias_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvCategorias.PageIndex = e.NewPageIndex;
+            CargarGrilla();
+        }
+
+        // --- NUEVO MÉTODO DE ELIMINACIÓN (Botón Oculto) ---
+        protected void btnEliminarServer_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(hfIdCategoria.Value))
+                {
+                    int id = int.Parse(hfIdCategoria.Value);
                     CategoriaNegocio negocio = new CategoriaNegocio();
                     negocio.eliminarLogico(id);
 
-                   
-                    CargarGrilla();
-                }
-                catch (Exception ex)
-                {
-                    Response.Write($"<script>alert('Error al eliminar: {ex.Message}');</script>");
+                    CargarGrilla(); // Refrescamos la grilla
                 }
             }
-        }
-
-       
-        protected void txtBuscar_TextChanged(object sender, EventArgs e)
-        {
-   
-            CargarGrilla();
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al eliminar: " + ex.Message);
+            }
         }
     }
 }

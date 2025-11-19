@@ -1,9 +1,6 @@
 USE TPC_GRUPO_14b;
 GO
-
-
 --ARTICULOS
-
 CREATE PROCEDURE SP_AgregarArticulo
     @Descripcion VARCHAR(255),
     @CodigoArticulo VARCHAR(50),
@@ -268,3 +265,21 @@ BEGIN
     INSERT INTO Categorias (Descripcion)
     VALUES (@Descripcion);
 END;
+
+CREATE PROCEDURE SP_RestaurarMarca
+    @IDMarca INT
+AS
+BEGIN
+    UPDATE Marcas
+    SET Activo = 1
+    WHERE IDMarca = @IDMarca
+END
+
+CREATE PROCEDURE SP_RestaurarCategoria
+    @IdCategoria INT
+AS
+BEGIN
+    UPDATE Categorias
+    SET Activo = 1
+    WHERE IdCategoria = @IdCategoria
+END

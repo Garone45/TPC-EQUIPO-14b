@@ -81,19 +81,20 @@ namespace Presentacion
         {
             try
             {
-                // (Validaciones de DDLs - Ya las tenías)
-                if (ddlMarca.SelectedValue == "0" || ddlCategoria.SelectedValue == "0")
-                {
-                    Response.Write("<script>alert('Debe seleccionar marca y categoría');</script>");
-                    return;
-                }
+                // 1. VALIDAR QUE EL FRONTEND ESTÉ OK
+                // Esto verifica todos los RequiredFieldValidator, RangeValidator, etc.
+                Page.Validate();
+                if (!Page.IsValid)
+                    return; // Si hay errores visuales, cortamos la ejecución aquí.
 
                 ArticuloNegocio negocio = new ArticuloNegocio();
                 Articulo articulo = new Articulo();
 
-                // 1. Cargar el objeto (igual que antes)
                 articulo.Descripcion = txtDescripcion.Text;
                 articulo.CodigoArticulo = txtSKU.Text;
+
+                // Usamos decimal.Parse. Si el usuario pone algo inválido, el validador del front
+                // ya lo debió haber frenado, pero el try-catch es el doble seguro.
                 articulo.PrecioCostoActual = decimal.Parse(txtPrecioCostoActual.Text);
                 articulo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text);
                 articulo.StockActual = int.Parse(txtStockActual.Text);
@@ -106,26 +107,27 @@ namespace Presentacion
                 articulo.Categorias = new Categoria();
                 articulo.Categorias.IDCategoria = int.Parse(ddlCategoria.SelectedValue);
 
-                // 2. Decidir si AGREGAR o MODIFICAR
-                if (EsModoEdicion) // Si la página cargó con un ID...
+                // 2. LOGICA DE NEGOCIO (Agregar o Modificar)
+                if (EsModoEdicion)
                 {
-                    // Obtenemos el ID de la URL
                     articulo.IDArticulo = int.Parse(Request.QueryString["id"]);
-                    negocio.modificar(articulo); // ¡Llamamos al método MODIFICAR!
-                    Session["msg"] = "Artículo modificado correctamente";
+                    negocio.modificar(articulo);
                 }
-                else // Si la página cargó sin ID...
+                else
                 {
-                    negocio.agregar(articulo); // ¡Llamamos al método AGREGAR!
-                    Session["msg"] = "Artículo agregado correctamente";
+                    negocio.agregar(articulo);
                 }
 
-                // 3. Redirigir al listado
-                Response.Redirect("ProductosListados.aspx");
+                // 3. ÉXITO
+                Response.Redirect("ProductosListados.aspx", false);
             }
             catch (Exception ex)
             {
-                Response.Write($"<script>alert('Error al guardar: {ex.Message}');</script>");
+                // MUESTRA EL ERROR EN EL LABEL DENTRO DEL UPDATE PANEL
+                lblMensaje.Text = "⚠️ Error: " + ex.Message;
+                // Clases de Tailwind para alerta roja (fondo rojo suave, texto rojo oscuro)
+                lblMensaje.CssClass = "block bg-red-100 text-red-700 border border-red-400 p-3 rounded font-bold";
+                lblMensaje.Visible = true;
             }
         }
     }

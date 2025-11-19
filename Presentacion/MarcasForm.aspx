@@ -1,55 +1,45 @@
-﻿<%@ Page Title="Gestión de Marca" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MarcasForm.aspx.cs" Inherits="Presentacion.MarcasForm" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MarcasForm.aspx.cs" Inherits="Presentacion.MarcasForm" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-</asp:Content>
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-     <!-- Este contenedor centra el formulario y le da un ancho máximo -->
     <div class="max-w-2xl mx-auto">
-        
-        <!-- 1. Título de la Página (Dinámico) -->
-        <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
-            <div class="flex flex-col gap-1">
-                <!-- Usamos un Label para poder cambiar el texto desde C# -->
-                <asp:Label ID="lblTitulo" runat="server" Text="Agregar Nueva Marca"
-                    CssClass="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]"></asp:Label>
-                <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Complete los datos de la marca.</p>
-            </div>
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-slate-900 dark:text-white">Gestión de Marcas</h1>
         </div>
 
-        <!-- 2. Formulario de Marca -->
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60">
-            <div class="flex flex-col gap-5">
-                
-                <label class="flex flex-col flex-1">
-                    <p class="text-slate-700 dark:text-slate-300 text-sm font-medium leading-normal pb-2">Descripción</p>
-                    <asp:TextBox ID="txtDescripcion" runat="server" 
-                        CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-600 bg-background-light dark:bg-slate-700/50 h-11 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-3 text-sm font-normal leading-normal" 
-                        placeholder="Ej: Samsung, Apple, Arcor"></asp:TextBox>
-                    
-                    <!-- Validador para que no quede vacío -->
-                    <asp:RequiredFieldValidator ID="rfvDescripcion" runat="server" 
-                        ControlToValidate="txtDescripcion"
-                        ErrorMessage="La descripción es requerida."
-                        CssClass="text-red-500 text-xs mt-1"
-                        Display="Dynamic" />
-                </label>
-                
-                <div class="flex items-center justify-end gap-3 mt-4">
-                    
-                    <!-- Botón Cancelar (HyperLink es mejor que Button para cancelar) -->
-                    <asp:HyperLink ID="btnCancelar" runat="server" NavigateUrl="~/MarcasListado.aspx"
-                        CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-slate-300 dark:hover:bg-slate-600">
-                        <span class="truncate">Cancelar</span>
-                    </asp:HyperLink>
-                    
-                    <!-- Botón Guardar (con OnClick) -->
-                    <asp:Button ID="btnGuardar" runat="server" Text="Guardar" 
-                        CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" 
-                        OnClick="btnGuardar_Click"
-                        CausesValidation="false"/> 
+        <asp:UpdatePanel ID="UpdatePanelMensajes" runat="server">
+            <ContentTemplate>
+                 <div class="mb-4">
+                    <asp:Label ID="lblMensaje" runat="server" Text="" Visible="false" class="p-4 rounded-lg block"></asp:Label>
                 </div>
+            </ContentTemplate>
+        </asp:UpdatePanel>
+
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">ID</label>
+                <asp:TextBox ID="txtId" runat="server" ReadOnly="true" CssClass="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-500"></asp:TextBox>
             </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre de la Marca *</label>
+                <asp:TextBox ID="txtDescripcion" runat="server" CssClass="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"></asp:TextBox>
+                
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescripcion"
+                    ErrorMessage="El nombre de la marca es obligatorio."
+                    CssClass="text-red-500 text-xs font-bold mt-1 block" Display="Dynamic" />
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" PostBackUrl="~/MarcasListado.aspx" CausesValidation="false"
+                    CssClass="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300 cursor-pointer" />
+                
+                <asp:Button ID="btnGuardar" runat="server" Text="Guardar" OnClick="btnGuardar_Click"
+                    CssClass="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 cursor-pointer" />
+            </div>
+
         </div>
     </div>
+
 </asp:Content>

@@ -1,13 +1,9 @@
 ﻿using Dominio.Articulos;
-using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
 
 namespace Presentacion
 {
@@ -17,6 +13,7 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
+                txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarGrilla();
             }
         }
@@ -25,7 +22,6 @@ namespace Presentacion
         {
             get
             {
-                // Si ViewState "Clientes" existe, devuelve la lista. Si no, devuelve una lista vacía.
                 if (ViewState["Productos"] == null)
                     ViewState["Productos"] = new List<Articulo>();
                 return (List<Articulo>)ViewState["Productos"];
@@ -36,83 +32,54 @@ namespace Presentacion
             }
         }
 
-       
-      
         private void CargarGrilla()
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
             try
             {
-                // 1. Obtener el texto del filtro
                 string filtro = txtBuscar.Text.Trim();
-
                 if (string.IsNullOrEmpty(filtro))
-                {
-                    // Si el filtro está vacío, cargamos todos los clientes activos.
-                    
                     Productos = negocio.listar();
-                }
                 else
-                {
-                    // Si hay filtro, usamos el nuevo método de negocio.
-                    // *** NOTA: Este método necesita ser implementado en ClienteNegocio.cs (Paso 3) ***
                     Productos = negocio.filtrar(filtro);
-                }
 
-                // 2. Vincular la lista (filtrada o completa) a la GridView
                 gvProductos.DataSource = Productos;
                 gvProductos.DataBind();
             }
             catch (Exception ex)
             {
-                // Manejo de errores 
-                Response.Write($"<script>alert('Error al cargar clientes: {ex.Message}');</script>");
+                System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
             }
         }
-       
-        
-        
-        
-        
-        //------- EVENTOS ---------//
 
         protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             gvProductos.PageIndex = 0;
             CargarGrilla();
         }
-        protected void gvClientes_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            // 1. Cambiamos la página actual de la GridView
-            gvProductos.PageIndex = e.NewPageIndex;
 
-            // 2. Re-vinculamos la GridView usando la lista guardada en ViewState
-            // Esto es crucial para que la paginación funcione sin ir a la BD de nuevo.
+        protected void gvProductos_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvProductos.PageIndex = e.NewPageIndex;
             gvProductos.DataSource = Productos;
             gvProductos.DataBind();
         }
-        protected void gvProductos_RowCommand(object sender, GridViewCommandEventArgs e)
+
+        protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
-            // Verificamos que el comando sea el que definimos en el ASPX
-            if (e.CommandName == "EliminarProducto")
+            try
             {
-                try
+                if (!string.IsNullOrEmpty(hfIdProducto.Value))
                 {
-                    // 1. Obtenemos el ID del artículo (que viene en CommandArgument)
-                    int id = Convert.ToInt32(e.CommandArgument);
-
-
+                    int id = int.Parse(hfIdProducto.Value);
                     ArticuloNegocio negocio = new ArticuloNegocio();
                     negocio.eliminarLogico(id);
-
-                    // 3. Recargamos la grilla para que el item desaparezca
-
                     CargarGrilla();
                 }
-                catch (Exception ex)
-                {
-                    Response.Write($"<script>alert('Error al eliminar: {ex.Message}');</script>");
-                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al eliminar: " + ex.Message);
             }
         }
     }

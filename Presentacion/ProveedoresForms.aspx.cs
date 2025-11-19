@@ -2,14 +2,12 @@
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Presentacion
 {
-    public partial class ProveedoresForm : System.Web.UI.Page
+    public partial class ProveedoresForms : System.Web.UI.Page // Asegurate que coincida el nombre de la clase
     {
         public bool EsModoEdicion { get; set; }
 
@@ -20,46 +18,64 @@ namespace Presentacion
 
             if (!IsPostBack)
             {
-               
                 if (EsModoEdicion)
                 {
-           
-                    int id = int.Parse(Request.QueryString["id"]);
-                    ProveedorNegocio negocio = new ProveedorNegocio();
-                    Proveedor seleccionado = negocio.obtenerPorId(id);
+                    // Cambiamos título si es edición
+                    lblTitulo.Text = "Modificar Proveedor";
 
+                    int id;
+                    if (int.TryParse(Request.QueryString["id"], out id))
+                    {
+                        cargarDatos(id);
+                    }
+                }
+            }
+        }
+
+        private void cargarDatos(int id)
+        {
+            try
+            {
+                ProveedorNegocio negocio = new ProveedorNegocio();
+                Proveedor seleccionado = negocio.obtenerPorId(id);
+
+                if (seleccionado != null)
+                {
                     txtRazonSocial.Text = seleccionado.RazonSocial;
                     txtCUIT.Text = seleccionado.Cuit;
                     txtSeudonimo.Text = seleccionado.Seudonimo;
                     txtTelefono.Text = seleccionado.Telefono;
                     txtEmail.Text = seleccionado.Email;
                     txtDireccion.Text = seleccionado.Direccion;
-
                 }
+            }
+            catch (Exception ex)
+            {
+                mostrarMensaje("Error al cargar datos: " + ex.Message, true);
             }
         }
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-         
-            if (string.IsNullOrWhiteSpace(txtRazonSocial.Text) || string.IsNullOrWhiteSpace(txtCUIT.Text))
-            {
+            // 1. VALIDACIÓN DEL SERVIDOR
+            // Esto verifica que se cumplan los RequiredFieldValidator y RegularExpressionValidator
+            Page.Validate();
+            if (!Page.IsValid)
                 return;
-            }
 
             try
             {
                 ProveedorNegocio negocio = new ProveedorNegocio();
                 Proveedor proveedor = new Proveedor();
 
-                // 2. Cargamos el objeto con todos los campos
+                // 2. Cargamos el objeto
                 proveedor.RazonSocial = txtRazonSocial.Text;
                 proveedor.Cuit = txtCUIT.Text;
                 proveedor.Seudonimo = txtSeudonimo.Text;
                 proveedor.Telefono = txtTelefono.Text;
                 proveedor.Email = txtEmail.Text;
                 proveedor.Direccion = txtDireccion.Text;
-                proveedor.Activo = true; 
+                proveedor.Activo = true;
 
                 if (EsModoEdicion)
                 {
@@ -73,12 +89,27 @@ namespace Presentacion
                     Session["msg"] = "Proveedor agregado correctamente";
                 }
 
-           
-                Response.Redirect("ProveedoresListados.aspx");
+                // Redirigimos solo si todo salió bien
+                Response.Redirect("ProveedoresListados.aspx", false);
             }
             catch (Exception ex)
             {
-                Response.Write($"<script>alert('Error al guardar: {ex.Message}');</script>");
+                // Si hay un error (ej: CUIT duplicado en BD), lo mostramos aquí
+                mostrarMensaje("⚠️ Error: " + ex.Message, true);
+            }
+        }
+
+        private void mostrarMensaje(string mensaje, bool esError)
+        {
+            lblMensaje.Text = mensaje;
+            lblMensaje.Visible = true;
+            if (esError)
+            {
+                lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800";
+            }
+            else
+            {
+                lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800";
             }
         }
     }

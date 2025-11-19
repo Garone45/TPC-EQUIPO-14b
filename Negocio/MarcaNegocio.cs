@@ -81,18 +81,52 @@ namespace Negocio
                 datos.cerrarConexion(); 
             }
         }
-        public void agregar(Marca nuevaMarca)
+        public void agregar(Marca nueva)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
+                // 1. CONSULTA INTELIGENTE:
+                // Buscamos si existe la descripción, sin importar si está activa o no.
+                datos.setearConsulta("SELECT IDMarca, Activo FROM Marcas WHERE Descripcion = @desc");
+                datos.setearParametro("@desc", nueva.Descripcion);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    // A. ¡LA ENCONTRAMOS!
+                    int id = (int)datos.Lector["IDMarca"];
+                    bool activo = (bool)datos.Lector["Activo"];
+
+                    // Cerramos esta lectura para poder ejecutar otra acción después
+                    datos.cerrarConexion();
+
+                    if (activo)
+                    {
+                        // A.1: Ya existe y está activa -> ERROR (Barrera de Negocio)
+                        throw new Exception("La marca ya existe en el sistema.");
+                    }
+                    else
+                    {
+                        // A.2: Existe pero está borrada (Activo = 0) -> LA RESTAURAMOS
+                        // Llamamos a un método privado para reactivarla
+                        restaurar(id);
+                        return; // Salimos, porque ya "agregamos" (reactivamos) la marca.
+                    }
+                }
+
+                // B. NO EXISTE -> INSERTAMOS NORMALMENTE
+                datos.cerrarConexion(); // Aseguramos cierre antes de reusar el objeto datos
+                datos = new AccesoDatos(); // Reinstanciamos para limpiar parámetros viejos
+
                 datos.setearProcedimiento("SP_AgregarMarca");
-                datos.setearParametro("@Descripcion", nuevaMarca.Descripcion);
-                datos.ejecutarAccion(); 
+                datos.setearParametro("@Descripcion", nueva.Descripcion);
+                datos.ejecutarAccion();
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al agregar Marca: " + ex.Message);
+                throw ex;
             }
             finally
             {
@@ -100,23 +134,50 @@ namespace Negocio
             }
         }
 
+        // Método auxiliar para reactivar
+        public void restaurar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearProcedimiento("SP_RestaurarMarca");
+                datos.setearParametro("@IDMarca", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        // Agrega la misma lógica en modificar() para que no le cambie el nombre a una existente.
         public void modificar(Marca marca)
         {
+            List<Marca> listado = listar();
+            // Validamos que exista otra marca CON EL MISMO NOMBRE pero DISTINTO ID
+            if (listado.Any(m => m.Descripcion.ToUpper() == marca.Descripcion.ToUpper() && m.IDMarca != marca.IDMarca))
+            {
+                throw new Exception("Ya existe otra marca con ese nombre.");
+            }
+
             AccesoDatos datos = new AccesoDatos();
             try
             {
                 datos.setearProcedimiento("SP_ModificarMarca");
                 datos.setearParametro("@IdMarca", marca.IDMarca);
                 datos.setearParametro("@Descripcion", marca.Descripcion);
-                datos.ejecutarAccion(); // Esta línea ya cierra la conexión
+                datos.ejecutarAccion();
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al modificar Marca: " + ex.Message);
+                throw ex;
             }
             finally
             {
-             
                 datos.cerrarConexion();
             }
         }
