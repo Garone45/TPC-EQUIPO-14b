@@ -87,13 +87,31 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtClientPhone;
 
         /// <summary>
-        /// Control txtSearchProduct.
+        /// Control upProductos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSearchProduct;
+        protected global::System.Web.UI.UpdatePanel upProductos;
+
+        /// <summary>
+        /// Control txtBuscarProductos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtBuscarProductos;
+
+        /// <summary>
+        /// Control gvProductos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvProductos;
 
         /// <summary>
         /// Control btnAddProduct.
@@ -105,58 +123,22 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.LinkButton btnAddProduct;
 
         /// <summary>
-        /// Control btnDecreaseQty1.
+        /// Control upDetalleVenta.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDecreaseQty1;
+        protected global::System.Web.UI.UpdatePanel upDetalleVenta;
 
         /// <summary>
-        /// Control txtQuantity1.
+        /// Control gvDetallePedido.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtQuantity1;
-
-        /// <summary>
-        /// Control btnIncreaseQty1.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIncreaseQty1;
-
-        /// <summary>
-        /// Control btnDecreaseQty2.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDecreaseQty2;
-
-        /// <summary>
-        /// Control txtQuantity2.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtQuantity2;
-
-        /// <summary>
-        /// Control btnIncreaseQty2.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnIncreaseQty2;
+        protected global::System.Web.UI.WebControls.GridView gvDetallePedido;
 
         /// <summary>
         /// Control btnFinalizarVenta.

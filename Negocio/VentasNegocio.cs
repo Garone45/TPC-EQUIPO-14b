@@ -133,13 +133,72 @@ namespace Negocio
             }
         }
 
+        public void Agregar(Pedido nuevoPedido)
+        {
+            AccesoDatos datos = new AccesoDatos();
 
+            try
+            {
 
+                string consulta = @"
+                INSERT INTO Pedidos 
+                (IDCliente, IDVendedor, FechaCreacion, FechaEntrega, MetodoPago, Estado, Descuento, Total) 
+                OUTPUT INSERTED.IDPedido 
+                VALUES 
+                (@IDCliente, @IDVendedor, @FechaCreacion, @FechaEntrega, @MetodoPago, @Estado, @Descuento, @Total)";
 
+                datos.setearConsulta(consulta);
 
+                // Parámetros basados en tu clase Pedido
+                datos.setearParametro("@IDCliente", nuevoPedido.IDCliente);
+                datos.setearParametro("@IDVendedor", nuevoPedido.IDVendedor);
+                datos.setearParametro("@FechaCreacion", nuevoPedido.FechaCreacion);
+                datos.setearParametro("@FechaEntrega", nuevoPedido.FechaEntrega);
+                datos.setearParametro("@MetodoPago", nuevoPedido.MetodoPago);
+                datos.setearParametro("@Estado", nuevoPedido.Estado.ToString());
 
+                // Nuevo campo: Descuento
+                // Nota: Asumo que agregaste la propiedad 'Descuento' a tu clase Pedido.
+                datos.setearParametro("@Descuento", nuevoPedido.Descuento);
+
+                datos.setearParametro("@Total", nuevoPedido.Total); // Este es el total final
+
+                // Ejecutamos y recuperamos el ID generado
+                int idPedidoGenerado = datos.ejecutarAccionScalar();
+
+                datos.cerrarConexion();
+
+                // 2. INSERTAR DETALLES (ESTO QUEDA IGUAL)
+                // ... (El código de inserción de detalles es el mismo, ya que usa el ID recién generado) ...
+                foreach (var item in nuevoPedido.Detalles)
+                {
+                    AccesoDatos datosDetalle = new AccesoDatos();
+
+                    string consultaDetalle = "INSERT INTO DetallesPedido (IDPedido, IDArticulo, Cantidad, PrecioUnitario) VALUES (@IDPedido, @IDArticulo, @Cantidad, @Precio)";
+
+                    datosDetalle.setearConsulta(consultaDetalle);
+                    datosDetalle.setearParametro("@IDPedido", idPedidoGenerado);
+                    datosDetalle.setearParametro("@IDArticulo", item.IDArticulo);
+                    datosDetalle.setearParametro("@Cantidad", item.Cantidad);
+                    datosDetalle.setearParametro("@Precio", item.PrecioUnitario);
+                    datosDetalle.setearParametro("@Descuento", 0);
+
+                    datosDetalle.ejecutarAccion();
+                    datosDetalle.cerrarConexion();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
+
 
 
 

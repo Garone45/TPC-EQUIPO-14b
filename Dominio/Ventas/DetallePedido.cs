@@ -13,11 +13,14 @@ namespace Dominio.Ventas
         public int IDPedido { get; set; }      // Relación con Pedido
         public int IDArticulo { get; set; }    // Relación con Producto
 
-
+        public string Descripcion { get; set; }
         public int Cantidad { get; set; }
         // CRÍTICO: Este es el precio de venta calculado en ese momento.
         public decimal PrecioUnitario { get; set; }
-        public decimal Subtotal => (Cantidad * PrecioUnitario) * (1 - Descuento / 100);
+        public decimal TotalParcial
+        {
+            get { return Cantidad * PrecioUnitario; }
+        }
 
         public decimal Descuento { get; set; }
     }

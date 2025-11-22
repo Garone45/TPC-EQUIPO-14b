@@ -79,5 +79,33 @@ namespace Negocio // (O el namespace de tu capa de datos)
                 conexion.Close();
             }
         }
+
+        public int ejecutarAccionScalar()
+        {
+            comando.Connection = conexion;
+            try
+            {
+                comando.Connection.Open();
+
+                // ExecuteScalar devuelve el valor de la primera columna de la primera fila
+                object resultado = comando.ExecuteScalar();
+
+                if (resultado != null && resultado != DBNull.Value)
+                {
+                    return Convert.ToInt32(resultado);
+                }
+
+                return -1;
+            }
+            catch (Exception ex)
+            {
+                comando.Parameters.Clear();
+                throw ex;
+            }
+            finally
+            {
+                cerrarConexion();
+            }
+        }
     }
 }
