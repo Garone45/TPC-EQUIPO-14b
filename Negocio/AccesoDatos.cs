@@ -9,7 +9,8 @@ namespace Negocio // (O el namespace de tu capa de datos)
         private SqlConnection conexion;
         private SqlCommand comando;
         private SqlDataReader lector;
-
+        public SqlConnection Conexion => conexion;
+        public SqlCommand Comando => comando;
         public SqlDataReader Lector => lector;
 
         public AccesoDatos()

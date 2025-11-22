@@ -2,6 +2,7 @@
 using Dominio.Ventas;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -194,6 +195,190 @@ namespace Negocio
             finally
             {
                 datos.cerrarConexion();
+            }
+        }
+
+        public Pedido ObtenerPorId(int idPedido)
+        {
+            // 1. UNA SOLA INSTANCIA para toda la operación
+            AccesoDatos datos = new AccesoDatos();
+            Pedido pedido = new Pedido();
+            if (pedido.Detalles == null)
+                pedido.Detalles = new List<DetallePedido>();
+
+            try
+            {
+                // 🟢 Abrir la conexión una sola vez
+                datos.Conexion.Open();
+                datos.Comando.Connection = datos.Conexion;
+
+                // --- 1. TRAER CABECERA DEL PEDIDO ---
+                datos.setearConsulta("SELECT * FROM Pedidos WHERE IDPedido = @id");
+                datos.setearParametro("@id", idPedido);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    // ... (Mapeo de la cabecera) ...
+                    pedido.IDPedido = (int)datos.Lector["IDPedido"];
+                    pedido.IDCliente = (int)datos.Lector["IDCliente"];
+                    pedido.IDVendedor = (int)datos.Lector["IDVendedor"];
+                    pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
+                    pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+                    pedido.Total = (decimal)datos.Lector["Total"];
+                }
+
+                // 🟢 CERRAR EL LECTOR de la cabecera
+                if (datos.Lector != null && !datos.Lector.IsClosed)
+                    datos.Lector.Close();
+
+                // 🟢 Limpiar parámetros
+                datos.Comando.Parameters.Clear();
+
+                // --- 2. TRAER DETALLES ---
+                string consultaDetalles = @"
+            SELECT D.IDArticulo, D.Cantidad, D.PrecioUnitario, 
+                   A.Descripcion, A.CodigoArticulo 
+            FROM DetallesPedido D 
+            LEFT JOIN Articulos A ON D.IDArticulo = A.IDArticulo 
+            WHERE D.IDPedido = @idPedidoDetalle";
+
+                datos.setearConsulta(consultaDetalles);
+                datos.setearParametro("@idPedidoDetalle", idPedido);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    DetallePedido detalle = new DetallePedido();
+                    detalle.IDPedido = idPedido;
+
+                    if (datos.Lector["IDArticulo"] != DBNull.Value)
+                        detalle.IDArticulo = (int)datos.Lector["IDArticulo"];
+
+                    if (datos.Lector["Descripcion"] != DBNull.Value)
+                        detalle.Descripcion = (string)datos.Lector["Descripcion"];
+
+                    if (datos.Lector["Cantidad"] != DBNull.Value)
+                        detalle.Cantidad = (int)datos.Lector["Cantidad"];
+
+                    if (datos.Lector["PrecioUnitario"] != DBNull.Value)
+                        detalle.PrecioUnitario = (decimal)datos.Lector["PrecioUnitario"];
+
+                    pedido.Detalles.Add(detalle);
+                }
+
+                // 🟢 CERRAR EL LECTOR de los detalles
+                if (datos.Lector != null && !datos.Lector.IsClosed)
+                    datos.Lector.Close();
+
+                return pedido;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                // 🟢 SOLUCIÓN FINAL: Cerrar la conexión directamente si está abierta.
+                // Esto es más robusto que depender de la lógica interna de datos.cerrarConexion().
+                if (datos.Conexion != null && datos.Conexion.State == System.Data.ConnectionState.Open)
+                    datos.Conexion.Close();
+            }
+        }
+        public void Modificar(Pedido pedido)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            SqlTransaction transaccion = null;
+
+            try
+            {
+                // 1. INICIAR LA TRANSACCIÓN
+                // ⚠️ Aquí iniciamos la conexión manualmente para que la transacción la use.
+                datos.Conexion.Open();
+                transaccion = datos.Conexion.BeginTransaction();
+                datos.Comando.Transaction = transaccion; // Vincula el comando a la transacción
+
+                // 
+
+                // --- 2. ACTUALIZAR CABECERA (Pedidos) ---
+                string consultaCabecera = @"
+                    UPDATE Pedidos SET 
+                        IDCliente = @IDCliente,
+                        IDVendedor = @IDVendedor,
+                        FechaEntrega = @FechaEntrega,
+                        MetodoPago = @MetodoPago,
+                        Estado = @Estado,
+                        Subtotal = @Subtotal,
+                        Descuento = @Descuento,
+                        Total = @Total
+                    WHERE IDPedido = @IDPedido";
+
+                datos.setearConsulta(consultaCabecera);
+
+                // Parámetros de la Cabecera
+                datos.setearParametro("@IDPedido", pedido.IDPedido);
+                datos.setearParametro("@IDCliente", pedido.IDCliente);
+                datos.setearParametro("@IDVendedor", pedido.IDVendedor);
+                datos.setearParametro("@FechaEntrega", pedido.FechaEntrega);
+                datos.setearParametro("@MetodoPago", pedido.MetodoPago);
+                datos.setearParametro("@Estado", pedido.Estado.ToString());
+                datos.setearParametro("@Subtotal", pedido.Subtotal);
+                datos.setearParametro("@Descuento", pedido.Descuento);
+                datos.setearParametro("@Total", pedido.Total);
+
+                // No necesitamos llamar a conexion.Open() o comando.Connection = conexion
+                // ya que lo hicimos en el paso 1 antes de la transacción.
+                datos.Comando.ExecuteNonQuery(); // Ejecuta el UPDATE usando el comando ya vinculado
+
+                // --- 3. REEMPLAZAR DETALLES ---
+
+                // 3.1 ELIMINAR detalles antiguos asociados a este IDPedido
+                string consultaDeleteDetalle = "DELETE FROM DetallePedidos WHERE IDPedido = @IDPedidoDetalle";
+                datos.setearConsulta(consultaDeleteDetalle);
+                datos.setearParametro("@IDPedidoDetalle", pedido.IDPedido);
+
+                // Ejecutamos el DELETE
+                // ¡IMPORTANTE! El comando ya está asociado a la conexión y a la transacción.
+                datos.Comando.ExecuteNonQuery();
+
+                // 3.2 INSERTAR los nuevos detalles
+                string consultaInsertDetalle = @"
+                    INSERT INTO DetallesPedido (IDPedido, IDArticulo, PrecioUnitario, Cantidad) 
+                    VALUES (@IDPedidoD, @IDArticulo, @PrecioUnitario, @Cantidad)";
+
+                foreach (DetallePedido detalle in pedido.Detalles)
+                {
+                    // Preparamos el comando para la inserción
+                    datos.Comando.Parameters.Clear();
+                    datos.Comando.CommandText = consultaInsertDetalle;
+
+                    datos.setearParametro("@IDPedidoD", pedido.IDPedido);
+                    datos.setearParametro("@IDArticulo", detalle.IDArticulo);
+                    datos.setearParametro("@PrecioUnitario", detalle.PrecioUnitario);
+                    datos.setearParametro("@Cantidad", detalle.Cantidad);
+
+                    // Ejecutamos el INSERT por cada detalle
+                    datos.Comando.ExecuteNonQuery();
+                }
+
+                // 4. CONFIRMAR
+                transaccion.Commit();
+            }
+            catch (Exception ex)
+            {
+                // 5. CANCELAR
+                if (transaccion != null)
+                {
+                    transaccion.Rollback();
+                }
+                throw new Exception("Error al modificar el pedido. Se ha deshecho la operación.", ex);
+            }
+            finally
+            {
+                // 6. CERRAR CONEXIÓN
+                // Usamos cerrarConexion, pero solo si la conexión está abierta
+                if (datos.Conexion.State == System.Data.ConnectionState.Open)
+                    datos.Conexion.Close();
             }
         }
     }

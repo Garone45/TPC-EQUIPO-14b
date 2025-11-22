@@ -17,9 +17,23 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-                
-                BindGridClientes(null);
-                ActualizarDetalleYTotales();
+                // 1. Verificar si estamos editando (Viene un ID en la URL, ej: VentasForms.aspx?id=10)
+                string idPedidoStr = Request.QueryString["id"];
+
+                if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
+                {
+                    // --- MODO EDICIÓN ---
+                    CargarDatosPedido(idPedido);
+                }
+                else
+                {
+                    // --- MODO NUEVA VENTA ---
+                    // Limpiamos la sesión para no arrastrar datos viejos
+                    Session["DetallePedido"] = null;
+                    Session["ClienteSeleccionado"] = null;
+                    BindGridClientes(null);
+                    ActualizarDetalleYTotales();
+                }
             }
         }
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
@@ -256,7 +270,7 @@ namespace Presentacion
             gvDetallePedido.DataBind();
 
             decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-            const decimal TasaIVA = 0.16m; // 16%
+            const decimal TasaIVA = 0.21m; // 16%
             decimal iva = subtotal * TasaIVA;
             decimal totalFinal = subtotal + iva;
 
@@ -272,79 +286,72 @@ namespace Presentacion
         {
             try
             {
-                // --- 1. VALIDACIONES ---
-
-                // 1.1 Validar que se haya seleccionado un cliente
+                // --- 1. VALIDACIONES --- (IGUAL QUE ANTES)
                 if (Session["ClienteSeleccionado"] == null)
                 {
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('ERROR: Debe seleccionar un cliente antes de finalizar la venta.');", true);
                     return;
                 }
 
-                // 1.2 Validar que el carrito no esté vacío
-                // (Asume que DetalleActual es tu propiedad que lee la Session["DetallePedido"])
                 if (DetalleActual == null || DetalleActual.Count == 0)
                 {
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('ERROR: Debe agregar productos al pedido.');", true);
                     return;
                 }
 
-                // --- 2. CÁLCULOS ECONÓMICOS ---
-
+                // --- 2. CÁLCULOS ECONÓMICOS --- (IGUAL QUE ANTES)
                 decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-
-                // Ajusta estos valores según tu lógica comercial y tu UI
                 decimal porcentajeIVA = 0.21m;
-                decimal descuentoAplicado = 0.00m; // Monto o porcentaje de descuento (Aquí es 0 para empezar)
-
-                // 2.1 Aplicar Descuento
-                // NOTA: Si el descuento es en porcentaje, usa: subtotal * (descuentoAplicado / 100)
-                // Aquí asumimos que descuentoAplicado es un monto fijo.
+                decimal descuentoAplicado = 0.00m;
                 decimal subtotalConDescuento = subtotal - descuentoAplicado;
-
-                // 2.2 Calcular IVA
                 decimal iva = subtotalConDescuento * porcentajeIVA;
-
-                // 2.3 Total Final (el que se guarda en la cabecera Pedidos.Total)
                 decimal totalFinal = subtotalConDescuento + iva;
-
 
                 // --- 3. ARMAR EL OBJETO PEDIDO ---
                 Pedido nuevoPedido = new Pedido();
 
-                // 3.1 Mapeo de Identificadores y Fechas
+                // 🟢 CAMBIO 1: DETECTAR SI ES EDICIÓN
+                // Si tenemos un ID guardado en ViewState (desde el Page_Load), se lo asignamos.
+                if (ViewState["IDPedidoEditar"] != null)
+                {
+                    nuevoPedido.IDPedido = Convert.ToInt32(ViewState["IDPedidoEditar"]);
+                }
+                // Si no hay nada, IDPedido queda en 0 (por defecto), lo que significa "Nuevo".
+
                 nuevoPedido.IDCliente = (int)Session["ClienteSeleccionado"];
-
-                // **IMPORTANTE**: Reemplaza este '1' por el ID del usuario LOGUEADO (el vendedor)
-                // Ejemplo: nuevoPedido.IDVendedor = ((Dominio.Usuario_Persona.Usuario)Session["usuario"]).IDVendedor;
                 nuevoPedido.IDVendedor = 1;
+                nuevoPedido.FechaCreacion = DateTime.Now; // Ojo: Al editar, quizás quieras mantener la fecha original. 
+                nuevoPedido.FechaEntrega = DateTime.Now.AddDays(7);
 
-                nuevoPedido.FechaCreacion = DateTime.Now;
-                nuevoPedido.FechaEntrega = DateTime.Now.AddDays(7); // Asumimos 7 días para la entrega
-
-                // 3.2 Mapeo de Montos
-                nuevoPedido.Subtotal = subtotal; // Subtotal sin descuento (aunque no se guarde en SQL, el objeto lo tiene)
+                nuevoPedido.Subtotal = subtotal;
                 nuevoPedido.Descuento = descuentoAplicado;
                 nuevoPedido.Total = totalFinal;
 
-                // 3.3 Mapeo de Estatus y Detalles
-                nuevoPedido.MetodoPago = "Efectivo"; // Reemplazar con DropDownList si lo tienes (ej: ddlMetodoPago.SelectedValue)
+                nuevoPedido.MetodoPago = "Efectivo";
                 nuevoPedido.Estado = Pedido.EstadoPedido.Pendiente;
-                nuevoPedido.Detalles = DetalleActual; // La lista de la Session
+                nuevoPedido.Detalles = DetalleActual;
 
 
                 // --- 4. LLAMAR AL NEGOCIO ---
                 VentasNegocio negocio = new VentasNegocio();
-                negocio.Agregar(nuevoPedido);
 
+                // 🟢 CAMBIO 2: DECIDIR SI AGREGAR O MODIFICAR
+                if (nuevoPedido.IDPedido != 0)
+                {
+                    // Si tiene ID, es una modificación
+                    negocio.Modificar(nuevoPedido);
+                }
+                else
+                {
+                    // Si el ID es 0, es nuevo
+                    negocio.Agregar(nuevoPedido);
+                }
 
-                // --- 5. LIMPIEZA Y ÉXITO ---
-                // Vaciar la Session y ViewState
+                // --- 5. LIMPIEZA Y ÉXITO --- (IGUAL QUE ANTES)
                 Session["DetallePedido"] = null;
                 Session["ClienteSeleccionado"] = null;
+                ViewState["IDPedidoEditar"] = null; // 🟢 Limpiamos también el ID de edición
 
-                // Limpiar controles visuales (Textboxes de cliente y totales)
-                // Llama a una función para limpiar el detalle y poner totales en 0
                 ActualizarDetalleYTotales();
 
                 Response.Redirect("VentasListado.aspx", false);
@@ -353,9 +360,44 @@ namespace Presentacion
             }
             catch (Exception ex)
             {
-                // Mostrar el error de la base de datos o de la lógica
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "error", $"alert('ERROR CRÍTICO AL GUARDAR: {ex.Message}');", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "error", $"alert('ERROR CRÍTICO: {ex.Message}');", true);
             }
         }
+
+        private void CargarDatosPedido(int idPedido)
+        {
+            VentasNegocio negocio = new VentasNegocio();
+            Pedido pedido = negocio.ObtenerPorId(idPedido);
+
+            if (pedido != null)
+            {
+                // A. Guardamos el ID que estamos editando en ViewState para saberlo al guardar
+                ViewState["IDPedidoEditar"] = pedido.IDPedido;
+
+                // B. Cargar Cliente (Usamos tu lógica existente de ClienteNegocio)
+                Session["ClienteSeleccionado"] = pedido.IDCliente;
+                ClienteNegocio clienteNegocio = new ClienteNegocio();
+                Cliente cliente = clienteNegocio.listar(pedido.IDCliente);
+
+                if (cliente != null)
+                {
+                    txtClientName.Text = cliente.Nombre;
+                    txtClientAddress.Text = cliente.Direccion;
+                    txtClientCity.Text = cliente.Localidad;
+                    txtClientDNI.Text = cliente.Dni;
+                    txtClientPhone.Text = cliente.Telefono;
+
+                    // Opcional: Ocultar panel de búsqueda de clientes si ya está cargado
+                }
+
+                // C. Cargar Detalles en Session
+                Session["DetallePedido"] = pedido.Detalles;
+
+                // D. Refrescar Pantalla
+                BindGridClientes(null);
+                ActualizarDetalleYTotales();
+            }
+        }
+
     }
 }

@@ -42,8 +42,6 @@
         // Llamar a la función al cargar la página (para que se suscriba al evento)
         window.onload = setFocusAfterUpdate;
     </script>
-
-
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
