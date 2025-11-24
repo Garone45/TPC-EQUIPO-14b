@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Data; // Para DBNull
-using Dominio.Articulos;
+﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio; // Para AccesoDatos
+using System;
+using System.Collections.Generic;
+using System.Data; // Para DBNull
+using System.Data.SqlClient;
 
 namespace Negocio
 {
@@ -18,18 +19,8 @@ namespace Negocio
 
             try
             {
-                
-                string consulta = "SELECT " +
-                    "A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, " +
-                    "A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo, " +
-                    "M.IdMarca, M.Descripcion AS MarcaDescripcion, " +
-                    "C.IdCategoria, C.Descripcion AS CategoriaDescripcion " +
-                    "FROM dbo.Articulos A " +
-                    "INNER JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca " +
-                    "INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria " +
-                    "WHERE A.Activo = 1";
 
-                datos.setearConsulta(consulta);
+                datos.setearProcedimiento("SP_ListarArticulos"); // 
                 datos.ejecutarLectura();
 
                  // Mapeo de daots  
@@ -53,6 +44,17 @@ namespace Negocio
                     aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
+                    aux.Proveedor = new Proveedor();
+                    if (!(datos.Lector["IdProveedor"] is DBNull))
+                    {
+                        aux.Proveedor.ID = (int)datos.Lector["IdProveedor"];
+                        aux.Proveedor.RazonSocial = (string)datos.Lector["RazonSocial"];
+                    }
+                    else
+                    {
+                        // Si es NULL en la BD, mostramos un texto por defecto o lo dejamos vacío
+                        aux.Proveedor.RazonSocial = "Sin Asignar";
+                    }
 
                     lista.Add(aux);
                 }
@@ -87,6 +89,7 @@ namespace Negocio
                     Articulo aux = new Articulo();
                     aux.Marca = new Marca();
                     aux.Categorias = new Categoria();
+                    aux.Proveedor = new Proveedor();
 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
@@ -185,23 +188,6 @@ namespace Negocio
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public void agregar(Articulo nuevoArticulo)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -214,6 +200,7 @@ namespace Negocio
                 datos.setearParametro("@CodigoArticulo", nuevoArticulo.CodigoArticulo);
                 datos.setearParametro("@IdMarca", nuevoArticulo.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", nuevoArticulo.Categorias.IDCategoria);
+                datos.setearParametro("@IdProveedor", nuevoArticulo.Proveedor.ID);
                 datos.setearParametro("@PrecioCostoActual", nuevoArticulo.PrecioCostoActual);
                 datos.setearParametro("@PorcentajeGanancia", nuevoArticulo.PorcentajeGanancia);
                 datos.setearParametro("@StockActual", nuevoArticulo.StockActual);
@@ -244,6 +231,7 @@ namespace Negocio
                 datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
                 datos.setearParametro("@IdMarca", articuloModificado.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", articuloModificado.Categorias.IDCategoria);
+                datos.setearParametro("@IdProveedor", articuloModificado.Proveedor.ID);
                 datos.setearParametro("@PrecioCostoActual", articuloModificado.PrecioCostoActual);
                 datos.setearParametro("@PorcentajeGanancia", articuloModificado.PorcentajeGanancia);
                 datos.setearParametro("@StockActual", articuloModificado.StockActual);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dominio.Usuario_Persona
 {
+    [Serializable]
     public class Proveedor
     {
         public int ID { get; set; } // El IDProveedor

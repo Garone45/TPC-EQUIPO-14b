@@ -259,12 +259,11 @@ BEGIN
     BEGIN
         RAISERROR('Ya existe una categoría con esa descripción.', 16, 1);
         RETURN;
-    END;
-
+    END
     -- Insertamos la nueva categoría
     INSERT INTO Categorias (Descripcion)
     VALUES (@Descripcion);
-END;
+END
 
 CREATE PROCEDURE SP_RestaurarMarca
     @IDMarca INT
@@ -283,3 +282,77 @@ BEGIN
     SET Activo = 1
     WHERE IdCategoria = @IdCategoria
 END
+
+ALTER PROCEDURE SP_AgregarArticulo
+    @Descripcion VARCHAR(255),
+    @CodigoArticulo VARCHAR(50),
+    @IdMarca INT,
+    @IdCategoria INT,
+    @IdProveedor INT, -- Nuevo parámetro
+    @PrecioCostoActual DECIMAL(10, 2),
+    @PorcentajeGanancia DECIMAL(5, 2),
+    @StockActual INT,
+    @StockMinimo INT,
+    @Activo BIT 
+AS
+BEGIN
+    INSERT INTO dbo.Articulos (
+        Descripcion, CodigoArticulo, IdMarca, IdCategoria, IdProveedor, -- Nuevo campo
+        PrecioCostoActual, PorcentajeGanancia, StockActual, StockMinimo, Activo 
+    )
+    VALUES (
+        @Descripcion, @CodigoArticulo, @IdMarca, @IdCategoria, @IdProveedor,
+        @PrecioCostoActual, @PorcentajeGanancia, @StockActual, @StockMinimo, @Activo 
+    );
+END
+GO
+
+-- ACTUALIZAR SP MODIFICAR
+ALTER PROCEDURE SP_ModificarArticulo
+    @IdArticulo INT, 
+    @Descripcion VARCHAR(255),
+    @CodigoArticulo VARCHAR(50),
+    @IdMarca INT,
+    @IdCategoria INT,
+    @IdProveedor INT, -- Nuevo parámetro
+    @PrecioCostoActual DECIMAL(10, 2),
+    @PorcentajeGanancia DECIMAL(5, 2),
+    @StockActual INT,
+    @StockMinimo INT,
+    @Activo BIT
+AS
+BEGIN
+    UPDATE dbo.Articulos
+    SET 
+        Descripcion = @Descripcion,
+        CodigoArticulo = @CodigoArticulo,
+        IdMarca = @IdMarca,
+        IdCategoria = @IdCategoria,
+        IdProveedor = @IdProveedor, -- Actualizamos proveedor
+        PrecioCostoActual = @PrecioCostoActual,
+        PorcentajeGanancia = @PorcentajeGanancia,
+        StockActual = @StockActual,
+        StockMinimo = @StockMinimo,
+        Activo = @Activo
+    WHERE IdArticulo = @IdArticulo;
+END
+GO
+
+-- ACTUALIZAR SP OBTENER POR ID (Para traer el dato al editar)
+ALTER PROCEDURE SP_ObtenerArticuloPorID
+@IdArticulo INT
+AS
+BEGIN
+    SELECT 
+        A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo, 
+        A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo,
+        A.IdProveedor, -- Traemos el ID del proveedor
+        M.IdMarca, M.Descripcion AS MarcaDescripcion,
+        C.IdCategoria, C.Descripcion AS CategoriaDescripcion
+    FROM dbo.Articulos A
+    INNER JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca
+    INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria
+    WHERE A.IdArticulo = @IdArticulo;
+END
+GO
+

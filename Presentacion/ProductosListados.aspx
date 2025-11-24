@@ -22,7 +22,7 @@
             <ContentTemplate>
 
                 <asp:HiddenField ID="hfIdProducto" runat="server" />
-                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" style="display:none;" ClientIDMode="Static" />
+                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
 
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
                     <div class="relative w-full sm:max-w-xs">
@@ -41,7 +41,7 @@
                     <div class="overflow-x-auto">
                         <asp:GridView ID="gvProductos" runat="server"
                             AutoGenerateColumns="False"
-                            DataKeyNames="IDArticulo" 
+                            DataKeyNames="IDArticulo"
                             CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
                             GridLines="None"
                             AllowPaging="True" PageSize="10"
@@ -57,6 +57,13 @@
                                 <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
+                                <asp:TemplateField HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
+                                    <ItemTemplate>
+                                        <%# Eval("Proveedor.RazonSocial") %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+
                                 <asp:BoundField DataField="StockActual" HeaderText="Stock" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center font-bold" />
 
                                 <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
@@ -68,9 +75,9 @@
                                                 <span class="material-symbols-outlined text-lg">edit</span>
                                             </asp:HyperLink>
 
-                                            <a href="javascript:void(0);" 
-                                               onclick="abrirModalEliminar(<%# Eval("IDArticulo") %>);"
-                                               class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
+                                            <a href="javascript:void(0);"
+                                                onclick="abrirModalEliminar(<%# Eval("IDArticulo") %>);"
+                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </a>
                                         </div>
@@ -100,7 +107,7 @@
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                       <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Eliminar</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -123,7 +130,7 @@
         function ejecutarBorradoServer() {
             // Ocultamos el modal
             $('#modalEliminar').modal('hide');
-            
+
             // Hacemos click en el botón invisible del servidor
             document.getElementById('btnEliminarServer').click();
         }

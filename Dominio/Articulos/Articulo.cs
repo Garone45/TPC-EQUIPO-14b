@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dominio.Usuario_Persona;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Dominio.Articulos
         public string Descripcion { get; set; }       
         public bool Activo { get; set; }
 
-
+        public Proveedor Proveedor { get; set; }
         public decimal PrecioCostoActual { get; set; } // Último costo de compra (insumo para el cálculo)
         public decimal PorcentajeGanancia { get; set; } // Margen para calcular Precio Venta
         public int StockActual { get; set; }          // Cantidad disponible (para la validación)

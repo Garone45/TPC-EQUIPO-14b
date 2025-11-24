@@ -38,6 +38,22 @@ CREATE TABLE Articulos (
     Activo BIT NOT NULL DEFAULT 1
 );
 GO
+---ALTER TABLE ARTICULOS---
+USE TPC_GRUPO_14b;
+GO
+
+-- Agregamos la columna si no existe
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'IdProveedor' AND Object_ID = Object_ID(N'Articulos'))
+BEGIN
+    ALTER TABLE Articulos ADD IdProveedor INT NULL;
+    
+    ALTER TABLE Articulos 
+    ADD CONSTRAINT FK_Articulos_Proveedores 
+    FOREIGN KEY (IdProveedor) REFERENCES Proveedores(IDProveedor);
+END
+GO
+
+
 -- TABLA PEDIDOS
 CREATE TABLE dbo.Pedidos
 (

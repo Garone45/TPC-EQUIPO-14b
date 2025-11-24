@@ -49,7 +49,7 @@
             <div class="flex flex-col gap-5">
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    
+
                     <label class="flex flex-col flex-1 sm:col-span-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">SKU (Código)</span>
                         <asp:TextBox ID="txtSKU" runat="server" ReadOnly="true"
@@ -60,15 +60,15 @@
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Descripción *</span>
                         <asp:TextBox ID="txtDescripcion" runat="server"
                             CssClass="form-input w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"></asp:TextBox>
-                        
+
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescripcion"
-                            ErrorMessage="La descripción es obligatoria." 
+                            ErrorMessage="La descripción es obligatoria."
                             CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
                     </label>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
+
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Marca *</span>
                         <asp:DropDownList ID="ddlMarca" runat="server"
@@ -90,18 +90,29 @@
                             InitialValue="0" ErrorMessage="Seleccione una categoría."
                             CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
                     </label>
+                    <label class="flex flex-col flex-1">
+                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Proveedor *</span>
+                        <asp:DropDownList ID="ddlProveedor" runat="server"
+                            CssClass="form-select w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                        </asp:DropDownList>
+
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlProveedor"
+                            InitialValue="0" ErrorMessage="Seleccione un proveedor."
+                            CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
+                    </label>
+
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    
+
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Precio Compra ($) *</span>
                         <asp:TextBox ID="txtPrecioCostoActual" runat="server"
                             CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></asp:TextBox>
-                        
+
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPrecioCostoActual"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
-                        
+
                         <asp:RangeValidator runat="server" ControlToValidate="txtPrecioCostoActual"
                             MinimumValue="0" MaximumValue="9999999" Type="Double"
                             ErrorMessage="Inválido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
@@ -114,7 +125,7 @@
 
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPorcentajeGanancia"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
-                        
+
                         <asp:RangeValidator runat="server" ControlToValidate="txtPorcentajeGanancia"
                             MinimumValue="0" MaximumValue="1000" Type="Double"
                             ErrorMessage="Inválido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
@@ -128,7 +139,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
+
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Stock Actual *</span>
                         <asp:TextBox ID="txtStockActual" runat="server" TextMode="Number"
@@ -136,7 +147,7 @@
 
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtStockActual"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
-                        
+
                         <asp:RangeValidator runat="server" ControlToValidate="txtStockActual"
                             MinimumValue="0" MaximumValue="999999" Type="Integer"
                             ErrorMessage="Solo núm. enteros." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
@@ -149,7 +160,7 @@
 
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtStockMinimo"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
-                        
+
                         <asp:RangeValidator runat="server" ControlToValidate="txtStockMinimo"
                             MinimumValue="0" MaximumValue="999999" Type="Integer"
                             ErrorMessage="Solo núm. enteros." CssClass="text-red-500 text-xs mt-1 font-bold" Display="Dynamic" />
@@ -160,7 +171,7 @@
                     <asp:Button ID="btnCancelar" runat="server" Text="Cancelar"
                         PostBackUrl="~/ProductosListados" CausesValidation="false"
                         CssClass="px-4 py-2 rounded-lg bg-slate-200 text-slate-700 font-bold hover:bg-slate-300 cursor-pointer" />
-                    
+
                     <asp:Button ID="btnGuardar" runat="server" Text="Guardar"
                         OnClick="btnGuardar_Click"
                         CssClass="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 cursor-pointer" />
