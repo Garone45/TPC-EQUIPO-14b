@@ -31,7 +31,6 @@
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Nombre(s) *</span>
                         <asp:TextBox ID="txtNombre" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: Juan"></asp:TextBox>
-                        
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNombre"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
@@ -39,7 +38,6 @@
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Apellido(s) *</span>
                         <asp:TextBox ID="txtApellido" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: Pérez"></asp:TextBox>
-                        
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtApellido"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
@@ -48,24 +46,27 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">DNI / Cédula *</span>
-                        <asp:TextBox ID="txtDni" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 30123456"></asp:TextBox>
+                        <asp:TextBox ID="txtDni" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 30123456"></asp:TextBox>
                         
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDni"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                         
                         <asp:RegularExpressionValidator runat="server" ControlToValidate="txtDni"
-                            ValidationExpression="^[a-zA-Z0-9\-]+$"
-                            ErrorMessage="Solo números, letras o guiones."
+                            ValidationExpression="^[0-9]+$"
+                            ErrorMessage="Ingrese solo números (sin puntos ni letras)."
                             CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
 
                     <label class="flex flex-col flex-1">
-                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Teléfono</span>
-                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 11 4444-5555"></asp:TextBox>
+                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Teléfono *</span>
+                        <asp:TextBox ID="txtTelefono" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 1144445555"></asp:TextBox>
                         
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtTelefono"
+                            ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
+
                         <asp:RegularExpressionValidator runat="server" ControlToValidate="txtTelefono"
-                            ValidationExpression="^[0-9\-\+\s]+$"
-                            ErrorMessage="Formato inválido (use números, guiones o +)."
+                            ValidationExpression="^[0-9]+$"
+                            ErrorMessage="Ingrese solo números (sin guiones ni espacios)."
                             CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
                 </div>
@@ -85,19 +86,26 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <label class="flex flex-col flex-1 sm:col-span-2">
-                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Dirección (Calle)</span>
+                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Dirección (Calle) *</span>
                         <asp:TextBox ID="txtDireccion" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: Av. Siempre Viva"></asp:TextBox>
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDireccion"
+                            ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
 
                     <label class="flex flex-col flex-1 sm:col-span-1">
-                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Altura</span>
-                        <asp:TextBox ID="txtAltura" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="123"></asp:TextBox>
+                        <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Altura *</span>
+                        <asp:TextBox ID="txtAltura" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="123"></asp:TextBox>
+                        
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAltura"
+                            ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                     </label>
                 </div>
 
                 <label class="flex flex-col">
-                    <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Localidad</span>
+                    <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Localidad *</span>
                     <asp:TextBox ID="txtLocalidad" runat="server" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: CABA"></asp:TextBox>
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtLocalidad"
+                        ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />
                 </label>
 
                 <div class="flex justify-end gap-4 mt-6">

@@ -145,4 +145,5 @@ VALUES
 (4, 4, '2025-11-03', '2025-11-17', 'Efectivo', 'Pendiente', 0.00, 5000.00),
 (5, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'En preparación', 3.50, 11580.00);
 GO
-	
+
+select  * from DetallesPedido
