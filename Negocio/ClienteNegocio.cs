@@ -285,6 +285,55 @@ namespace Negocio
             }
         }
 
+        public Cliente obtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearProcedimiento("SP_ObtenerClientePorID");
+                datos.setearParametro("@IdCliente", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Cliente aux = new Cliente();
+                    aux.IDCliente = (int)datos.Lector["IDCliente"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    aux.Dni = (string)datos.Lector["Dni"];
+
+                    // Validamos nulos para evitar errores si el campo está vacío en BD
+                    if (!(datos.Lector["Telefono"] is DBNull))
+                        aux.Telefono = (string)datos.Lector["Telefono"];
+
+                    if (!(datos.Lector["Email"] is DBNull))
+                        aux.Email = (string)datos.Lector["Email"];
+
+                    if (!(datos.Lector["Direccion"] is DBNull))
+                        aux.Direccion = (string)datos.Lector["Direccion"];
+
+                    if (!(datos.Lector["Altura"] is DBNull))
+                        aux.Altura = (string)datos.Lector["Altura"];
+
+                    if (!(datos.Lector["Localidad"] is DBNull))
+                        aux.Localidad = (string)datos.Lector["Localidad"];
+
+                    aux.Activo = (bool)datos.Lector["Activo"];
+
+                    return aux;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 
 }

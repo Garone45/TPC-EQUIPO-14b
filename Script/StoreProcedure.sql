@@ -1,9 +1,9 @@
+
 USE TPC_GRUPO_14b;
 GO
 -- =============================================
 --                  ARTICULOS
 -- =============================================
-
 CREATE PROCEDURE SP_AgregarArticulo
     @Descripcion VARCHAR(255),
     @CodigoArticulo VARCHAR(50),
@@ -167,9 +167,12 @@ BEGIN
 END
 GO
 
+
+
 -- =============================================
 --                  CATEGORIAS
 -- =============================================
+
 
 CREATE PROCEDURE SP_AgregarCategoria
     @Descripcion VARCHAR(50)
@@ -246,3 +249,25 @@ BEGIN
     UPDATE Proveedores SET Activo = 1 WHERE IDProveedor = @IDProveedor
 END
 GO
+
+
+
+-- =============================================
+--							CLIENTES
+-- =============================================
+
+
+USE TPC_GRUPO_14b;
+GO
+CREATE OR ALTER PROCEDURE SP_ObtenerClientePorID
+    @IdCliente INT
+AS
+BEGIN
+    SELECT 
+        IDCliente, Nombre, Apellido, Dni, Telefono, 
+        Email, Direccion, Altura, Localidad, Activo
+    FROM Cliente
+    WHERE IDCliente = @IdCliente
+END
+GO
+
