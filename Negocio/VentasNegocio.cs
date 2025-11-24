@@ -200,27 +200,29 @@ namespace Negocio
 
         public Pedido ObtenerPorId(int idPedido)
         {
-            // 1. UNA SOLA INSTANCIA para toda la operación
             AccesoDatos datos = new AccesoDatos();
             Pedido pedido = new Pedido();
+
+            // Inicializamos la lista para evitar NullReferenceException
             if (pedido.Detalles == null)
                 pedido.Detalles = new List<DetallePedido>();
 
             try
             {
-                // 🟢 Abrir la conexión una sola vez
-                datos.Conexion.Open();
-                datos.Comando.Connection = datos.Conexion;
+                // ❌ ELIMINADO: datos.Conexion.Open(); 
+                // No la abras manualmente aquí. Deja que 'ejecutarLectura' lo haga.
 
                 // --- 1. TRAER CABECERA DEL PEDIDO ---
                 datos.setearConsulta("SELECT * FROM Pedidos WHERE IDPedido = @id");
                 datos.setearParametro("@id", idPedido);
+
+                // Al ejecutar esto, tu clase AccesoDatos abrirá la conexión internamente
                 datos.ejecutarLectura();
 
                 if (datos.Lector.Read())
                 {
-                    // ... (Mapeo de la cabecera) ...
                     pedido.IDPedido = (int)datos.Lector["IDPedido"];
+                    // ... (resto de tus mapeos) ...
                     pedido.IDCliente = (int)datos.Lector["IDCliente"];
                     pedido.IDVendedor = (int)datos.Lector["IDVendedor"];
                     pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
@@ -228,11 +230,18 @@ namespace Negocio
                     pedido.Total = (decimal)datos.Lector["Total"];
                 }
 
-                // 🟢 CERRAR EL LECTOR de la cabecera
-                if (datos.Lector != null && !datos.Lector.IsClosed)
+                // 🟢 IMPORTANTE: Cerrar Lector Y Conexión antes de la segunda consulta
+                // Cerramos el lector para liberar el recurso
+                if (datos.Lector != null)
                     datos.Lector.Close();
 
-                // 🟢 Limpiar parámetros
+                // ⚠️ TRUCO CLAVE: Cerramos la conexión explícitamente aquí.
+                // ¿Por qué? Porque 'ejecutarLectura' de la segunda vuelta va a querer abrirla de nuevo.
+                // Si la dejamos abierta desde la primera vuelta, la segunda fallará.
+                if (datos.Conexion.State == System.Data.ConnectionState.Open)
+                    datos.Conexion.Close();
+
+                // Limpiar parámetros para la nueva consulta
                 datos.Comando.Parameters.Clear();
 
                 // --- 2. TRAER DETALLES ---
@@ -245,6 +254,8 @@ namespace Negocio
 
                 datos.setearConsulta(consultaDetalles);
                 datos.setearParametro("@idPedidoDetalle", idPedido);
+
+                // Aquí 'ejecutarLectura' vuelve a abrir la conexión limpiamente
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -252,23 +263,23 @@ namespace Negocio
                     DetallePedido detalle = new DetallePedido();
                     detalle.IDPedido = idPedido;
 
-                    if (datos.Lector["IDArticulo"] != DBNull.Value)
+                    if (!(datos.Lector["IDArticulo"] is DBNull))
                         detalle.IDArticulo = (int)datos.Lector["IDArticulo"];
 
-                    if (datos.Lector["Descripcion"] != DBNull.Value)
+                    if (!(datos.Lector["Descripcion"] is DBNull))
                         detalle.Descripcion = (string)datos.Lector["Descripcion"];
 
-                    if (datos.Lector["Cantidad"] != DBNull.Value)
+                    if (!(datos.Lector["Cantidad"] is DBNull))
                         detalle.Cantidad = (int)datos.Lector["Cantidad"];
 
-                    if (datos.Lector["PrecioUnitario"] != DBNull.Value)
+                    if (!(datos.Lector["PrecioUnitario"] is DBNull))
                         detalle.PrecioUnitario = (decimal)datos.Lector["PrecioUnitario"];
 
                     pedido.Detalles.Add(detalle);
                 }
 
-                // 🟢 CERRAR EL LECTOR de los detalles
-                if (datos.Lector != null && !datos.Lector.IsClosed)
+                // Cerramos el segundo lector
+                if (datos.Lector != null)
                     datos.Lector.Close();
 
                 return pedido;
@@ -279,8 +290,8 @@ namespace Negocio
             }
             finally
             {
-                // 🟢 SOLUCIÓN FINAL: Cerrar la conexión directamente si está abierta.
-                // Esto es más robusto que depender de la lógica interna de datos.cerrarConexion().
+                // 🟢 SEGURIDAD FINAL
+                // Tu lógica aquí está perfecta, asegura que si algo falló, la conexión muera.
                 if (datos.Conexion != null && datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
             }
@@ -308,7 +319,6 @@ namespace Negocio
                         FechaEntrega = @FechaEntrega,
                         MetodoPago = @MetodoPago,
                         Estado = @Estado,
-                        Subtotal = @Subtotal,
                         Descuento = @Descuento,
                         Total = @Total
                     WHERE IDPedido = @IDPedido";
@@ -322,7 +332,6 @@ namespace Negocio
                 datos.setearParametro("@FechaEntrega", pedido.FechaEntrega);
                 datos.setearParametro("@MetodoPago", pedido.MetodoPago);
                 datos.setearParametro("@Estado", pedido.Estado.ToString());
-                datos.setearParametro("@Subtotal", pedido.Subtotal);
                 datos.setearParametro("@Descuento", pedido.Descuento);
                 datos.setearParametro("@Total", pedido.Total);
 
@@ -333,12 +342,14 @@ namespace Negocio
                 // --- 3. REEMPLAZAR DETALLES ---
 
                 // 3.1 ELIMINAR detalles antiguos asociados a este IDPedido
-                string consultaDeleteDetalle = "DELETE FROM DetallePedidos WHERE IDPedido = @IDPedidoDetalle";
+                string consultaDeleteDetalle = "DELETE FROM DetallesPedido WHERE IDPedido = @IDPedidoDetalle";
                 datos.setearConsulta(consultaDeleteDetalle);
-                datos.setearParametro("@IDPedidoDetalle", pedido.IDPedido);
 
-                // Ejecutamos el DELETE
-                // ¡IMPORTANTE! El comando ya está asociado a la conexión y a la transacción.
+
+                datos.Comando.Connection = datos.Conexion;
+                datos.Comando.Transaction = transaccion;
+
+                datos.setearParametro("@IDPedidoDetalle", pedido.IDPedido);
                 datos.Comando.ExecuteNonQuery();
 
                 // 3.2 INSERTAR los nuevos detalles

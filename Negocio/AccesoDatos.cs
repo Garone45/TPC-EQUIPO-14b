@@ -17,6 +17,7 @@ namespace Negocio // (O el namespace de tu capa de datos)
         {
             conexion = new SqlConnection("server=.\\SQLEXPRESS; database=TPC_GRUPO_14b; integrated security=true");
             comando = new SqlCommand();
+            comando.Connection = conexion;
         }
 
         public void setearConsulta(string consulta)
@@ -43,12 +44,15 @@ namespace Negocio // (O el namespace de tu capa de datos)
             comando.Connection = conexion;
             try
             {
-                conexion.Open();
+                
+                if (conexion.State != ConnectionState.Open)
+                    conexion.Open();
+
                 lector = comando.ExecuteReader();
             }
             catch (Exception ex)
             {
-                throw ex; // La excepción viaja a la capa de Negocio
+                throw ex;
             }
         }
 
@@ -58,14 +62,17 @@ namespace Negocio // (O el namespace de tu capa de datos)
             comando.Connection = conexion;
             try
             {
-                conexion.Open();
-                comando.ExecuteNonQuery(); 
+              
+                if (conexion.State != ConnectionState.Open)
+                    conexion.Open();
+
+                comando.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-           
+
         }
 
        
@@ -105,7 +112,8 @@ namespace Negocio // (O el namespace de tu capa de datos)
             }
             finally
             {
-                cerrarConexion();
+                if (conexion.State == ConnectionState.Open)
+                    conexion.Close();
             }
         }
     }

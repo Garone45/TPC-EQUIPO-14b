@@ -92,7 +92,6 @@ CREATE TABLE Pedidos
     FechaEntrega DATETIME NULL,
     MetodoPago VARCHAR(50) NOT NULL,
     Estado VARCHAR(20) NOT NULL DEFAULT 'Pendiente',
-    Subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00, -- Agrego Subtotal si lo usas
     Descuento DECIMAL(5,2) NOT NULL DEFAULT 0.00,
     Total DECIMAL(10,2) NOT NULL DEFAULT 0.00, -- Agrego Total si lo usas
     
