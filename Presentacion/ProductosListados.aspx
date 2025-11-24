@@ -19,7 +19,7 @@
         </div>
 
         <asp:UpdatePanel ID="upnlGrillaProductos" runat="server" UpdateMode="Conditional">
-            <ContentTemplate>
+            <ContentTemplate>   
 
                 <asp:HiddenField ID="hfIdProducto" runat="server" />
                 <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
