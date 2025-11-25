@@ -11,7 +11,7 @@ namespace Presentacion
 {
 
 
-    public partial class VentasListado
+    public partial class ComprasListado
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace Presentacion
         protected global::System.Web.UI.ScriptManagerProxy ScriptManagerProxy1;
 
         /// <summary>
-        /// Control lnkNuevaVenta.
+        /// Control lnkNuevaCompra.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkNuevaVenta;
+        protected global::System.Web.UI.WebControls.HyperLink lnkNuevaCompra;
 
         /// <summary>
         /// Control txtBuscar.
@@ -48,7 +48,7 @@ namespace Presentacion
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updPedidos;
+        protected global::System.Web.UI.UpdatePanel updCompras;
 
         /// <summary>
         /// Control gvCompras.
@@ -57,6 +57,6 @@ namespace Presentacion
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvPedidos;
+        protected global::System.Web.UI.WebControls.GridView gvCompras;
     }
 }

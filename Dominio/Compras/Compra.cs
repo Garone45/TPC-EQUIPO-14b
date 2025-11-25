@@ -1,6 +1,7 @@
 ﻿using Dominio.Usuario_Persona;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,30 @@ using System.Threading.Tasks;
 
 namespace Dominio.Compras
 {
-    internal class Compra
+    [Serializable]
+    public class Compra
     {
         public int IDCompra { get; set; }
         public int IDProveedor { get; set; }
         public int IDUsuario { get; set; }
-        public OrdenCompra IDOrdenCompra { get; set; }
-        public DateTime FechaIngreso { get; set; }
-        public string NumeroFacturaProveedor { get; set; } // N° de factura de quien te vende
+        public string Documento { get; set; } // N° de factura de quien te vende
+        public DateTime FechaCompra { get; set; }
+        public decimal MontoTotal { get; set; }
 
-        // La compra tiene muchas líneas de detalle
+        public string Observaciones { get; set; }
+        public enum Estado
+        {
+            Pendiente, Entregado, Cancelado
+        }
+        public Estado EstadoCompra { get; set; }
+        public DateTime FechaRegistro { get; set; }
         public List<DetalleCompra> Detalles { get; set; }
 
-        public decimal TotalCompra { get; set; }
-        public bool Activo { get; set; }
+        public string RazonSocialProveedor { get; set; }
+        
+        
+        // La compra tiene muchas líneas de detalle
+
 
         public Compra()
         {
