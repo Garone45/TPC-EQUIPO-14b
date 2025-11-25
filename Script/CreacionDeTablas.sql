@@ -51,10 +51,13 @@ CREATE TABLE Proveedores (
 );
 GO
 
+
 -- ==============================================================================
 -- 3. TABLAS PRINCIPALES (Con Relaciones)
 -- ==============================================================================
 -- ARTICULOS (Con relación a Proveedor, Marca y Categoría)
+
+
 CREATE TABLE Articulos (
     IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(255) NOT NULL,
@@ -102,12 +105,41 @@ CREATE TABLE DetallesPedido
     CONSTRAINT FK_Detalles_Pedidos FOREIGN KEY (IDPedido) REFERENCES Pedidos (IDPedido),
     CONSTRAINT FK_Detalles_Articulos FOREIGN KEY (IDArticulo) REFERENCES Articulos (IdArticulo)
 );
+
 GO
+CREATE TABLE Compras (
+    IDCompra INT IDENTITY(1,1) PRIMARY KEY,
+    IDProveedor INT NOT NULL,
+    Documento INT NOT NULL,
+    FechaCompra DATETIME NOT NULL DEFAULT GETDATE(),
+    MontoTotal DECIMAL(10,2) NOT NULL,
+    Observaciones VARCHAR(200),
+    Estado VARCHAR(20) DEFAULT 'Pendiente',
+
+    -- Control
+    UsuarioCreador VARCHAR(50),
+    FechaRegistro DATETIME DEFAULT GETDATE(),
+
+    FOREIGN KEY (IDProveedor) REFERENCES Proveedores(IDProveedor)
+);
+
+GO
+CREATE TABLE CompraDetalle (
+    IDDetalle INT IDENTITY(1,1) PRIMARY KEY,
+    IDCompra INT NOT NULL,
+    IDArticulo INT NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10,2) NOT NULL,
+    Subtotal AS (Cantidad * PrecioUnitario) PERSISTED,
+
+    FOREIGN KEY (IDCompra) REFERENCES Compras(IDCompra),
+    FOREIGN KEY (IDArticulo) REFERENCES Articulos(IdArticulo)
+    );
 
 -- ==============================================================================
 -- 4. CARGA DE DATOS INICIALES
 -- ==============================================================================
-
+GO
 -- Importante: Seteamos el formato de fecha a Año-Mes-Día para evitar errores
 SET DATEFORMAT ymd; 
 GO
@@ -145,4 +177,5 @@ VALUES
 (4, 4, '2025-11-03', '2025-11-17', 'Efectivo', 'Pendiente', 0.00, 5000.00),
 (5, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'En preparación', 3.50, 11580.00);
 GO
-	
+
+select  * from DetallesPedido

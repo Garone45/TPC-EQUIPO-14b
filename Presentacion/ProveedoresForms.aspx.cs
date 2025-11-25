@@ -1,28 +1,23 @@
 ﻿using Dominio.Usuario_Persona;
 using Negocio;
 using System;
-using System.Collections.Generic;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Presentacion
 {
-    public partial class ProveedoresForms : System.Web.UI.Page // Asegurate que coincida el nombre de la clase
+    public partial class ProveedoresForms : System.Web.UI.Page
     {
         public bool EsModoEdicion { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verificamos si la URL trae un ID
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)
             {
                 if (EsModoEdicion)
                 {
-                    // Cambiamos título si es edición
                     lblTitulo.Text = "Modificar Proveedor";
-
                     int id;
                     if (int.TryParse(Request.QueryString["id"], out id))
                     {
@@ -57,18 +52,16 @@ namespace Presentacion
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            // 1. VALIDACIÓN DEL SERVIDOR
-            // Esto verifica que se cumplan los RequiredFieldValidator y RegularExpressionValidator
+            // VALIDACIÓN DE SERVIDOR: Si falta algo, no avanza
             Page.Validate();
-            if (!Page.IsValid)
-                return;
+            if (!Page.IsValid) return;
 
             try
             {
                 ProveedorNegocio negocio = new ProveedorNegocio();
                 Proveedor proveedor = new Proveedor();
 
-                // 2. Cargamos el objeto
+                // Llenamos el objeto
                 proveedor.RazonSocial = txtRazonSocial.Text;
                 proveedor.Cuit = txtCUIT.Text;
                 proveedor.Seudonimo = txtSeudonimo.Text;
@@ -89,13 +82,16 @@ namespace Presentacion
                     Session["msg"] = "Proveedor agregado correctamente";
                 }
 
-                // Redirigimos solo si todo salió bien
                 Response.Redirect("ProveedoresListados.aspx", false);
             }
             catch (Exception ex)
             {
-                // Si hay un error (ej: CUIT duplicado en BD), lo mostramos aquí
-                mostrarMensaje("⚠️ Error: " + ex.Message, true);
+                // Manejo de errores de BD (ej: CUIT duplicado)
+                string msg = ex.Message;
+                if (ex.Message.Contains("UNIQUE") || ex.Message.Contains("CUIT"))
+                    msg = "El CUIT ingresado ya existe en el sistema.";
+
+                mostrarMensaje("⚠️ Error: " + msg, true);
             }
         }
 

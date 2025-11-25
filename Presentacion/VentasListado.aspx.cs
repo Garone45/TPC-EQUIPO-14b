@@ -1,5 +1,4 @@
-﻿using Dominio.Usuario_Persona;
-using Dominio.Ventas; // Para usar tu clase Pedido
+﻿using Dominio.Ventas;
 using Negocio;
 using System;
 using System.Collections.Generic;
@@ -8,17 +7,18 @@ using System.Web.UI.WebControls;
 
 namespace Presentacion
 {
-    public partial class VentasListado : Page
+    public partial class VentasListado : System.Web.UI.Page
     {
-        // Propiedad para guardar la lista en ViewState (opcional pero bueno para mantener el estado)
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-               
+                txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarVentas();
             }
         }
+
+        // Propiedad para guardar estado (opcional)
         private List<Pedido> ListaPedidos
         {
             get
@@ -27,97 +27,68 @@ namespace Presentacion
                     ViewState["Pedidos"] = new List<Pedido>();
                 return (List<Pedido>)ViewState["Pedidos"];
             }
-            set
-            {
-                ViewState["Pedidos"] = value;
-            }
+            set { ViewState["Pedidos"] = value; }
         }
-
 
         private void CargarVentas()
         {
             VentasNegocio negocio = new VentasNegocio();
-            List<Pedido> listaPedidos = null;
-
-            // 1. OBTENER EL FILTRO: Si es la búsqueda, tendrá texto.
-            string filtroTexto = txtBuscar.Text.Trim();
-
             try
             {
-                if (string.IsNullOrEmpty(filtroTexto))
-                {
-                  
-                    listaPedidos = negocio.ListarPedidos();
-                }
+                string filtro = txtBuscar.Text.Trim();
+                List<Pedido> lista;
+
+                if (string.IsNullOrEmpty(filtro))
+                    lista = negocio.ListarPedidos();
                 else
-                {
-            
-                    listaPedidos = negocio.Filtrar(filtroTexto);
-                }
+                    lista = negocio.Filtrar(filtro);
 
-                
-                gvPedidos.DataSource = listaPedidos;
+                gvPedidos.DataSource = lista;
                 gvPedidos.DataBind();
-                ListaPedidos = listaPedidos;
-
+                ListaPedidos = lista;
             }
             catch (Exception ex)
             {
-                Response.Write($"<script>alert('Error al cargar Pedidos: {ex.Message}');</script>");
+                System.Diagnostics.Debug.WriteLine("Error al cargar ventas: " + ex.Message);
             }
-
         }
 
         protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            // Al cambiar el texto, volvemos a llamar a CargarVentas, que ahora usa el nuevo texto.
             gvPedidos.PageIndex = 0;
             CargarVentas();
-
-          
         }
 
         protected void gvPedidos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            // 1. Cambiamos la página actual de la GridView
             gvPedidos.PageIndex = e.NewPageIndex;
-
-            // 2. Re-vinculamos la GridView usando la lista guardada en ViewState
-            // Esto es crucial para que la paginación funcione sin ir a la BD de nuevo.
             gvPedidos.DataSource = ListaPedidos;
             gvPedidos.DataBind();
         }
-        protected void gvPedidos_RowCommand(object sender, GridViewCommandEventArgs e)
+
+        // --- MÉTODO DE CANCELACIÓN (Llamado por el botón oculto) ---
+        protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
-            // Verificamos que el comando sea el que llamamos "Eliminar"
-            if (e.CommandName == "Eliminar")
+            try
             {
-                try
+                if (!string.IsNullOrEmpty(hfIdVenta.Value))
                 {
-                    // 1. Obtenemos el índice de la fila desde el CommandArgument
-                    int rowIndex = Convert.ToInt32(e.CommandArgument);
+                    int id = int.Parse(hfIdVenta.Value);
+                    VentasNegocio negocio = new VentasNegocio();
 
-                    // 2. Obtenemos el IDCliente de esa fila usando los DataKeys del GridView
-                    // (¡Asegúrate de que 'IDCliente' esté en DataKeyNames en tu ASPX!)
-                    // <asp:GridView ... DataKeyNames="IDCliente" ... > (Ya lo tienes bien)
-                    int idPedido = Convert.ToInt32(gvPedidos.DataKeys[rowIndex].Value);
+                    // Llama al método Eliminar que agregamos antes (Update Estado = 'Cancelado')
+                    negocio.Eliminar(id);
 
-                    // 3. Llamamos al método de negocio para el borrado lógico
-                    ClienteNegocio negocio = new ClienteNegocio();
-                    negocio.eliminarLogico(idPedido);
-
-                    // 4. Volvemos a cargar la grilla para que refleje el cambio
-                    // (Necesitarás tener un método para cargar la grilla,
-                    // probablemente el mismo que usas en el Page_Load)
-                    CargarVentas();
+                    CargarVentas(); // Refrescamos
                 }
-                catch (Exception ex)
-                {
-                    // Manejar el error
-                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al cancelar venta: " + ex.Message);
             }
         }
 
+        // Método para colores de estado
         protected string GetEstadoClass(string estado)
         {
             switch (estado)
@@ -132,6 +103,5 @@ namespace Presentacion
                     return "inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-700/50 dark:text-gray-300";
             }
         }
-
     }
 }
