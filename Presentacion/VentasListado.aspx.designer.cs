@@ -60,9 +60,8 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtBuscar;
 
         /// <summary>
-<<<<<<< HEAD
         /// Control gvPedidos.
-=======
+
         /// Control updCompras.
         /// </summary>
         /// <remarks>
@@ -73,7 +72,7 @@ namespace Presentacion
 
         /// <summary>
         /// Control gvCompras.
->>>>>>> 51f2c36b3b51f80259627ce5083d3b0e3c96e10a
+
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
