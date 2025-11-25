@@ -74,9 +74,17 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
+
     <div class="relative flex w-full flex-col group/design-root">
 
         <main class="flex flex-col p-6 gap-6">
+            <asp:UpdatePanel ID="updMensajes" runat="server" UpdateMode="Conditional">
+                <ContentTemplate>
+                    <div class="mb-4">
+                        <asp:Label ID="lblMensaje" runat="server" Text="" Visible="false" class="p-4 rounded-lg block border"></asp:Label>
+                    </div>
+                </ContentTemplate>
+            </asp:UpdatePanel>
 
             <asp:UpdatePanel ID="upCliente" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
@@ -138,7 +146,7 @@
             </asp:UpdatePanel>
 
             <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm flex flex-col">
-                
+
                 <div class="p-6 border-b border-slate-200 dark:border-slate-800">
                     <asp:UpdatePanel ID="upProductos" runat="server" UpdateMode="Conditional">
                         <ContentTemplate>
@@ -237,7 +245,7 @@
                         <div class="p-6 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 mt-auto">
                             <div class="grid grid-cols-12 gap-x-6 items-end">
                                 <div class="col-span-7">
-                                    <asp:LinkButton ID="btnFinalizarVenta" runat="server" 
+                                    <asp:LinkButton ID="btnFinalizarVenta" runat="server"
                                         CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-5 bg-primary text-white gap-2 text-base font-bold tracking-wide"
                                         OnClick="btnFinalizarVenta_Click"
                                         CausesValidation="false"

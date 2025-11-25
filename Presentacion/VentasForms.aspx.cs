@@ -5,7 +5,6 @@ using Negocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -13,230 +12,244 @@ namespace Presentacion
 {
     public partial class VentasForms : System.Web.UI.Page
     {
-        protected void Page_Load(object sender, EventArgs e)
-        {
-            if (!IsPostBack)
-            {
-                // 1. Verificar si estamos editando (Viene un ID en la URL, ej: VentasForms.aspx?id=10)
-                string idPedidoStr = Request.QueryString["id"];
-
-                if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
-                {
-                    // --- MODO EDICIÓN ---
-                    CargarDatosPedido(idPedido);
-                }
-                else
-                {
-                    // --- MODO NUEVA VENTA ---
-                    // Limpiamos la sesión para no arrastrar datos viejos
-                    Session["DetallePedido"] = null;
-                    Session["ClienteSeleccionado"] = null;
-                    BindGridClientes(null);
-                    ActualizarDetalleYTotales();
-                }
-            }
-        }
-        protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
-        {
-            string filtro = txtBuscarCliente.Text.Trim();
-            BindGridClientes(filtro);
-            
-        }
-
-        protected void gvClientes_SelectedIndexChanged(object sender, EventArgs e)
-        {
-         
-            int selectedId = (int)gvClientes.SelectedDataKey.Value;
-            Session["clienteSeleccionado"] = selectedId;
-            ClienteNegocio negocio = new ClienteNegocio();
-
-           
-            Cliente clienteSeleccionado = negocio.listar(selectedId);
-
-            if (clienteSeleccionado != null)
-            {
-                txtClientName.Text = clienteSeleccionado.Nombre;
-                txtClientAddress.Text = clienteSeleccionado.Direccion;
-                txtClientCity.Text = clienteSeleccionado.Localidad;
-                txtClientDNI.Text = clienteSeleccionado.Dni;
-                txtClientPhone.Text = clienteSeleccionado.Telefono;
-            }
-
-            
-            txtBuscarCliente.Text = string.Empty;
-            BindGridClientes(null);
-        }
-
-        private void BindGridClientes(string filtro)
-        {
-            
-            ClienteNegocio negocio = new ClienteNegocio();
-            List<Cliente> clientes = negocio.listar(); // 
-
-            if (!string.IsNullOrEmpty(filtro))
-            {
-               
-                clientes = clientes.Where(c =>
-                    c.Nombre.ToLower().Contains(filtro.ToLower()) ||
-                    c.Dni.Contains(filtro)
-                ).ToList();
-            }
-
-            gvClientes.DataSource = clientes;
-            gvClientes.DataBind();
-        }
-
+        // --- PROPIEDADES DE SESIÓN ---
         private List<DetallePedido> DetalleActual
         {
             get
             {
                 if (Session["DetallePedido"] == null)
-                {
                     Session["DetallePedido"] = new List<DetallePedido>();
-                }
                 return (List<DetallePedido>)Session["DetallePedido"];
             }
-            set
+            set { Session["DetallePedido"] = value; }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
             {
-                Session["DetallePedido"] = value;
+                string idPedidoStr = Request.QueryString["id"];
+                if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
+                {
+                    CargarDatosPedido(idPedido); // Modo Edición
+                }
+                else
+                {
+                    // Modo Nuevo: Limpieza inicial
+                    Session["DetallePedido"] = null;
+                    Session["ClienteSeleccionado"] = null;
+                    ViewState["IDPedidoEditar"] = null;
+                    BindGridClientes(null);
+                    ActualizarDetalleYTotales();
+                }
             }
+        }
+
+        // --- MÉTODOS DE BÚSQUEDA Y GRILLAS (Sin cambios mayores) ---
+
+        protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
+        {
+            BindGridClientes(txtBuscarCliente.Text.Trim());
+        }
+
+        private void BindGridClientes(string filtro)
+        {
+            ClienteNegocio negocio = new ClienteNegocio();
+            List<Cliente> clientes = negocio.listar();
+
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                clientes = clientes.Where(c =>
+                    c.Nombre.ToLower().Contains(filtro.ToLower()) ||
+                    c.Dni.Contains(filtro)
+                ).ToList();
+            }
+            gvClientes.DataSource = clientes;
+            gvClientes.DataBind();
+        }
+
+        protected void gvClientes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selectedId = (int)gvClientes.SelectedDataKey.Value;
+            Session["ClienteSeleccionado"] = selectedId; // Unificamos nombre de sesión
+
+            ClienteNegocio negocio = new ClienteNegocio();
+            Cliente cliente = negocio.listar(selectedId); // Asumo que listar(id) devuelve un objeto
+
+            if (cliente != null)
+            {
+                txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
+                txtClientAddress.Text = cliente.Direccion;
+                txtClientCity.Text = cliente.Localidad;
+                txtClientDNI.Text = cliente.Dni;
+                txtClientPhone.Text = cliente.Telefono;
+            }
+            txtBuscarCliente.Text = string.Empty;
+            BindGridClientes(null);
         }
 
         protected void txtBuscarProductos_TextChanged(object sender, EventArgs e)
         {
-            // 1. Lógica para buscar productos en la base de datos
-            string BuscarText = txtBuscarProductos.Text.Trim();
-            List<Articulo> resultados = new List<Articulo>();
-            ArticuloNegocio negocio = new ArticuloNegocio();
-
-            if (!string.IsNullOrEmpty(BuscarText))
+            string filtro = txtBuscarProductos.Text.Trim();
+            if (!string.IsNullOrEmpty(filtro))
             {
-             
-                List<Articulo> articulosEncontrados = negocio.filtrar(BuscarText);
-                resultados = articulosEncontrados;
-
-            }
-
-            gvProductos.DataSource = resultados;
-            gvProductos.DataBind();
-            upProductos.Update(); // Actualiza el UpdatePanel para mostrar los resultados
-        }
-
-        protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (gvProductos.SelectedDataKey != null)
-            {
-                int idArticulo = Convert.ToInt32(gvProductos.SelectedDataKey.Value);
-
-                // 1. Busca el Artículo completo (idealmente en la DB, o si la lista 'resultados' está disponible, búscala allí)
-                // Usaremos una búsqueda directa por ID a la base de datos para asegurar el artículo más reciente.
                 ArticuloNegocio negocio = new ArticuloNegocio();
-                Articulo articuloSeleccionado = negocio.obtenerPorId(idArticulo); // Necesitas una función obtenerPorId()
-
-                if (articuloSeleccionado != null)
-                {
-                    // 2. Calcula el precio de venta final.
-                    decimal precioVenta = articuloSeleccionado.PrecioVentaCalculado; // Si usas la propiedad calculada
-                                                                            // O: decimal precioVenta = articuloSeleccionado.PrecioCostoActual * (1 + articuloSeleccionado.PorcentajeGanancia / 100m);
-
-                    // 3. Agregar o incrementar cantidad en el detalle de la venta
-                    AgregarProductoAlDetalle(
-                        articuloSeleccionado.IDArticulo,
-                        articuloSeleccionado.Descripcion,
-                        articuloSeleccionado.CodigoArticulo,
-                        precioVenta, // Usa el precio de venta
-                        1
-                    );
-
-                    // 4. Limpiar la búsqueda y GridView de resultados de productos
-                    txtBuscarProductos.Text = string.Empty;
-                    gvProductos.DataSource = null; // Limpia el GridView
-                    gvProductos.DataBind();
-
-                    // 5. Actualizar ambos UpdatePanels
-                    ActualizarDetalleYTotales();
-                    upProductos.Update(); // Para limpiar el GridView
-                }
+                gvProductos.DataSource = negocio.filtrar(filtro);
+                gvProductos.DataBind();
+                upProductos.Update();
             }
         }
+
+        // --- AGREGAR PRODUCTO CON VALIDACIÓN DE STOCK ---
 
         protected void btnAddProduct_Click(object sender, EventArgs e)
         {
-            string BuscarText = txtBuscarProductos.Text.Trim();
+            // 1. Validar selección
+            if (gvProductos.SelectedDataKey == null)
+            {
+                mostrarMensaje("⚠️ Seleccione un producto de la lista primero.", true);
+                return;
+            }
+
+            int idArticulo = (int)gvProductos.SelectedDataKey.Value;
             ArticuloNegocio negocio = new ArticuloNegocio();
+            Articulo articulo = negocio.obtenerPorId(idArticulo);
 
-            if (string.IsNullOrWhiteSpace(BuscarText)) return;
-
-            // 1. Llama a tu función de filtro.
-            // Esto buscará artículos cuya ID o Descripción contengan el texto ingresado.
-            List<Articulo> articulosEncontrados = negocio.filtrar(BuscarText);
-
-            Articulo articuloSeleccionado = null;
-
-            // 2. Intentamos determinar si se buscó por ID exacto.
-            if (int.TryParse(BuscarText, out int idIngresado))
+            // 2. Validar Stock Inicial
+            if (articulo.StockActual <= 0)
             {
-                // El usuario ingresó un número. Buscamos el match EXACTO por ID.
-                articuloSeleccionado = articulosEncontrados
-                    .FirstOrDefault(a => a.IDArticulo == idIngresado);
+                mostrarMensaje($"⚠️ El producto '{articulo.Descripcion}' no tiene stock disponible.", true);
+                return;
             }
 
-            // 3. Si no encontramos un match por ID exacto, y solo hay un resultado (es la mejor opción)
-            if (articuloSeleccionado == null && articulosEncontrados.Count == 1)
+            // 3. Validar si ya lo tengo en el carrito y si me paso del stock
+            var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
+            if (detalle != null)
             {
-                articuloSeleccionado = articulosEncontrados.First();
-            }
-
-            if (articuloSeleccionado != null)
-            {
-                // 4. Cálculo y agregación 
-                decimal precioVenta = articuloSeleccionado.PrecioCostoActual * (1 + articuloSeleccionado.PorcentajeGanancia / 100m);
-
-                AgregarProductoAlDetalle(
-                    articuloSeleccionado.IDArticulo,
-                    articuloSeleccionado.Descripcion,
-                    articuloSeleccionado.CodigoArticulo,
-                    precioVenta,
-                    1
-                );
-
-                // 5. Limpieza y Actualización
-                txtBuscarProductos.Text = string.Empty;
-                gvProductos.DataSource = null;
-                gvProductos.DataBind();
-
-                ActualizarDetalleYTotales();
-                upProductos.Update();
-            }
-            else if (articulosEncontrados.Count > 1)
-            {
-                // Si hay varios resultados, se muestran en el GridView
-                // Aquí no hace nada y deja que el usuario haga clic en el GridView
-            }
-            // Si no se encontró nada, se podría mostrar un m
-        }
-
-        private void AgregarProductoAlDetalle(int id, string nombre, string codigo, decimal precio, int cantidad)
-        {
-            var detalleExistente = DetalleActual.FirstOrDefault(d => d.IDArticulo == id);
-
-            if (detalleExistente != null)
-            {
-                detalleExistente.Cantidad += cantidad;
+                if (detalle.Cantidad + 1 > articulo.StockActual)
+                {
+                    mostrarMensaje($"⚠️ No hay suficiente stock para agregar más. (Stock: {articulo.StockActual})", true);
+                    return;
+                }
+                detalle.Cantidad++;
             }
             else
             {
                 DetalleActual.Add(new DetallePedido
                 {
-                    IDArticulo = id,
-                    Descripcion = nombre,
-                    PrecioUnitario = precio,
-                    Cantidad = cantidad
+                    IDArticulo = articulo.IDArticulo,
+                    Descripcion = articulo.Descripcion,
+                    PrecioUnitario = articulo.PrecioVentaCalculado,
+                    Cantidad = 1
                 });
             }
+
+            // 4. Limpieza
+            DetalleActual = DetalleActual; // Refrescar sesión
+            txtBuscarProductos.Text = "";
+            gvProductos.DataSource = null;
+            gvProductos.DataBind();
+
+            ActualizarDetalleYTotales();
+            upProductos.Update();
         }
+
+        // --- GUARDAR VENTA CON VALIDACIONES FINALES ---
+
+        protected void btnFinalizarVenta_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // VALIDACIÓN 1: Cliente
+                if (Session["ClienteSeleccionado"] == null)
+                {
+                    mostrarMensaje("⚠️ Debe seleccionar un CLIENTE.", true);
+                    return;
+                }
+
+                // VALIDACIÓN 2: Carrito
+                if (DetalleActual == null || DetalleActual.Count == 0)
+                {
+                    mostrarMensaje("⚠️ El carrito está VACÍO.", true);
+                    return;
+                }
+
+                // VALIDACIÓN 3: Stock Final (Iteramos todo el carrito antes de guardar)
+                ArticuloNegocio artNegocio = new ArticuloNegocio();
+                foreach (var item in DetalleActual)
+                {
+                    Articulo artEnBD = artNegocio.obtenerPorId(item.IDArticulo);
+                    if (artEnBD.StockActual < item.Cantidad)
+                    {
+                        mostrarMensaje($"⚠️ Stock insuficiente para '{item.Descripcion}'. Stock actual: {artEnBD.StockActual}", true);
+                        return; // Cancelamos todo
+                    }
+                }
+
+                // --- SI TODO OK, GUARDAMOS ---
+
+                Pedido pedido = new Pedido();
+                if (ViewState["IDPedidoEditar"] != null)
+                    pedido.IDPedido = (int)ViewState["IDPedidoEditar"];
+
+                pedido.IDCliente = (int)Session["ClienteSeleccionado"];
+                pedido.IDVendedor = 1; // TODO: Usar usuario logueado
+                pedido.FechaCreacion = DateTime.Now;
+                pedido.Estado = Pedido.EstadoPedido.Pendiente;
+                pedido.Detalles = DetalleActual;
+
+                // Totales
+                pedido.Subtotal = DetalleActual.Sum(d => d.TotalParcial);
+                pedido.Total = pedido.Subtotal * 1.21m; // Ejemplo IVA
+
+                VentasNegocio negocio = new VentasNegocio();
+
+                if (pedido.IDPedido != 0)
+                    negocio.Modificar(pedido);
+                else
+                    negocio.Agregar(pedido);
+
+                // ÉXITO
+                Session["msg"] = "Venta registrada correctamente.";
+                Response.Redirect("VentasListado.aspx", false);
+            }
+            catch (Exception ex)
+            {
+                mostrarMensaje("Error al finalizar: " + ex.Message, true);
+            }
+        }
+
+        // --- MÉTODOS AUXILIARES ---
+
+        private void ActualizarDetalleYTotales()
+        {
+            gvDetallePedido.DataSource = DetalleActual;
+            gvDetallePedido.DataBind();
+
+            decimal sub = DetalleActual.Sum(d => d.TotalParcial);
+            decimal total = sub * 1.21m;
+
+            lblSubtotal.Text = sub.ToString("C");
+            lblTotalFinal.Text = total.ToString("C");
+            upDetalleVenta.Update();
+        }
+
+        private void mostrarMensaje(string msg, bool error)
+        {
+            lblMensaje.Text = msg;
+            lblMensaje.Visible = true;
+            lblMensaje.CssClass = error ?
+                "block p-4 mb-4 text-sm text-red-800 bg-red-50 rounded-lg border border-red-300" :
+                "block p-4 mb-4 text-sm text-green-800 bg-green-50 rounded-lg border border-green-300";
+
+            updMensajes.Update(); // Asegúrate de tener este UpdatePanel en el ASPX
+        }
+
+        // ... (Tus eventos RowCommand para sumar/restar y CargarDatosPedido siguen igual) ...
         protected void gvDetallePedido_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            // Copia aquí tu lógica original de Sumar/Restar/Eliminar del carrito
+            // ...
             if (int.TryParse(e.CommandArgument.ToString(), out int idProducto))
             {
                 var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idProducto);
@@ -264,108 +277,10 @@ namespace Presentacion
             }
         }
 
-        private void ActualizarDetalleYTotales()
-        {
-            gvDetallePedido.DataSource = DetalleActual;
-            gvDetallePedido.DataBind();
-
-            decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-            const decimal TasaIVA = 0.21m; // 16%
-            decimal iva = subtotal * TasaIVA;
-            decimal totalFinal = subtotal + iva;
-
-            lblSubtotal.Text = subtotal.ToString("C");
-            lblIVA.Text = iva.ToString("C");
-            lblTotalFinal.Text = totalFinal.ToString("C");
-
-            upDetalleVenta.Update(); // Actualiza el UpdatePanel de los totales y el detalle
-        }
-
-
-        protected void btnFinalizarVenta_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // --- 1. VALIDACIONES --- (IGUAL QUE ANTES)
-                if (Session["ClienteSeleccionado"] == null)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('ERROR: Debe seleccionar un cliente antes de finalizar la venta.');", true);
-                    return;
-                }
-
-                if (DetalleActual == null || DetalleActual.Count == 0)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('ERROR: Debe agregar productos al pedido.');", true);
-                    return;
-                }
-
-                // --- 2. CÁLCULOS ECONÓMICOS --- (IGUAL QUE ANTES)
-                decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-                decimal porcentajeIVA = 0.21m;
-                decimal descuentoAplicado = 0.00m;
-                decimal subtotalConDescuento = subtotal - descuentoAplicado;
-                decimal iva = subtotalConDescuento * porcentajeIVA;
-                decimal totalFinal = subtotalConDescuento + iva;
-
-                // --- 3. ARMAR EL OBJETO PEDIDO ---
-                Pedido nuevoPedido = new Pedido();
-
-                // 🟢 CAMBIO 1: DETECTAR SI ES EDICIÓN
-                // Si tenemos un ID guardado en ViewState (desde el Page_Load), se lo asignamos.
-                if (ViewState["IDPedidoEditar"] != null)
-                {
-                    nuevoPedido.IDPedido = Convert.ToInt32(ViewState["IDPedidoEditar"]);
-                }
-                // Si no hay nada, IDPedido queda en 0 (por defecto), lo que significa "Nuevo".
-
-                nuevoPedido.IDCliente = (int)Session["ClienteSeleccionado"];
-                nuevoPedido.IDVendedor = 1;
-                nuevoPedido.FechaCreacion = DateTime.Now; // Ojo: Al editar, quizás quieras mantener la fecha original. 
-                nuevoPedido.FechaEntrega = DateTime.Now.AddDays(7);
-
-                nuevoPedido.Subtotal = subtotal;
-                nuevoPedido.Descuento = descuentoAplicado;
-                nuevoPedido.Total = totalFinal;
-
-                nuevoPedido.MetodoPago = "Efectivo";
-                nuevoPedido.Estado = Pedido.EstadoPedido.Pendiente;
-                nuevoPedido.Detalles = DetalleActual;
-
-
-                // --- 4. LLAMAR AL NEGOCIO ---
-                VentasNegocio negocio = new VentasNegocio();
-
-                // 🟢 CAMBIO 2: DECIDIR SI AGREGAR O MODIFICAR
-                if (nuevoPedido.IDPedido != 0)
-                {
-                    // Si tiene ID, es una modificación
-                    negocio.Modificar(nuevoPedido);
-                }
-                else
-                {
-                    // Si el ID es 0, es nuevo
-                    negocio.Agregar(nuevoPedido);
-                }
-
-                // --- 5. LIMPIEZA Y ÉXITO --- (IGUAL QUE ANTES)
-                Session["DetallePedido"] = null;
-                Session["ClienteSeleccionado"] = null;
-                ViewState["IDPedidoEditar"] = null; // 🟢 Limpiamos también el ID de edición
-
-                ActualizarDetalleYTotales();
-
-                Response.Redirect("VentasListado.aspx", false);
-                Context.ApplicationInstance.CompleteRequest();
-
-            }
-            catch (Exception ex)
-            {
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "error", $"alert('ERROR CRÍTICO: {ex.Message}');", true);
-            }
-        }
-
         private void CargarDatosPedido(int idPedido)
         {
+            // Copia aquí tu lógica original de cargar pedido
+            // ...
             VentasNegocio negocio = new VentasNegocio();
             Pedido pedido = negocio.ObtenerPorId(idPedido);
 
@@ -377,7 +292,10 @@ namespace Presentacion
                 // B. Cargar Cliente (Usamos tu lógica existente de ClienteNegocio)
                 Session["ClienteSeleccionado"] = pedido.IDCliente;
                 ClienteNegocio clienteNegocio = new ClienteNegocio();
-                Cliente cliente = clienteNegocio.listar(pedido.IDCliente);
+                // Aquí asumo que tienes un método que devuelve un objeto Cliente por ID
+                // Si tu listar() devuelve lista, usa .FirstOrDefault()
+                List<Cliente> lista = clienteNegocio.listar();
+                Cliente cliente = lista.FirstOrDefault(c => c.IDCliente == pedido.IDCliente);
 
                 if (cliente != null)
                 {
@@ -386,8 +304,6 @@ namespace Presentacion
                     txtClientCity.Text = cliente.Localidad;
                     txtClientDNI.Text = cliente.Dni;
                     txtClientPhone.Text = cliente.Telefono;
-
-                    // Opcional: Ocultar panel de búsqueda de clientes si ya está cargado
                 }
 
                 // C. Cargar Detalles en Session
@@ -399,5 +315,10 @@ namespace Presentacion
             }
         }
 
+        // Evento SelectionChanged de Grilla Productos (para habilitar el botón añadir)
+        protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Esto es necesario para que btnAddProduct sepa qué ID agarrar
+        }
     }
 }
