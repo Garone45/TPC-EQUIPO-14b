@@ -69,8 +69,6 @@ namespace Negocio
         }
 
 
-
-
            public List<Pedido> Filtrar(string filtro)
         {
             List<Pedido> lista = new List<Pedido>();
@@ -390,6 +388,25 @@ namespace Negocio
                 // Usamos cerrarConexion, pero solo si la conexión está abierta
                 if (datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
+            }
+        }
+        public void Eliminar(int idPedido)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                
+                datos.setearConsulta("UPDATE Pedidos SET Estado = 'Cancelado' WHERE IDPedido = @id");
+                datos.setearParametro("@id", idPedido);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
             }
         }
     }
