@@ -51,10 +51,13 @@ CREATE TABLE Proveedores (
 );
 GO
 
+
 -- ==============================================================================
 -- 3. TABLAS PRINCIPALES (Con Relaciones)
 -- ==============================================================================
 -- ARTICULOS (Con relación a Proveedor, Marca y Categoría)
+
+
 CREATE TABLE Articulos (
     IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(255) NOT NULL,
