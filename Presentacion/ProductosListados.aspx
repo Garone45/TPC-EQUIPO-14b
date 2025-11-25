@@ -57,7 +57,7 @@
                                 <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
-                                <asp:TemplateField HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
+                                <asp:TemplateField DataField ="Proveedor.RazonSocial" HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
                                         <%# Eval("Proveedor.RazonSocial") %>
                                     </ItemTemplate>

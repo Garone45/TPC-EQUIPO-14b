@@ -45,9 +45,9 @@ namespace Negocio
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
                     aux.Proveedor = new Proveedor();
-                    if (!(datos.Lector["IdProveedor"] is DBNull))
+                    if (!(datos.Lector["IDProveedor"] is DBNull))
                     {
-                        aux.Proveedor.ID = (int)datos.Lector["IdProveedor"];
+                        aux.Proveedor.ID = (int)datos.Lector["IDProveedor"];
                         aux.Proveedor.RazonSocial = (string)datos.Lector["RazonSocial"];
                     }
                     else
@@ -231,7 +231,7 @@ namespace Negocio
                 datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
                 datos.setearParametro("@IdMarca", articuloModificado.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", articuloModificado.Categorias.IDCategoria);
-                datos.setearParametro("@IdProveedor", articuloModificado.Proveedor.ID);
+                datos.setearParametro("@IDProveedor", articuloModificado.Proveedor.ID);
                 datos.setearParametro("@PrecioCostoActual", articuloModificado.PrecioCostoActual);
                 datos.setearParametro("@PorcentajeGanancia", articuloModificado.PorcentajeGanancia);
                 datos.setearParametro("@StockActual", articuloModificado.StockActual);

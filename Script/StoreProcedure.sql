@@ -34,7 +34,7 @@ CREATE PROCEDURE SP_ModificarArticulo
     @CodigoArticulo VARCHAR(50),
     @IdMarca INT,
     @IdCategoria INT,
-    @IdProveedor INT, -- Nuevo
+    @IDProveedor INT, -- Nuevo
     @PrecioCostoActual DECIMAL(10, 2),
     @PorcentajeGanancia DECIMAL(5, 2),
     @StockActual INT,
