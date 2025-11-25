@@ -11,44 +11,26 @@ namespace Presentacion
 {
 
 
-    public partial class VentasListado
+    public partial class ComprasListado
     {
 
         /// <summary>
-        /// Control btnNuevaVenta.
+        /// Control ScriptManagerProxy1.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink btnNuevaVenta;
+        protected global::System.Web.UI.ScriptManagerProxy ScriptManagerProxy1;
 
         /// <summary>
-        /// Control updVentas.
+        /// Control lnkNuevaCompra.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updVentas;
-
-        /// <summary>
-        /// Control hfIdVenta.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfIdVenta;
-
-        /// <summary>
-        /// Control btnEliminarServer.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnEliminarServer;
+        protected global::System.Web.UI.WebControls.HyperLink lnkNuevaCompra;
 
         /// <summary>
         /// Control txtBuscar.
@@ -60,25 +42,21 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtBuscar;
 
         /// <summary>
-<<<<<<< HEAD
-        /// Control gvPedidos.
-=======
         /// Control updCompras.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updPedidos;
+        protected global::System.Web.UI.UpdatePanel updCompras;
 
         /// <summary>
         /// Control gvCompras.
->>>>>>> 51f2c36b3b51f80259627ce5083d3b0e3c96e10a
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvPedidos;
+        protected global::System.Web.UI.WebControls.GridView gvCompras;
     }
 }

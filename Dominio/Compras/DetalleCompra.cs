@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Dominio.Compras
 {
+    [Serializable]
     public class DetalleCompra
     {
-        public int IDDetalleCompra { get; set; }
-        public int IDOrdenCompra { get; set; }
+        public int IDDetalle { get; set; }
+        public int IDCompra { get; set; }
         public int IDArticulo { get; set; }
 
         // Relación con el Artículo que se compró
