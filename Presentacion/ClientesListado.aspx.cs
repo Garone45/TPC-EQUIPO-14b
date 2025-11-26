@@ -11,6 +11,19 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // 1. CHEQUEO LOGIN
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            Usuario user = (Usuario)Session["usuario"];
+
+            if (user.TipoUsuario == TipoUsuario.VENDEDOR)
+            {
+             
+            }
             if (!IsPostBack)
             {
                 cargarGrilla();
@@ -89,6 +102,15 @@ namespace Presentacion
             {
                 System.Diagnostics.Debug.WriteLine("Error al eliminar: " + ex.Message);
             }
+        }
+        public bool EsAdmin()
+        {
+            if (Session["usuario"] != null)
+            {
+                Dominio.Usuario_Persona.Usuario user = (Dominio.Usuario_Persona.Usuario)Session["usuario"];
+                return user.TipoUsuario == Dominio.Usuario_Persona.TipoUsuario.ADMIN;
+            }
+            return false;
         }
     }
 }

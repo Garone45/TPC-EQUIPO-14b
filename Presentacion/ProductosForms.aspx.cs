@@ -10,17 +10,31 @@ namespace Presentacion
 {
     public partial class ProductosForms : System.Web.UI.Page
     {
-        // Propiedad para saber si estamos en modo Edición
+     
         public bool EsModoEdicion { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verificamos si la URL trae un ID ANTES del IsPostBack
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+            Usuario user = (Usuario)Session["usuario"];
+
+            if (user.TipoUsuario != TipoUsuario.ADMIN) // caso para alguien disinto a admin 
+            {
+               
+                Session.Add("error", "No tienes permisos para acceder a esta pantalla.");
+                Response.Redirect("ProductosListado.aspx", false);
+                return;
+            }
+          
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)
             {
-                // 1. Cargar DropDownLists (Esto ya lo tenías)
+              
                 MarcaNegocio marcaNegocio = new MarcaNegocio();
                 CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
                 try
@@ -60,8 +74,7 @@ namespace Presentacion
                     return;
                 }
 
-                // --- INICIO DE LÓGICA DE MODIFICAR ---
-                // 2. Si EsModoEdicion (si la URL trae ?id=...), cargamos los datos
+            
                 if (EsModoEdicion)
                 {
                     int id = int.Parse(Request.QueryString["id"]);
@@ -93,8 +106,7 @@ namespace Presentacion
         {
             try
             {
-                // 1. VALIDAR QUE EL FRONTEND ESTÉ OK
-                // Esto verifica todos los RequiredFieldValidator, RangeValidator, etc.
+            
                 Page.Validate();
                 if (!Page.IsValid)
                     return; // Si hay errores visuales, cortamos la ejecución aquí.
@@ -105,8 +117,7 @@ namespace Presentacion
                 articulo.Descripcion = txtDescripcion.Text;
                 articulo.CodigoArticulo = txtSKU.Text;
 
-                // Usamos decimal.Parse. Si el usuario pone algo inválido, el validador del front
-                // ya lo debió haber frenado, pero el try-catch es el doble seguro.
+ 
                 articulo.PrecioCostoActual = decimal.Parse(txtPrecioCostoActual.Text);
                 articulo.PorcentajeGanancia = decimal.Parse(txtPorcentajeGanancia.Text);
                 articulo.StockActual = int.Parse(txtStockActual.Text);
@@ -138,9 +149,9 @@ namespace Presentacion
             }
             catch (Exception ex)
             {
-                // MUESTRA EL ERROR EN EL LABEL DENTRO DEL UPDATE PANEL
+            
                 lblMensaje.Text = "⚠️ Error: " + ex.Message;
-                // Clases de Tailwind para alerta roja (fondo rojo suave, texto rojo oscuro)
+              
                 lblMensaje.CssClass = "block bg-red-100 text-red-700 border border-red-400 p-3 rounded font-bold";
                 lblMensaje.Visible = true;
             }

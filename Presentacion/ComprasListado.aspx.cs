@@ -1,4 +1,5 @@
 ﻿using Dominio.Compras;
+using Dominio.Usuario_Persona;
 using Dominio.Ventas;
 using Negocio;
 using System;
@@ -14,6 +15,20 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para gestionar Compras.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
             if (!IsPostBack)
             {
 

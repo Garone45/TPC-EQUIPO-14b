@@ -22,7 +22,7 @@ CREATE TABLE Usuario (
     IDUsuario INT IDENTITY(1,1) PRIMARY KEY,
     NombreUser VARCHAR(100) NOT NULL,
     Contraseña VARCHAR(100) NOT NULL,
-    Rol VARCHAR(50) NOT NULL,
+    TipoUser INT  NOT NULL,
     Activo BIT NOT NULL DEFAULT 1
 );
 

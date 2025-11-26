@@ -1,4 +1,5 @@
 ﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,26 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+        
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            Usuario user = (Usuario)Session["usuario"];
+
+        
+            if (user.TipoUsuario == TipoUsuario.VENDEDOR)
+            {
+                // Ocultamos el botón "Agregar Producto"
+                btnNuevo.Visible = false;
+                gvProductos.Columns[7].Visible = false;
+            }
+
+     
+
+
             if (!IsPostBack)
             {
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");

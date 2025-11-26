@@ -1,4 +1,5 @@
 ﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Web.UI;
@@ -11,6 +12,20 @@ namespace Presentacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para gestionar Categorias.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)

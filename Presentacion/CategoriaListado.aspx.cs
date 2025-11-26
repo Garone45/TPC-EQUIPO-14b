@@ -1,4 +1,5 @@
 ﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,29 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para gestionar Categorias.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
+
+            // Carga normal...
+            if (!IsPostBack)
+            {
+                ComprasNegocio negocio = new ComprasNegocio();
+                // Asumo que tienes un método listar() en ComprasNegocio
+                // dgvCompras.DataSource = negocio.listar();
+                // dgvCompras.DataBind();
+            }
             if (!IsPostBack)
             {
                 // Configuración inicial

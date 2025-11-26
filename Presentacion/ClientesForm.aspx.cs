@@ -11,6 +11,8 @@ namespace Presentacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
+         
+           
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)
@@ -32,8 +34,6 @@ namespace Presentacion
             try
             {
                 ClienteNegocio negocio = new ClienteNegocio();
-                // Asumo que tienes un metodo obtenerPorId en ClienteNegocio, 
-                // si no lo tienes, deberias agregarlo similar a Proveedor.
                 Cliente cliente = negocio.obtenerPorId(id);
 
                 if (cliente != null)
@@ -93,7 +93,7 @@ namespace Presentacion
             {
                 // Aquí atrapamos si el DNI está duplicado
                 string msg = ex.Message;
-                if (ex.Message.Contains("UNIQUE") || ex.Message.Contains("Dni")) // Ajusta según tu error SQL
+                if (ex.Message.Contains("UNIQUE") || ex.Message.Contains("Dni")) 
                     msg = "El DNI ingresado ya existe en el sistema.";
 
                 mostrarMensaje("⚠️ Error: " + msg, true);

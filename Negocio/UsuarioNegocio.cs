@@ -4,26 +4,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dominio.Usuario_Persona;
-using Negocio;
 
 namespace Negocio
 {
     public class UsuarioNegocio
     {
-      AccesoDatos datos = new AccesoDatos();
+        AccesoDatos datos = new AccesoDatos();
+
         public bool Loguear(Usuario usuario)
         {
             try
             {
-                datos.setearConsulta("SELECT IDUsuario, NombreUser, Contrasena, Activo, CASE WHEN TipoUsuario = 1 THEN 'Admin' ELSE 'Vendedor' END AS TipoUsuario FROM Usuarios WHERE NombreUser = @user AND Contrasena = @pass");
+                // 1. CAMBIO EN LA CONSULTA:
+                // Buscamos 'TipoUser' (INT) en lugar de 'Rol'.
+                // La tabla ahora pide 'NombreUser' y 'Contraseña'.
+                datos.setearConsulta("SELECT IDUsuario, NombreUser, TipoUser, Activo FROM Usuario WHERE NombreUser = @user AND Contraseña = @pass AND Activo = 1");
+
                 datos.Comando.Parameters.Clear();
-                datos.Comando.Parameters.AddWithValue("@user", usuario.NombreUser);
-                datos.Comando.Parameters.AddWithValue("@pass", usuario.Contrasena);
+
+                // 2. PARÁMETROS:
+                // Asignamos las propiedades de tu objeto a los parámetros de SQL
+                datos.Comando.Parameters.AddWithValue("@user", usuario.NombreUsuario);
+                datos.Comando.Parameters.AddWithValue("@pass", usuario.Contraseña);
+
                 datos.ejecutarLectura();
+
                 if (datos.Lector.Read())
                 {
+                    // 3. MAPEO DE DATOS:
                     usuario.IDUsuario = (int)datos.Lector["IDUsuario"];
-                    usuario.TipoUsuario =(int)(datos.Lector["Rol"]) == 2 ? TipoUsuario.Admin : TipoUsuario.Vendedor;
+                    usuario.NombreUsuario = (string)datos.Lector["NombreUser"];
+
+                    // 4. MAGIA DEL ENUM:
+                    // Como en la BD es 1 o 2, y tu Enum es ADMIN=1, VENDEDOR=2,
+                    // hacemos un cast directo de int a TipoUsuario.
+                    usuario.TipoUsuario = (TipoUsuario)(int)datos.Lector["TipoUser"];
+
+                    usuario.Activo = (bool)datos.Lector["Activo"];
+
                     return true;
                 }
                 return false;

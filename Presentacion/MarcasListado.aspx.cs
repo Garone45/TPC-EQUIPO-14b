@@ -1,4 +1,5 @@
 ﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,27 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para gestionar Marcas.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
+
+  
+            if (!IsPostBack)
+            {
+                ComprasNegocio negocio = new ComprasNegocio();
+               
+            }
             if (!IsPostBack)
             {
                 // Configuración inicial opcional para el buscador
@@ -39,14 +61,12 @@ namespace Presentacion
             try
             {
                 string filtro = txtBuscar.Text.Trim();
-                // Revisa si tu método listar soporta el filtro opcional
-                // Si no, usa la lógica de if/else que tenías antes
+             
                 if (string.IsNullOrEmpty(filtro))
-                    Marcas = negocio.listar(); // Asegúrate que listar() sin parámetros exista
+                    Marcas = negocio.listar();
                 else
-                    // Si tu negocio no tiene listar(string), usa filtrar(string) o adáptalo
-                    // Por ahora asumo que tienes el método listar(string) como corregimos antes
-                    Marcas = negocio.listar(filtro); // OJO AQUÍ: Chequea tu Negocio
+                   
+                    Marcas = negocio.listar(filtro); 
 
                 gvMarcas.DataSource = Marcas;
                 gvMarcas.DataBind();
@@ -70,7 +90,7 @@ namespace Presentacion
             gvMarcas.DataBind();
         }
 
-        // --- NUEVO MÉTODO DE BORRADO ---
+
         protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
             try
@@ -89,7 +109,7 @@ namespace Presentacion
             }
         }
 
-        // El RowCommand ya no se usa para eliminar, pero puedes dejarlo vacío o borrarlo
+        
         protected void gvMarcas_RowCommand(object sender, GridViewCommandEventArgs e)
         {
         }

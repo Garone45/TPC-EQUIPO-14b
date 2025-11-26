@@ -6,11 +6,5 @@ using System.Threading.Tasks;
 
 namespace Dominio.Usuario_Persona
 {
-    public class Vendedor : Usuario
-    {
-        public Vendedor()
-        {
-            this.Rol = "Vendedor";
-        }
-    }
+  
 }

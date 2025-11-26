@@ -1,22 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Dominio.Usuario_Persona
+﻿namespace Dominio.Usuario_Persona
 {
+    public enum TipoUsuario
+    {
+        ADMIN = 1,
+        VENDEDOR = 2
+    }
+
     public class Usuario
     {
         public int IDUsuario { get; set; }
-        public string NombreUser { get; set; }
-        public string Contrasena { get; set; }
+        public string NombreUsuario { get; set; } // Ojo: En SQL se llama NombreUser
+        public string Contraseña { get; set; }
         public bool Activo { get; set; }
+        public TipoUsuario TipoUsuario { get; set; }
 
-        // El Rol es la propiedad clave. 
-        // Usamos 'protected set' para que solo las clases hijas (Admin, Vendedor)
-        // puedan establecer este valor.
-        public string Rol { get; protected set; }
+     
+        public Usuario()
+        {
+        }
+      
 
+        public Usuario(string NombreUser, string Contrasena, bool ADMIN)
+        {
+            NombreUsuario = NombreUser;
+            Contraseña = Contrasena;
+            TipoUsuario = ADMIN ? TipoUsuario.ADMIN : TipoUsuario.VENDEDOR;
+        }
     }
 }

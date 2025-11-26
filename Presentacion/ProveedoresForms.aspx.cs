@@ -11,6 +11,18 @@ namespace Presentacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para ver la lista de Proveedores.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)

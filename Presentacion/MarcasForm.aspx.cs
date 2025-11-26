@@ -1,4 +1,5 @@
 ﻿using Dominio.Articulos;
+using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Web.UI;
@@ -11,6 +12,20 @@ namespace Presentacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["usuario"] == null)
+            {
+                Response.Redirect("Login.aspx", false);
+                return;
+            }
+
+            // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
+            Usuario user = (Usuario)Session["usuario"];
+            if (user.TipoUsuario != TipoUsuario.ADMIN)
+            {
+                Session.Add("error", "No tienes permisos para gestionar Marcas.");
+                Response.Redirect("Default.aspx", false);
+                return;
+            }
             EsModoEdicion = Request.QueryString["id"] != null;
 
             if (!IsPostBack)
@@ -27,7 +42,7 @@ namespace Presentacion
             MarcaNegocio negocio = new MarcaNegocio();
             try
             {
-                Marca marca = negocio.obtenerPorId(id); // Asegurate que este método exista en tu Negocio
+                Marca marca = negocio.obtenerPorId(id); 
                 if (marca != null)
                 {
                     txtId.Text = marca.IDMarca.ToString();
@@ -42,7 +57,7 @@ namespace Presentacion
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            // 1. Verificar Barrera 1 (Frontend)
+         
             Page.Validate();
             if (!Page.IsValid) return;
 
@@ -68,7 +83,7 @@ namespace Presentacion
             }
             catch (Exception ex)
             {
-                // Si salta la Barrera 2 (Nombre duplicado), cae acá.
+        
                 mostrarMensaje("⚠️ " + ex.Message, true);
             }
         }
