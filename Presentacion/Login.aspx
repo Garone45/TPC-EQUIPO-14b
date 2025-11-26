@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Iniciar Sesión" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="Presentacion.Login" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    </asp:Content>
+</asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -14,7 +14,7 @@
                    <span class="material-symbols-outlined text-4xl">lock</span>
                 </div>
                 <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Bienvenido</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Sistema de Gestión TPC</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Sistema de Gestión</p>
             </div>
 
             <div class="flex flex-col gap-5">
@@ -38,10 +38,26 @@
                         </div>
                         <asp:TextBox ID="txtPassword" runat="server" CssClass="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm" TextMode="Password" placeholder="••••••••"></asp:TextBox>
                     </div>
+                    
                     <asp:RequiredFieldValidator ErrorMessage="La contraseña es requerida." ControlToValidate="txtPassword" runat="server" Display="Dynamic" CssClass="text-xs text-red-500 font-bold mt-1 ml-1 block" />
+                    
+                    <asp:RegularExpressionValidator 
+                        ErrorMessage="⚠️ La contraseña debe estar en minúsculas." 
+                        ControlToValidate="txtPassword" 
+                        runat="server" 
+                        Display="Dynamic" 
+                        CssClass="text-xs text-amber-500 font-bold mt-1 ml-1 block" 
+                        ValidationExpression="^[^A-Z]*$" />
+
+                    <div class="flex justify-end mt-2">
+                        <asp:HyperLink ID="lnkOlvidePass" runat="server" NavigateUrl="RecuperarPassword.aspx" 
+                            CssClass="text-xs font-medium text-primary hover:text-blue-700 dark:hover:text-blue-400 transition-colors cursor-pointer underline-offset-4 hover:underline">
+                            ¿Olvidaste tu contraseña?
+                        </asp:HyperLink>
+                    </div>
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-2">
                     <asp:Button ID="btnLogin" runat="server" Text="INGRESAR" OnClick="btnLogin_Click" 
                         CssClass="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer tracking-wide" />
                 </div>

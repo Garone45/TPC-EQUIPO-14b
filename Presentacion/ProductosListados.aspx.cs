@@ -28,8 +28,9 @@ namespace Presentacion
                 btnNuevo.Visible = false;
                 gvProductos.Columns[7].Visible = false;
             }
+           
 
-     
+
 
 
             if (!IsPostBack)

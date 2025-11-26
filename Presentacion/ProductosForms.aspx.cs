@@ -26,7 +26,7 @@ namespace Presentacion
             {
                
                 Session.Add("error", "No tienes permisos para acceder a esta pantalla.");
-                Response.Redirect("ProductosListado.aspx", false);
+                Response.Redirect("ProductosListados.aspx", false);
                 return;
             }
           
