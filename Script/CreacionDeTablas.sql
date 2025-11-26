@@ -172,15 +172,15 @@ INSERT INTO Articulos (Descripcion, CodigoArticulo, IdMarca, IdCategoria, IdProv
 INSERT INTO Pedidos (IDCliente, IDVendedor, FechaCreacion, FechaEntrega, MetodoPago, Estado, Descuento, Total)
 VALUES
 (1, 1, '2025-10-29', '2025-11-13', 'Efectivo', 'Pendiente', 5.00, 14250.00),
-(2, 2, '2025-10-31', '2025-11-14', 'Tarjeta', 'En preparación', 0.00, 25000.00),
+(2, 2, '2025-10-31', '2025-11-14', 'Tarjeta', 'Cancelado', 0.00, 25000.00),
 (3, 3, '2025-11-01', '2025-11-15', 'Transferencia', 'Entregado', 10.00, 9000.00),
 (4, 4, '2025-11-03', '2025-11-17', 'Efectivo', 'Pendiente', 0.00, 5000.00),
-(5, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'En preparación', 3.50, 11580.00);
+(5, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'Pendiente', 3.50, 11580.00);
 GO
 
 -- INSERTAMOS USUARIOS CON TIPO USER EN INT 
-INSERT INTO Usuarios (IDUsuario, NombreUser, Contraseña, TipoUuser, Activo)
+INSERT INTO Usuario (NombreUser, Contraseña, TipoUser, Activo)
 VALUES
-(1, 'admin', 'admin', 1, 1), -- Admin (ROL = 2)
-(2, 'vendedor', 'vendedor', 2, 1);    -- Vendedor (ROL = 1)
+('admin', 'admin', 1, 1), -- Admin (ROL = 2)
+('vendedor', 'vendedor', 2, 1);    -- Vendedor (ROL = 1)
 GO

@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ComprasForms.aspx" />
     <Content Include="ComprasListado.aspx" />
     <Content Include="GestionStock.aspx" />
     <Content Include="Login.aspx" />
@@ -191,6 +192,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="ComprasForms.aspx.cs">
+      <DependentUpon>ComprasForms.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ComprasForms.aspx.designer.cs">
+      <DependentUpon>ComprasForms.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ComprasListado.aspx.cs">
       <DependentUpon>ComprasListado.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

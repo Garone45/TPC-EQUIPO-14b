@@ -151,8 +151,15 @@ namespace Negocio
                 // Parámetros basados en tu clase Pedido
                 datos.setearParametro("@IDCliente", nuevoPedido.IDCliente);
                 datos.setearParametro("@IDVendedor", nuevoPedido.IDVendedor);
-                datos.setearParametro("@FechaCreacion", nuevoPedido.FechaCreacion);
-                datos.setearParametro("@FechaEntrega", nuevoPedido.FechaEntrega);
+                datos.setearParametro("@FechaCreacion", DateTime.Now);
+                if (nuevoPedido.FechaEntrega == DateTime.MinValue)
+                {
+                    datos.setearParametro("@FechaEntrega", DBNull.Value);
+                }
+                else
+                {
+                    datos.setearParametro("@FechaEntrega", nuevoPedido.FechaEntrega);
+                }
                 datos.setearParametro("@MetodoPago", nuevoPedido.MetodoPago);
                 datos.setearParametro("@Estado", nuevoPedido.Estado.ToString());
 
@@ -222,9 +229,15 @@ namespace Negocio
                     pedido.IDPedido = (int)datos.Lector["IDPedido"];
                     // ... (resto de tus mapeos) ...
                     pedido.IDCliente = (int)datos.Lector["IDCliente"];
+                    
                     pedido.IDVendedor = (int)datos.Lector["IDVendedor"];
-                    pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
-                    pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+                    
+                    if (!(datos.Lector["FechaCreacion"] is DBNull))
+                        pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
+                    
+                    if (!(datos.Lector["FechaEntrega"] is DBNull))
+                        pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+
                     pedido.Total = (decimal)datos.Lector["Total"];
                 }
 
@@ -327,7 +340,14 @@ namespace Negocio
                 datos.setearParametro("@IDPedido", pedido.IDPedido);
                 datos.setearParametro("@IDCliente", pedido.IDCliente);
                 datos.setearParametro("@IDVendedor", pedido.IDVendedor);
-                datos.setearParametro("@FechaEntrega", pedido.FechaEntrega);
+                if (pedido.FechaEntrega == DateTime.MinValue)
+                {
+                    datos.setearParametro("@FechaEntrega", DBNull.Value);
+                }
+                else
+                {
+                    datos.setearParametro("@FechaEntrega", pedido.FechaEntrega);
+                }
                 datos.setearParametro("@MetodoPago", pedido.MetodoPago);
                 datos.setearParametro("@Estado", pedido.Estado.ToString());
                 datos.setearParametro("@Descuento", pedido.Descuento);

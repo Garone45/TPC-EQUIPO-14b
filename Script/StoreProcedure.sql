@@ -256,7 +256,7 @@ GO
 -- =============================================
 
 
-USE TPC_GRUPO_14b;
+
 GO
 CREATE OR ALTER PROCEDURE SP_ObtenerClientePorID
     @IdCliente INT
@@ -270,4 +270,4 @@ BEGIN
 END
 GO
 
-use 
+ 
