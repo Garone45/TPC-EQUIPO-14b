@@ -71,9 +71,9 @@ namespace Presentacion
         {
             try
             {
-                if (!string.IsNullOrEmpty(hfIdVenta.Value))
+                if (!string.IsNullOrEmpty(IdVenta.Value))
                 {
-                    int id = int.Parse(hfIdVenta.Value);
+                    int id = int.Parse(IdVenta.Value);
                     VentasNegocio negocio = new VentasNegocio();
 
                     // Llama al método Eliminar que agregamos antes (Update Estado = 'Cancelado')

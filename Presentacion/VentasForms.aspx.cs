@@ -39,13 +39,22 @@ namespace Presentacion
                     Session["DetallePedido"] = null;
                     Session["ClienteSeleccionado"] = null;
                     ViewState["IDPedidoEditar"] = null;
+
                     BindGridClientes(null);
+
+                    // Limpiar campos visuales
+                    txtClientName.Text = "";
+                    txtClientAddress.Text = "";
+                    txtClientCity.Text = "";
+                    txtClientDNI.Text = "";
+                    txtClientPhone.Text = "";
+
                     ActualizarDetalleYTotales();
                 }
             }
         }
 
-        // --- MÉTODOS DE BÚSQUEDA Y GRILLAS (Sin cambios mayores) ---
+        // --- MÉTODOS DE BÚSQUEDA ---
 
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
         {
@@ -61,6 +70,7 @@ namespace Presentacion
             {
                 clientes = clientes.Where(c =>
                     c.Nombre.ToLower().Contains(filtro.ToLower()) ||
+                    c.Apellido.ToLower().Contains(filtro.ToLower()) ||
                     c.Dni.Contains(filtro)
                 ).ToList();
             }
@@ -71,19 +81,24 @@ namespace Presentacion
         protected void gvClientes_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedId = (int)gvClientes.SelectedDataKey.Value;
-            Session["ClienteSeleccionado"] = selectedId; // Unificamos nombre de sesión
+            Session["ClienteSeleccionado"] = selectedId;
 
             ClienteNegocio negocio = new ClienteNegocio();
-            Cliente cliente = negocio.listar(selectedId); // Asumo que listar(id) devuelve un objeto
+            // Asumiendo que listar() devuelve todos, buscamos el seleccionado en memoria
+            // O idealmente usa negocio.obtenerPorId(selectedId) si lo tienes implementado
+            Cliente cliente = negocio.listar().FirstOrDefault(c => c.IDCliente == selectedId);
 
             if (cliente != null)
             {
                 txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
-                txtClientAddress.Text = cliente.Direccion;
+                txtClientAddress.Text = cliente.Direccion + " " + cliente.Altura;
                 txtClientCity.Text = cliente.Localidad;
                 txtClientDNI.Text = cliente.Dni;
                 txtClientPhone.Text = cliente.Telefono;
+
+                mostrarMensaje("Cliente seleccionado correctamente.", false);
             }
+
             txtBuscarCliente.Text = string.Empty;
             BindGridClientes(null);
         }
@@ -100,35 +115,42 @@ namespace Presentacion
             }
         }
 
-        // --- AGREGAR PRODUCTO CON VALIDACIÓN DE STOCK ---
+        protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Evento necesario para que el botón Select funcione, aunque la lógica la hacemos en btnAddProduct
+        }
 
+        // --- AGREGAR PRODUCTO AL CARRITO (CON VALIDACIONES) ---
         protected void btnAddProduct_Click(object sender, EventArgs e)
         {
-            // 1. Validar selección
+            // VALIDACIÓN 1: ¿Seleccionó algo en la grilla?
             if (gvProductos.SelectedDataKey == null)
             {
-                mostrarMensaje("⚠️ Seleccione un producto de la lista primero.", true);
+                mostrarMensaje("⚠️ Debe buscar y SELECCIONAR un producto de la lista antes de añadir.", true);
                 return;
             }
 
             int idArticulo = (int)gvProductos.SelectedDataKey.Value;
+
             ArticuloNegocio negocio = new ArticuloNegocio();
             Articulo articulo = negocio.obtenerPorId(idArticulo);
 
-            // 2. Validar Stock Inicial
+            if (articulo == null) return;
+
+            // VALIDACIÓN 2: Stock disponible
             if (articulo.StockActual <= 0)
             {
                 mostrarMensaje($"⚠️ El producto '{articulo.Descripcion}' no tiene stock disponible.", true);
                 return;
             }
 
-            // 3. Validar si ya lo tengo en el carrito y si me paso del stock
+            // VALIDACIÓN 3: Stock suficiente (si ya tengo en el carrito)
             var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
             if (detalle != null)
             {
                 if (detalle.Cantidad + 1 > articulo.StockActual)
                 {
-                    mostrarMensaje($"⚠️ No hay suficiente stock para agregar más. (Stock: {articulo.StockActual})", true);
+                    mostrarMensaje($"⚠️ Stock insuficiente. Solo quedan {articulo.StockActual} unidades.", true);
                     return;
                 }
                 detalle.Cantidad++;
@@ -144,112 +166,22 @@ namespace Presentacion
                 });
             }
 
-            // 4. Limpieza
-            DetalleActual = DetalleActual; // Refrescar sesión
+            // Limpieza y actualización
+            DetalleActual = DetalleActual; // Guardar cambios en Session
+
             txtBuscarProductos.Text = "";
             gvProductos.DataSource = null;
             gvProductos.DataBind();
+            gvProductos.SelectedIndex = -1; // Deseleccionar
 
             ActualizarDetalleYTotales();
             upProductos.Update();
+            mostrarMensaje("Producto añadido al carrito.", false);
         }
 
-        // --- GUARDAR VENTA CON VALIDACIONES FINALES ---
-
-        protected void btnFinalizarVenta_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // VALIDACIÓN 1: Cliente
-                if (Session["ClienteSeleccionado"] == null)
-                {
-                    mostrarMensaje("⚠️ Debe seleccionar un CLIENTE.", true);
-                    return;
-                }
-
-                // VALIDACIÓN 2: Carrito
-                if (DetalleActual == null || DetalleActual.Count == 0)
-                {
-                    mostrarMensaje("⚠️ El carrito está VACÍO.", true);
-                    return;
-                }
-
-                // VALIDACIÓN 3: Stock Final (Iteramos todo el carrito antes de guardar)
-                ArticuloNegocio artNegocio = new ArticuloNegocio();
-                foreach (var item in DetalleActual)
-                {
-                    Articulo artEnBD = artNegocio.obtenerPorId(item.IDArticulo);
-                    if (artEnBD.StockActual < item.Cantidad)
-                    {
-                        mostrarMensaje($"⚠️ Stock insuficiente para '{item.Descripcion}'. Stock actual: {artEnBD.StockActual}", true);
-                        return; // Cancelamos todo
-                    }
-                }
-
-                // --- SI TODO OK, GUARDAMOS ---
-
-                Pedido pedido = new Pedido();
-                if (ViewState["IDPedidoEditar"] != null)
-                    pedido.IDPedido = (int)ViewState["IDPedidoEditar"];
-
-                pedido.IDCliente = (int)Session["ClienteSeleccionado"];
-                pedido.IDVendedor = 1; // TODO: Usar usuario logueado
-                pedido.FechaCreacion = DateTime.Now;
-                pedido.Estado = Pedido.EstadoPedido.Pendiente;
-                pedido.Detalles = DetalleActual;
-
-                // Totales
-                pedido.Subtotal = DetalleActual.Sum(d => d.TotalParcial);
-                pedido.Total = pedido.Subtotal * 1.21m; // Ejemplo IVA
-
-                VentasNegocio negocio = new VentasNegocio();
-
-                if (pedido.IDPedido != 0)
-                    negocio.Modificar(pedido);
-                else
-                    negocio.Agregar(pedido);
-
-                // ÉXITO
-                Session["msg"] = "Venta registrada correctamente.";
-                Response.Redirect("VentasListado.aspx", false);
-            }
-            catch (Exception ex)
-            {
-                mostrarMensaje("Error al finalizar: " + ex.Message, true);
-            }
-        }
-
-        // --- MÉTODOS AUXILIARES ---
-
-        private void ActualizarDetalleYTotales()
-        {
-            gvDetallePedido.DataSource = DetalleActual;
-            gvDetallePedido.DataBind();
-
-            decimal sub = DetalleActual.Sum(d => d.TotalParcial);
-            decimal total = sub * 1.21m;
-
-            lblSubtotal.Text = sub.ToString("C");
-            lblTotalFinal.Text = total.ToString("C");
-            upDetalleVenta.Update();
-        }
-
-        private void mostrarMensaje(string msg, bool error)
-        {
-            lblMensaje.Text = msg;
-            lblMensaje.Visible = true;
-            lblMensaje.CssClass = error ?
-                "block p-4 mb-4 text-sm text-red-800 bg-red-50 rounded-lg border border-red-300" :
-                "block p-4 mb-4 text-sm text-green-800 bg-green-50 rounded-lg border border-green-300";
-
-            updMensajes.Update(); // Asegúrate de tener este UpdatePanel en el ASPX
-        }
-
-        // ... (Tus eventos RowCommand para sumar/restar y CargarDatosPedido siguen igual) ...
+        // --- GESTIÓN DE GRILLA CARRITO (SUMAR/RESTAR) ---
         protected void gvDetallePedido_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            // Copia aquí tu lógica original de Sumar/Restar/Eliminar del carrito
-            // ...
             if (int.TryParse(e.CommandArgument.ToString(), out int idProducto))
             {
                 var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idProducto);
@@ -259,66 +191,160 @@ namespace Presentacion
                     switch (e.CommandName)
                     {
                         case "Sumar":
+                            // Aquí también podrías validar stock máximo contra la BD si quisieras ser muy estricto
                             detalle.Cantidad++;
                             break;
                         case "Restar":
                             if (detalle.Cantidad > 1)
                                 detalle.Cantidad--;
                             else
-                                DetalleActual.Remove(detalle); // Eliminar si llega a 0 o menos (o a 1 y se resta)
+                                DetalleActual.Remove(detalle);
                             break;
                         case "Eliminar":
                             DetalleActual.Remove(detalle);
                             break;
                     }
-
                     ActualizarDetalleYTotales();
                 }
             }
         }
 
+        private void ActualizarDetalleYTotales()
+        {
+            gvDetallePedido.DataSource = DetalleActual;
+            gvDetallePedido.DataBind();
+
+            decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
+            decimal iva = subtotal * 0.21m; // Ejemplo IVA 21%
+            decimal total = subtotal + iva;
+
+            lblSubtotal.Text = subtotal.ToString("C");
+            lblIVA.Text = iva.ToString("C");
+            lblTotalFinal.Text = total.ToString("C");
+
+            upDetalleVenta.Update();
+        }
+
+        // --- FINALIZAR VENTA (GUARDAR) ---
+        protected void btnFinalizarVenta_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // VALIDACIÓN 4: Cliente
+                if (Session["ClienteSeleccionado"] == null)
+                {
+                    mostrarMensaje("⚠️ Error: Debe seleccionar un cliente para facturar.", true);
+                    return;
+                }
+
+                // VALIDACIÓN 5: Carrito vacío
+                if (DetalleActual == null || DetalleActual.Count == 0)
+                {
+                    mostrarMensaje("⚠️ Error: No se puede generar una venta sin productos.", true);
+                    return;
+                }
+
+                // VALIDACIÓN 6: Re-chequeo final de Stock (Crucial en entornos multi-usuario)
+                ArticuloNegocio artNegocio = new ArticuloNegocio();
+                foreach (var item in DetalleActual)
+                {
+                    Articulo artBD = artNegocio.obtenerPorId(item.IDArticulo);
+                    if (artBD.StockActual < item.Cantidad)
+                    {
+                        mostrarMensaje($"⚠️ Error de Stock: '{item.Descripcion}' tiene solo {artBD.StockActual} disponibles.", true);
+                        return;
+                    }
+                }
+
+                // --- Armado del Pedido ---
+                Pedido pedido = new Pedido();
+
+                // Si es edición, recuperamos ID. Si no, queda en 0.
+                if (ViewState["IDPedidoEditar"] != null)
+                    pedido.IDPedido = (int)ViewState["IDPedidoEditar"];
+
+                pedido.IDCliente = (int)Session["ClienteSeleccionado"];
+                pedido.IDVendedor = 1; // TODO: Sacar del Login actual
+                pedido.FechaCreacion = DateTime.Now;
+                pedido.Estado = Pedido.EstadoPedido.Pendiente;
+                pedido.MetodoPago = "Efectivo"; // Opcional: Podrías poner un DropDown de pago
+                pedido.Detalles = DetalleActual;
+
+                // Totales
+                decimal sub = DetalleActual.Sum(d => d.TotalParcial);
+                pedido.Subtotal = sub;
+                pedido.Total = sub * 1.21m; // +IVA
+
+                // Guardar
+                VentasNegocio negocio = new VentasNegocio();
+                if (pedido.IDPedido != 0)
+                    negocio.Modificar(pedido);
+                else
+                    negocio.Agregar(pedido);
+
+                // Limpieza
+                Session["DetallePedido"] = null;
+                Session["ClienteSeleccionado"] = null;
+                ViewState["IDPedidoEditar"] = null;
+
+                // Redirigir
+                Response.Redirect("VentasListado.aspx", false);
+            }
+            catch (Exception ex)
+            {
+                mostrarMensaje("Error crítico al guardar: " + ex.Message, true);
+            }
+        }
+
+        // --- Cargar Datos para Edición ---
         private void CargarDatosPedido(int idPedido)
         {
-            // Copia aquí tu lógica original de cargar pedido
-            // ...
             VentasNegocio negocio = new VentasNegocio();
             Pedido pedido = negocio.ObtenerPorId(idPedido);
 
             if (pedido != null)
             {
-                // A. Guardamos el ID que estamos editando en ViewState para saberlo al guardar
                 ViewState["IDPedidoEditar"] = pedido.IDPedido;
-
-                // B. Cargar Cliente (Usamos tu lógica existente de ClienteNegocio)
                 Session["ClienteSeleccionado"] = pedido.IDCliente;
-                ClienteNegocio clienteNegocio = new ClienteNegocio();
-                // Aquí asumo que tienes un método que devuelve un objeto Cliente por ID
-                // Si tu listar() devuelve lista, usa .FirstOrDefault()
-                List<Cliente> lista = clienteNegocio.listar();
-                Cliente cliente = lista.FirstOrDefault(c => c.IDCliente == pedido.IDCliente);
+                Session["DetallePedido"] = pedido.Detalles;
+
+                // Cargar datos visuales del cliente
+                ClienteNegocio cliNegocio = new ClienteNegocio();
+                Cliente cliente = cliNegocio.listar().FirstOrDefault(c => c.IDCliente == pedido.IDCliente);
 
                 if (cliente != null)
                 {
-                    txtClientName.Text = cliente.Nombre;
+                    txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
                     txtClientAddress.Text = cliente.Direccion;
                     txtClientCity.Text = cliente.Localidad;
                     txtClientDNI.Text = cliente.Dni;
                     txtClientPhone.Text = cliente.Telefono;
                 }
 
-                // C. Cargar Detalles en Session
-                Session["DetallePedido"] = pedido.Detalles;
-
-                // D. Refrescar Pantalla
                 BindGridClientes(null);
                 ActualizarDetalleYTotales();
             }
         }
 
-        // Evento SelectionChanged de Grilla Productos (para habilitar el botón añadir)
-        protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
+        // --- MÉTODO PARA MOSTRAR MENSAJES EN EL UPDATE PANEL ---
+        private void mostrarMensaje(string mensaje, bool esError)
         {
-            // Esto es necesario para que btnAddProduct sepa qué ID agarrar
+            lblMensaje.Text = mensaje;
+            lblMensaje.Visible = true;
+
+            if (esError)
+            {
+                // Estilo Rojo (Error)
+                lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800";
+            }
+            else
+            {
+                // Estilo Verde (Éxito)
+                lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800";
+            }
+
+            // IMPORTANTE: Actualizar el panel para que se vea el mensaje
+            updMensajes.Update();
         }
     }
 }

@@ -33,13 +33,13 @@ namespace Presentacion
         protected global::System.Web.UI.UpdatePanel updVentas;
 
         /// <summary>
-        /// Control hfIdVenta.
+        /// Control IdVenta.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfIdVenta;
+        protected global::System.Web.UI.WebControls.HiddenField IdVenta;
 
         /// <summary>
         /// Control btnEliminarServer.
@@ -61,18 +61,6 @@ namespace Presentacion
 
         /// <summary>
         /// Control gvPedidos.
-
-        /// Control updCompras.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updPedidos;
-
-        /// <summary>
-        /// Control gvCompras.
-
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.

@@ -52,7 +52,7 @@
         <asp:UpdatePanel ID="updVentas" runat="server" UpdateMode="Conditional">
             <ContentTemplate>
                 
-                <asp:HiddenField ID="hfIdVenta" runat="server" />
+                <asp:HiddenField ID="IdVenta" runat="server" />
                 <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" style="display:none;" ClientIDMode="Static" />
 
                 <div class="flex justify-between items-center gap-4 mb-4">
@@ -144,14 +144,14 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
                         <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Cancelar</button>
                     </div>
-                </div>
+                </div>  
             </div>
         </div>
     </div>
 
     <script type="text/javascript">
         function abrirModalEliminar(id) {
-            var hf = document.getElementById('<%= hfIdVenta.ClientID %>');
+            var hf = document.getElementById('<%= IdVenta.ClientID %>');
             if (hf) hf.value = id;
 
             var el = document.getElementById('deleteModal');
