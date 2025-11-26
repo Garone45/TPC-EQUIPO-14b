@@ -178,4 +178,9 @@ VALUES
 (5, 5, '2025-11-04', '2025-11-18', 'Tarjeta', 'En preparación', 3.50, 11580.00);
 GO
 
-select  * from DetallesPedido
+-- INSERTAMOS USUARIOS CON TIPO USER EN INT 
+INSERT INTO Usuarios (IDUsuario, NombreUser, Contraseña, TipoUuser, Activo)
+VALUES
+(1, 'admin', 'admin', 1, 1), -- Admin (ROL = 2)
+(2, 'vendedor', 'vendedor', 2, 1);    -- Vendedor (ROL = 1)
+GO
