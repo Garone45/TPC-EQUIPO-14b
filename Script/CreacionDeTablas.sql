@@ -184,3 +184,16 @@ VALUES
 ('admin', 'admin', 1, 1), -- Admin (ROL = 2)
 ('vendedor', 'vendedor', 2, 1);    -- Vendedor (ROL = 1)
 GO
+
+  INSERT INTO Compras
+    (IDProveedor, Documento, FechaCompra, MontoTotal, Observaciones, Estado, UsuarioCreador, FechaRegistro)
+VALUES
+    (3, 55445555, GETDATE(), 15000, 'Compra de materiales', 'Pendiente', 'julian', GETDATE());
+    GO
+    DECLARE @IDCompra1 INT = SCOPE_IDENTITY();
+    GO
+    INSERT INTO CompraDetalle
+    (IDCompra, IDArticulo, Cantidad, PrecioUnitario)
+VALUES
+    (2, 2, 5, 1000),
+    (2, 3, 2, 5000);
