@@ -122,14 +122,16 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-          
+
                 string consulta = @"
                     SELECT 
                         P.IDPedido AS [Nro Factura],
-                        P.FechaCreacion AS [Fecha],
+                        P.FechaCreacion AS [Fecha Alta],
+                        ISNULL(CONVERT(VARCHAR, P.FechaEntrega, 103), '0') AS [Fecha Entrega],
                         C.Apellido + ', ' + C.Nombre AS [Cliente],
                         P.Estado,
                         P.MetodoPago,
+                        P.Descuento, 
                         P.Total
                     FROM Pedidos P
                     INNER JOIN Cliente C ON P.IDCliente = C.IDCliente
@@ -159,7 +161,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-               
+
                 string consulta = @"
                     SELECT 
                         A.CodigoArticulo,
@@ -168,7 +170,9 @@ namespace Negocio
                         Cat.Descripcion AS Categoria,
                         Pr.RazonSocial AS Proveedor,
                         A.PrecioCostoActual AS [Costo Unitario],
+                        A.PorcentajeGanancia AS [% Ganancia], 
                         A.StockActual,
+                        A.StockMinimo,
                         (A.PrecioCostoActual * A.StockActual) AS [Valor Total Inventario]
                     FROM Articulos A
                     INNER JOIN Marcas M ON A.IdMarca = M.IdMarca
