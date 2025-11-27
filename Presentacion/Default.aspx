@@ -42,9 +42,12 @@
                     <span class="material-symbols-outlined">payments</span>
                 </div>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">$ 0.00</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                <asp:Label ID="lblVentasHoy" runat="server" Text="$ 0.00"></asp:Label>
+            </p>
             <p class="text-xs text-green-500 mt-1 flex items-center gap-1">
-                <span class="material-symbols-outlined text-[14px]">trending_up</span> +0% desde ayer
+                <span class="material-symbols-outlined text-[14px]">trending_up</span> 
+                <asp:Label ID="lblPorcentaje" runat="server" Text="+0%"></asp:Label> desde ayer
             </p>
         </div>
 
@@ -55,7 +58,9 @@
                     <span class="material-symbols-outlined">pending_actions</span>
                 </div>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                <asp:Label ID="lblPedidosPendientes" runat="server" Text="0"></asp:Label>
+            </p>
             <p class="text-xs text-slate-500 mt-1">Requieren atención</p>
         </div>
 
@@ -66,7 +71,9 @@
                     <span class="material-symbols-outlined">inventory_2</span>
                 </div>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                <asp:Label ID="lblAlertasStock" runat="server" Text="0"></asp:Label>
+            </p>
             <p class="text-xs text-red-500 mt-1">Productos bajo el mínimo</p>
         </div>
 
@@ -77,7 +84,9 @@
                     <span class="material-symbols-outlined">group</span>
                 </div>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
+            <p class="text-2xl font-bold text-slate-900 dark:text-white">
+                <asp:Label ID="lblClientesActivos" runat="server" Text="0"></asp:Label>
+            </p>
             <p class="text-xs text-slate-500 mt-1">Total registrados</p>
         </div>
     </div>
