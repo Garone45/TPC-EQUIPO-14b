@@ -33,6 +33,8 @@
         </div>
     </div>
 
+
+    <!-- Dashboard estadisticas -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         
         <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow">
@@ -95,8 +97,9 @@
         <span class="material-symbols-outlined text-slate-400">analytics</span> Centro de Reportes
     </h2>
 
+    <!-- Dashboard reportesss -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+        <!--  Reporte de ventas  -->
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
             <div class="p-6">
                 <div class="flex items-start justify-between">
@@ -109,10 +112,9 @@
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button type="button" class="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-white border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-green-700 transition-all group-hover:border-green-500 group-hover:text-green-600">
-                        <span class="material-symbols-outlined">download</span>
-                        Descargar Excel de Ventas
-                    </button>
+                    <asp:Button ID="btnDescargarVentas" runat="server" OnClick="btnDescargarVentas_Click" 
+                    CssClass="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-white border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-green-700 transition-all group-hover:border-green-500 group-hover:text-green-600 cursor-pointer" 
+                    Text="⬇ Descargar Excel de Ventas" />
                 </div>
             </div>
             <div class="bg-slate-50 dark:bg-slate-700/50 px-6 py-3 border-t border-slate-100 dark:border-slate-700">
@@ -121,7 +123,7 @@
                 </p>
             </div>
         </div>
-
+        <!-- Compras stock -->
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden group">
             <div class="p-6">
                 <div class="flex items-start justify-between">
@@ -134,10 +136,9 @@
                     </div>
                 </div>
                 <div class="mt-6">
-                    <button type="button" class="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-white border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-green-700 transition-all group-hover:border-green-500 group-hover:text-green-600">
-                        <span class="material-symbols-outlined">download</span>
-                        Descargar Excel de Compras
-                    </button>
+                    <asp:Button ID="btnDescargarCompras" runat="server" OnClick="btnDescargarCompras_Click" 
+                    CssClass="w-full inline-flex justify-center items-center gap-2 px-4 py-3 bg-white border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-green-700 transition-all group-hover:border-green-500 group-hover:text-green-600 cursor-pointer" 
+                    Text="⬇ Descargar Reporte Stock/Prov" />
                 </div>
             </div>
             <div class="bg-slate-50 dark:bg-slate-700/50 px-6 py-3 border-t border-slate-100 dark:border-slate-700">

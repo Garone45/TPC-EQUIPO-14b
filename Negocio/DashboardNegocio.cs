@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,5 +114,83 @@ namespace Negocio
             }
         }
 
+
+        // Reportes
+
+        public DataTable ObtenerReporteVentas()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+          
+                string consulta = @"
+                    SELECT 
+                        P.IDPedido AS [Nro Factura],
+                        P.FechaCreacion AS [Fecha],
+                        C.Apellido + ', ' + C.Nombre AS [Cliente],
+                        P.Estado,
+                        P.MetodoPago,
+                        P.Total
+                    FROM Pedidos P
+                    INNER JOIN Cliente C ON P.IDCliente = C.IDCliente
+                    ORDER BY P.FechaCreacion DESC";
+
+                datos.setearConsulta(consulta);
+                datos.ejecutarLectura();
+
+              
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+                return tabla;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+       
+        public DataTable ObtenerReporteCompras()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+               
+                string consulta = @"
+                    SELECT 
+                        A.CodigoArticulo,
+                        A.Descripcion,
+                        M.Descripcion AS Marca,
+                        Cat.Descripcion AS Categoria,
+                        Pr.RazonSocial AS Proveedor,
+                        A.PrecioCostoActual AS [Costo Unitario],
+                        A.StockActual,
+                        (A.PrecioCostoActual * A.StockActual) AS [Valor Total Inventario]
+                    FROM Articulos A
+                    INNER JOIN Marcas M ON A.IdMarca = M.IdMarca
+                    INNER JOIN Categorias Cat ON A.IdCategoria = Cat.IdCategoria
+                    LEFT JOIN Proveedores Pr ON A.IdProveedor = Pr.IDProveedor
+                    WHERE A.Activo = 1";
+
+                datos.setearConsulta(consulta);
+                datos.ejecutarLectura();
+
+                DataTable tabla = new DataTable();
+                tabla.Load(datos.Lector);
+                return tabla;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
