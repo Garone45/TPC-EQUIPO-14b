@@ -2,6 +2,7 @@
 using Negocio;
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -11,14 +12,23 @@ namespace Presentacion
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
             if (!IsPostBack)
             {
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarVentas();
             }
+            if (ScriptManager.GetCurrent(this) != null && ScriptManager.GetCurrent(this).IsInAsyncPostBack)
+            {
+                // Forzamos la regeneración total de la GridView
+                gvPedidos.DataSource = null;
+                gvPedidos.DataBind();
+            }
+
         }
 
-        // Propiedad para guardar estado (opcional)
+       
         private List<Pedido> ListaPedidos
         {
             get
@@ -27,7 +37,12 @@ namespace Presentacion
                     ViewState["Pedidos"] = new List<Pedido>();
                 return (List<Pedido>)ViewState["Pedidos"];
             }
-            set { ViewState["Pedidos"] = value; }
+            set 
+            {
+                gvPedidos.DataSource = null;
+                gvPedidos.DataBind();
+                ViewState["Pedidos"] = value; 
+            }
         }
 
         private void CargarVentas()
@@ -43,9 +58,9 @@ namespace Presentacion
                 else
                     lista = negocio.Filtrar(filtro);
 
+                ListaPedidos = lista;
                 gvPedidos.DataSource = lista;
                 gvPedidos.DataBind();
-                ListaPedidos = lista;
             }
             catch (Exception ex)
             {
@@ -62,11 +77,54 @@ namespace Presentacion
         protected void gvPedidos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvPedidos.PageIndex = e.NewPageIndex;
-            gvPedidos.DataSource = ListaPedidos;
-            gvPedidos.DataBind();
+
+            // Si la lista está vacía por algún motivo, la recargamos.
+            if (ListaPedidos == null || ListaPedidos.Count == 0)
+            {
+                CargarVentas();
+            }
+            else
+            {
+                // Si no está vacía, usamos el ViewState.
+                gvPedidos.DataSource = ListaPedidos;
+                gvPedidos.DataBind();
+            }
+        }
+        protected void btnEntregarServer_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Leemos el ID desde el HiddenField que llenamos con JS
+                if (!string.IsNullOrEmpty(hfIdPedidoEntregar.Value))
+                {
+                    int idPedido = int.Parse(hfIdPedidoEntregar.Value);
+
+                    VentasNegocio negocio = new VentasNegocio();
+
+                    // Ejecutamos la actualización
+                    if (negocio.ActualizarEstado(idPedido))
+                    {
+                        // Recargamos la grilla
+                        CargarVentas();
+                        updVentas.Update(); // <--- ESTO ES VITAL
+                        // Como el botón está dentro del UpdatePanel, 
+                        // esto se refresca solo y sin parpadeos raros.
+                    }
+                    else
+                    {
+                        // ScriptManager maneja el alert correctamente en AJAX
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertError", "alert('No se pudo actualizar el estado.');", true);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
+            }
         }
 
-        // --- MÉTODO DE CANCELACIÓN (Llamado por el botón oculto) ---
+
+
         protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
             try
@@ -76,10 +134,9 @@ namespace Presentacion
                     int id = int.Parse(IdVenta.Value);
                     VentasNegocio negocio = new VentasNegocio();
 
-                    // Llama al método Eliminar que agregamos antes (Update Estado = 'Cancelado')
                     negocio.Eliminar(id);
 
-                    CargarVentas(); // Refrescamos
+                    CargarVentas();
                 }
             }
             catch (Exception ex)

@@ -30,6 +30,89 @@
         }
         window.onload = setFocusAfterUpdate;
     </script>
+
+    <script type="text/javascript">
+
+        // Almacenamos el UniqueID del botón que abrió el modal
+        var clickedButtonUniqueID = '';
+
+        // 1. Abrir el Modal (Ahora recibe el uniqueID del botón)
+        function abrirModalEntrega(uniqueID, idPedido) {
+
+            // Guardamos el UniqueID en la variable global
+            clickedButtonUniqueID = uniqueID;
+
+            var modal = document.getElementById('modalConfirmarEntrega');
+            var inputHidden = document.getElementById('pedidoIdConfirmar');
+            var displayText = document.getElementById('pedidoIdDisplay');
+
+            // Seteamos el ID del pedido
+            inputHidden.value = idPedido;
+            displayText.innerText = '#' + idPedido;
+
+            // Mostrar el modal
+            modal.classList.remove('hidden');
+        }
+
+        // 2. Cerrar el Modal
+        function cerrarModalEntrega() {
+            var modal = document.getElementById('modalConfirmarEntrega');
+            modal.classList.add('hidden');
+        }
+
+        function confirmarEntrega() {
+            // 1. Cerrar el modal
+            cerrarModalEntrega();
+
+            // 2. Obtener el ID del input del modal
+            var idPedido = document.getElementById('pedidoIdConfirmar').value;
+
+            // 3. Pasarlo al HiddenField del servidor (hfIdPedidoEntregar)
+            var hf = document.getElementById('hfIdPedidoEntregar');
+            if (hf) {
+                hf.value = idPedido;
+
+                // 4. Simular clic en el botón del servidor (btnEntregarServer)
+                var btn = document.getElementById('btnEntregarServer');
+                if (btn) {
+                    btn.click();
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function abrirModalEliminar(id) {
+            var hf = document.getElementById('<%= IdVenta.ClientID %>');
+            if (hf) hf.value = id;
+
+            var el = document.getElementById('deleteModal');
+
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            } else if (window.jQuery) {
+                $('#deleteModal').modal('show');
+            } else {
+                if (confirm("¿Cancelar venta?")) {
+                    document.getElementById('btnEliminarServer').click();
+                }
+            }
+        }
+
+        function confirmarEliminar() {
+            try {
+                var el = document.getElementById('deleteModal');
+                if (window.bootstrap) {
+                    var myModal = bootstrap.Modal.getInstance(el);
+                    if (myModal) myModal.hide();
+                } else if (window.jQuery) {
+                    $('#deleteModal').modal('hide');
+                }
+            } catch (e) { }
+            document.getElementById('btnEliminarServer').click();
+        }
+    </script>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
@@ -54,6 +137,9 @@
                 
                 <asp:HiddenField ID="IdVenta" runat="server" />
                 <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" style="display:none;" ClientIDMode="Static" />
+
+                <asp:HiddenField ID="hfIdPedidoEntregar" runat="server" ClientIDMode="Static" />
+                <asp:Button ID="btnEntregarServer" runat="server" OnClick="btnEntregarServer_Click" style="display:none;" ClientIDMode="Static" />
 
                 <div class="flex justify-between items-center gap-4 mb-4">
                     <div class="relative w-full sm:max-w-xs">
@@ -96,7 +182,9 @@
                                         </span>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-
+                                
+    
+                               
                                 <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
                                     <ItemTemplate>
                                         <div class="flex justify-center gap-2">
@@ -113,7 +201,15 @@
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </a>
 
+                                            <asp:LinkButton ID="btnEntregado" runat="server"
+                                                Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
+                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-green-500/10 hover:text-green-500 dark:hover:bg-green-500/20"
+                                                OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>' 
+                                                >
+                                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                            </asp:LinkButton>
                                         </div>
+
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -121,11 +217,14 @@
                         
                     </div>
                 </div>
+                <asp:LinkButton ID="btnPostbackReferencia" runat="server" style="display:none;" />
             </ContentTemplate>
             
             <Triggers>
                 <asp:AsyncPostBackTrigger ControlID="txtBuscar" EventName="TextChanged" />
                 <asp:AsyncPostBackTrigger ControlID="gvPedidos" EventName="PageIndexChanging" />
+                <asp:AsyncPostBackTrigger ControlID="btnEntregarServer" EventName="Click" />
+                <asp:AsyncPostBackTrigger ControlID="btnEliminarServer" EventName="Click" />
             </Triggers>
         </asp:UpdatePanel>
 
@@ -149,36 +248,41 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-        function abrirModalEliminar(id) {
-            var hf = document.getElementById('<%= IdVenta.ClientID %>');
-            if (hf) hf.value = id;
+   <!-- MODALS -->
 
-            var el = document.getElementById('deleteModal');
+    <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300">
+        
+        <div class="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-3 mb-4">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Confirmar Entrega
+            </h3>
+            <button onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
 
-            if (window.bootstrap && window.bootstrap.Modal) {
-                var myModal = bootstrap.Modal.getOrCreateInstance(el);
-                myModal.show();
-            } else if (window.jQuery) {
-                $('#deleteModal').modal('show');
-            } else {
-                if (confirm("¿Cancelar venta?")) {
-                    document.getElementById('btnEliminarServer').click();
-                }
-            }
-        }
+        <div class="mb-6">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                ¿Estás seguro de que deseas marcar el pedido <strong id="pedidoIdDisplay">#XXX</strong> como **ENTREGADO**? Esta acción no se puede deshacer fácilmente.
+            </p>
+            <input type="hidden" id="pedidoIdConfirmar" value="" /> 
+        </div>
 
-        function confirmarEliminar() {
-            try {
-                var el = document.getElementById('deleteModal');
-                if (window.bootstrap) {
-                    var myModal = bootstrap.Modal.getInstance(el);
-                    if (myModal) myModal.hide();
-                } else if (window.jQuery) {
-                    $('#deleteModal').modal('hide');
-                }
-            } catch (e) { }
-            document.getElementById('btnEliminarServer').click();
-        }
-    </script>
+        <div class="flex justify-end gap-3">
+            <button onclick="cerrarModalEntrega()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600 transition duration-150">
+                Cancelar
+            </button>
+            <button onclick="confirmarEntrega()" 
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
+                Confirmar
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+
 </asp:Content>

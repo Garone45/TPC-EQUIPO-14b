@@ -134,7 +134,7 @@ namespace Negocio
 
                 string consulta = @"
                 SELECT 
-                    A.IdArticulo, A.Descripcion, A.CodigoArticulo, A.Activo,
+                    A.IdArticulo, A.Descripcion, A.Activo,
                     A.PrecioCostoActual, A.PorcentajeGanancia, A.StockActual, A.StockMinimo,
                     M.IdMarca, M.Descripcion AS MarcaDescripcion,
                     C.IdCategoria, C.Descripcion AS CategoriaDescripcion

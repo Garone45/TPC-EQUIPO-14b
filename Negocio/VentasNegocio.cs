@@ -241,24 +241,19 @@ namespace Negocio
                     pedido.Total = (decimal)datos.Lector["Total"];
                 }
 
-                // 🟢 IMPORTANTE: Cerrar Lector Y Conexión antes de la segunda consulta
-                // Cerramos el lector para liberar el recurso
+             
                 if (datos.Lector != null)
                     datos.Lector.Close();
-
-                // ⚠️ TRUCO CLAVE: Cerramos la conexión explícitamente aquí.
-                // ¿Por qué? Porque 'ejecutarLectura' de la segunda vuelta va a querer abrirla de nuevo.
-                // Si la dejamos abierta desde la primera vuelta, la segunda fallará.
                 if (datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
 
-                // Limpiar parámetros para la nueva consulta
+              
                 datos.Comando.Parameters.Clear();
 
-                // --- 2. TRAER DETALLES ---
+               
                 string consultaDetalles = @"
             SELECT D.IDArticulo, D.Cantidad, D.PrecioUnitario, 
-                   A.Descripcion, A.CodigoArticulo 
+                   A.Descripcion 
             FROM DetallesPedido D 
             LEFT JOIN Articulos A ON D.IDArticulo = A.IDArticulo 
             WHERE D.IDPedido = @idPedidoDetalle";
@@ -314,8 +309,7 @@ namespace Negocio
 
             try
             {
-                // 1. INICIAR LA TRANSACCIÓN
-                // ⚠️ Aquí iniciamos la conexión manualmente para que la transacción la use.
+           
                 datos.Conexion.Open();
                 transaccion = datos.Conexion.BeginTransaction();
                 datos.Comando.Transaction = transaccion; // Vincula el comando a la transacción
@@ -429,6 +423,39 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
+
+        public bool ActualizarEstado(int idPedido)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = "UPDATE Pedidos SET Estado = @EstadoNew WHERE IDPedido = @IDPedido AND Estado = @EstadoOld";
+
+                datos.setearConsulta(consulta);
+                datos.setearParametro("@EstadoNew", "Entregado");
+                datos.setearParametro("@IDPedido", idPedido);
+                datos.setearParametro("@EstadoOld", "Pendiente"); // <--- VALIDACIÓN
+
+                // 2. Ejecutar la acción
+                datos.ejecutarAccion();
+
+                // Si filasAfectadas es 1, se actualizó. Si es 0, significa que el estado no era PENDIENTE.
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Manejo de excepción
+                Console.WriteLine("Error al marcar pedido como ENTREGADO: " + ex.ToString());
+                return false;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+
+        }
+            
+            
     }
 }
 
