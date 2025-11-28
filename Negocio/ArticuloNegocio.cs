@@ -33,8 +33,6 @@ namespace Negocio
 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
-                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
-                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
                     aux.StockActual = (int)datos.Lector["StockActual"];
                     aux.StockMinimo = (int)datos.Lector["StockMinimo"];
                     aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
@@ -93,8 +91,7 @@ namespace Negocio
 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
-                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
-                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
+
 
                     aux.StockActual = (int)datos.Lector["StockActual"];
                     aux.StockMinimo = (int)datos.Lector["StockMinimo"];
@@ -161,8 +158,7 @@ namespace Negocio
 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
-                    if (datos.Lector["CodigoArticulo"] != DBNull.Value)
-                        aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
+
                     aux.StockActual = (int)datos.Lector["StockActual"];
                     aux.StockMinimo = (int)datos.Lector["StockMinimo"];
                     aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
@@ -197,7 +193,6 @@ namespace Negocio
                 datos.setearProcedimiento("SP_AgregarArticulo");
 
                 datos.setearParametro("@Descripcion", nuevoArticulo.Descripcion);
-                datos.setearParametro("@CodigoArticulo", nuevoArticulo.CodigoArticulo);
                 datos.setearParametro("@IdMarca", nuevoArticulo.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", nuevoArticulo.Categorias.IDCategoria);
                 datos.setearParametro("@IdProveedor", nuevoArticulo.Proveedor.ID);
@@ -228,7 +223,6 @@ namespace Negocio
                
                 datos.setearParametro("@IdArticulo", articuloModificado.IDArticulo);
                 datos.setearParametro("@Descripcion", articuloModificado.Descripcion);
-                datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
                 datos.setearParametro("@IdMarca", articuloModificado.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", articuloModificado.Categorias.IDCategoria);
                 datos.setearParametro("@IDProveedor", articuloModificado.Proveedor.ID);

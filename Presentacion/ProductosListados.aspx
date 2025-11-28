@@ -4,6 +4,48 @@
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <script src="Scripts/jquery-3.7.0.min.js"></script>
     <script src="Scripts/bootstrap.bundle.min.js"></script>
+
+   
+<style>
+    /* Aseguramos que los encabezados sean posicionables para los 'resizers' */
+    .resizable th {
+        position: relative;
+        overflow: hidden; /* Importante para que el resizer no se salga */
+        text-overflow: ellipsis;
+    }
+
+    .resizable th .resizer {
+        width: 5px;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: col-resize;
+        user-select: none;
+        z-index: 10;
+        /* Un color suave al pasar el mouse para que el usuario sepa que está ahí */
+        border-right: 2px solid transparent; 
+    }
+    
+    .resizable th .resizer:hover {
+        border-right: 2px solid #ccc;
+    }
+
+    /* CORRECCIÓN PRINCIPAL: fixed layout */
+    #gvProductos table {
+        table-layout: fixed !important; 
+        width: 100% !important; /* Ocupar el ancho disponible */
+        border-collapse: collapse;
+    }
+
+    /* Opcional: Para que las celdas también respeten el ancho y corten texto */
+    #gvProductos table td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+    
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
@@ -38,25 +80,28 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <asp:GridView ID="gvProductos" runat="server"
+                    <div class="overflow-x-auto" style="display:block; width:100%;">
+                        <asp:GridView ID="gvProductos" runat="server" 
                             AutoGenerateColumns="False"
                             DataKeyNames="IDArticulo"
-                            CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
+                            CssClass="resizable"
                             GridLines="None"
                             AllowPaging="True" PageSize="10"
-                            OnPageIndexChanging="gvProductos_PageIndexChanging">
+                            AllowSorting="True" 
+                            OnSorting="gvProductos_Sorting"
+                            OnPageIndexChanging="gvProductos_PageIndexChanging"
+                            >
 
-                            <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50" />
+                            <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50 cursor-pointer" />
                             <RowStyle CssClass="bg-white dark:bg-slate-800 border-b dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/40" />
                             <PagerStyle CssClass="flex items-center justify-between p-4" />
 
                             <Columns>
-                                <asp:BoundField DataField="IDArticulo" HeaderText="SKU" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
-                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
-                                <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
-                                <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
-                                <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
+                                <asp:BoundField DataField="IDArticulo" HeaderText="SKU" SortExpression="IDArticulo" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
+                                <asp:BoundField DataField="Descripcion" HeaderText="Descripción" SortExpression="Descripcion" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap" />
+                                <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" SortExpression="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                                <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" SortExpression="Categoria" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
+                                <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" SortExpression="PrecioVentaCalculado" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
                                 <asp:TemplateField  HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
                                         <%# Eval("Proveedor.RazonSocial") %>
@@ -155,5 +200,118 @@
             });
         }
         try { if (typeof Sys !== 'undefined') setFocusAfterUpdate(); } catch (e) { }
+
     </script>
+
+    <script type="text/javascript">
+        (function () {
+
+            function inicializarResize() {
+                try {
+                    // Obtener el GridView
+                    var grid = document.getElementById('<%= gvProductos.ClientID %>');
+                    if (!grid) return;
+
+                    // Buscar la tabla real (ASP.NET a veces renderiza un div contenedor)
+                    var table = (grid.tagName && grid.tagName.toLowerCase() === 'table') ? grid : grid.querySelector('table');
+                    if (!table) return;
+
+                    // --- CORRECCIÓN CRÍTICA ---
+                    // Forzamos el layout fixed para que obedezca nuestros anchos en pixeles
+                    table.style.tableLayout = 'fixed';
+
+                    // Si la tabla no tiene ancho definido, el fixed layout colapsa.
+                    // Aseguramos que tenga el ancho actual calculado antes de empezar.
+                    if (table.clientWidth) {
+                        table.style.width = table.clientWidth + "px";
+                    }
+
+                    // Limpiar resizers previos para evitar duplicados en postbacks
+                    var oldResizers = table.querySelectorAll('.resizer');
+                    for (var i = 0; i < oldResizers.length; i++) {
+                        oldResizers[i].parentNode.removeChild(oldResizers[i]);
+                    }
+
+                    // Obtener THs de la primera fila (header)
+                    var ths = table.querySelectorAll('th');
+
+                    // Asignar el ancho computado actual como estilo inline fijo
+                    // Esto es vital para que al cambiar de 'auto' a 'fixed' no salten las columnas
+                    ths.forEach(function (th) {
+                        var width = th.offsetWidth;
+                        th.style.width = width + "px";
+
+                        // Crear el div resizer
+                        var resizer = document.createElement('div');
+                        resizer.className = 'resizer';
+                        th.appendChild(resizer);
+
+                        createResizableColumn(th, resizer);
+                    });
+
+                } catch (err) {
+                    console.error('Error inicializarResize:', err);
+                }
+            }
+
+            function createResizableColumn(th, resizer) {
+                var x = 0;
+                var w = 0;
+
+                var mouseDownHandler = function (e) {
+                    // Guardar posición inicial
+                    x = e.clientX; // Usar clientX es más seguro que pageX para fixed layouts
+
+                    var styles = window.getComputedStyle(th);
+                    w = parseInt(styles.width, 10);
+
+                    document.addEventListener('mousemove', mouseMoveHandler);
+                    document.addEventListener('mouseup', mouseUpHandler);
+
+                    resizer.classList.add('resizing');
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none'; // Evitar seleccionar texto mientras arrastras
+                };
+
+                var mouseMoveHandler = function (e) {
+                    var dx = e.clientX - x;
+                    var newWidth = w + dx;
+
+                    // Evitar que la columna sea invisible (mínimo 50px)
+                    if (newWidth > 50) {
+                        th.style.width = newWidth + 'px';
+                    }
+                };
+
+                var mouseUpHandler = function () {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                };
+
+                resizer.addEventListener('mousedown', mouseDownHandler);
+            }
+
+            // Ejecutar al cargar
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', inicializarResize);
+            } else {
+                inicializarResize();
+            }
+
+            // Re-ejecutar tras UpdatePanel
+            try {
+                if (typeof Sys !== 'undefined' && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                    Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+                        // Pequeño delay para asegurar que el DOM del UpdatePanel se pintó
+                        setTimeout(inicializarResize, 50);
+                    });
+                }
+            } catch (e) { }
+
+        })();
+</script>
 </asp:Content>
