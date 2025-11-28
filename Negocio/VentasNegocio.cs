@@ -106,8 +106,10 @@ namespace Negocio
                     aux.IDPedido = (int)datos.Lector["IDPedido"];
                     aux.IDCliente = (int)datos.Lector["IDCliente"];
                     aux.IDVendedor = (int)datos.Lector["IDVendedor"];
-                    aux.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
-                    aux.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
+                    if (!(datos.Lector["FechaCreacion"] is DBNull))
+                        aux.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
+                    if (!(datos.Lector["FechaEntrega"] is DBNull))
+                        aux.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
                     aux.MetodoPago = datos.Lector["MetodoPago"].ToString();
                     string estadoStr = datos.Lector["Estado"].ToString().Trim();
                     EstadoPedido estadoParseado;

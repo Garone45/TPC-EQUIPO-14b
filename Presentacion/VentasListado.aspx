@@ -6,28 +6,56 @@
     <script src="Scripts/bootstrap.bundle.min.js"></script>
 
     <script type="text/javascript">
+        
         var delayTimer;
-        function delayPostback(source) {
+
+        function delayPostback() {
+            // Reiniciamos el reloj cada vez que escribes
             clearTimeout(delayTimer);
+
             delayTimer = setTimeout(function () {
-                __doPostBack(source.name, '');
-            }, 500);
+                // Buscamos el botón oculto por su ID estático
+                var btn = document.getElementById('btnBuscarTrigger');
+                if (btn) {
+                    btn.click(); // ¡Clic! Esto dispara el UpdatePanel
+                }
+            }, 500); // Espera medio segundo después de dejar de escribir
         }
 
         function setFocusAfterUpdate() {
             var prm = Sys.WebForms.PageRequestManager.getInstance();
+
             prm.add_endRequest(function (sender, args) {
+                // Verificamos que no haya errores de servidor antes de intentar poner foco
                 if (args.get_error() == null) {
-                    var focusedControl = $get('<%= txtBuscar.ClientID %>');
-                    if (focusedControl) {
-                        focusedControl.focus();
-                        var temp = focusedControl.value;
-                        focusedControl.value = '';
-                        focusedControl.value = temp;
+
+                    // Buscamos el textbox por su ID Static
+                    var txt = document.getElementById('txtBuscar');
+
+                    if (txt) {
+                        // 1. Guardamos el largo del texto actual
+                        var len = txt.value.length;
+
+                        // 2. Ponemos el foco básico
+                        txt.focus();
+
+                        // 3. TRUCO DE MAGIA: Forzamos el cursor al final
+                        // Método A: Para la mayoría de navegadores (Reset de valor)
+                        var val = txt.value;
+                        txt.value = '';
+                        txt.value = val;
+
+                        // Método B: Para navegadores modernos (Chrome, Edge, Firefox)
+                        // Esto le dice explícitamente: "Pon la selección desde el caracter final hasta el final"
+                        if (txt.setSelectionRange) {
+                            txt.setSelectionRange(len, len);
+                        }
                     }
                 }
             });
         }
+
+        // Inicializamos al cargar la página
         window.onload = setFocusAfterUpdate;
     </script>
 
@@ -150,7 +178,11 @@
                             CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal" 
                             placeholder="Buscar por ID o Cliente..."
                             onkeyup="delayPostback(this);"
-                            OnTextChanged="txtBuscar_TextChanged" />
+                            ClientIDMode="Static"/>
+                        <asp:Button ID="btnBuscarTrigger" runat="server" 
+                            OnClick="btnBuscarTrigger_Click" 
+                            style="display:none;" 
+                            ClientIDMode="Static" />
                     </div>
                 </div>
                 
@@ -221,7 +253,7 @@
             </ContentTemplate>
             
             <Triggers>
-                <asp:AsyncPostBackTrigger ControlID="txtBuscar" EventName="TextChanged" />
+                <asp:AsyncPostBackTrigger ControlID="btnBuscarTrigger" EventName="Click" />                
                 <asp:AsyncPostBackTrigger ControlID="gvPedidos" EventName="PageIndexChanging" />
                 <asp:AsyncPostBackTrigger ControlID="btnEntregarServer" EventName="Click" />
                 <asp:AsyncPostBackTrigger ControlID="btnEliminarServer" EventName="Click" />
@@ -250,14 +282,14 @@
 
    <!-- MODALS -->
 
-    <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+   <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300">
         
         <div class="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-3 mb-4">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                 Confirmar Entrega
             </h3>
-            <button onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <button type="button" onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -270,11 +302,12 @@
         </div>
 
         <div class="flex justify-end gap-3">
-            <button onclick="cerrarModalEntrega()" 
+            <button type="button" onclick="cerrarModalEntrega()" 
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600 transition duration-150">
                 Cancelar
             </button>
-            <button onclick="confirmarEntrega()" 
+            
+            <button type="button" onclick="confirmarEntrega()" 
                     class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
                 Confirmar
             </button>

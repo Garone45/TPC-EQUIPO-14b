@@ -19,12 +19,7 @@ namespace Presentacion
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarVentas();
             }
-            if (ScriptManager.GetCurrent(this) != null && ScriptManager.GetCurrent(this).IsInAsyncPostBack)
-            {
-                // Forzamos la regeneración total de la GridView
-                gvPedidos.DataSource = null;
-                gvPedidos.DataBind();
-            }
+           
 
         }
 
@@ -68,10 +63,16 @@ namespace Presentacion
             }
         }
 
-        protected void txtBuscar_TextChanged(object sender, EventArgs e)
+        protected void btnBuscarTrigger_Click(object sender, EventArgs e)
         {
+            // Reseteamos la paginación para que al buscar no quedes en la página 5 sin resultados
             gvPedidos.PageIndex = 0;
+
+            // Cargamos la grilla
             CargarVentas();
+
+            // Ponemos el foco de nuevo en el buscador (aunque tu JS ya hace esto, es un refuerzo)
+            txtBuscar.Focus();
         }
 
         protected void gvPedidos_PageIndexChanging(object sender, GridViewPageEventArgs e)
