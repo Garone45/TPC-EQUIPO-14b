@@ -87,38 +87,35 @@ namespace Negocio
 
             try
             {
-                // 1. CONSULTA INTELIGENTE:
-                // Buscamos si existe la descripción, sin importar si está activa o no.
+                
                 datos.setearConsulta("SELECT IDMarca, Activo FROM Marcas WHERE Descripcion = @desc");
                 datos.setearParametro("@desc", nueva.Descripcion);
                 datos.ejecutarLectura();
 
                 if (datos.Lector.Read())
                 {
-                    // A. ¡LA ENCONTRAMOS!
+               
                     int id = (int)datos.Lector["IDMarca"];
                     bool activo = (bool)datos.Lector["Activo"];
 
-                    // Cerramos esta lectura para poder ejecutar otra acción después
                     datos.cerrarConexion();
 
                     if (activo)
                     {
-                        // A.1: Ya existe y está activa -> ERROR (Barrera de Negocio)
+                       
                         throw new Exception("La marca ya existe en el sistema.");
                     }
                     else
                     {
-                        // A.2: Existe pero está borrada (Activo = 0) -> LA RESTAURAMOS
-                        // Llamamos a un método privado para reactivarla
+                        
                         restaurar(id);
-                        return; // Salimos, porque ya "agregamos" (reactivamos) la marca.
+                        return; 
                     }
                 }
 
-                // B. NO EXISTE -> INSERTAMOS NORMALMENTE
-                datos.cerrarConexion(); // Aseguramos cierre antes de reusar el objeto datos
-                datos = new AccesoDatos(); // Reinstanciamos para limpiar parámetros viejos
+                
+                datos.cerrarConexion(); 
+                datos = new AccesoDatos(); 
 
                 datos.setearProcedimiento("SP_AgregarMarca");
                 datos.setearParametro("@Descripcion", nueva.Descripcion);
@@ -154,7 +151,7 @@ namespace Negocio
             }
         }
 
-        // Agrega la misma lógica en modificar() para que no le cambie el nombre a una existente.
+       
         public void modificar(Marca marca)
         {
             List<Marca> listado = listar();
@@ -227,6 +224,26 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
-
+        public int obtenerProximoId()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT ISNULL(MAX(IdMarca), 0) + 1 AS ProximoID FROM Marcas");
+                datos.ejecutarLectura();
+                if (datos.Lector.Read())
+                    return (int)datos.Lector["ProximoID"];
+                else
+                    return 1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el próximo ID: " + ex.Message);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }

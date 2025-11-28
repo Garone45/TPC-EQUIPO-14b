@@ -12,10 +12,16 @@ namespace Presentacion
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            MarcaNegocio negocio = new MarcaNegocio();
+            int proximoId = negocio.obtenerProximoId();
+            txtId.Text = proximoId.ToString();
+            txtId.ReadOnly = true;
+
             if (Session["usuario"] == null)
             {
                 Response.Redirect("Login.aspx", false);
                 return;
+
             }
 
             // 2. VALIDAR PERMISO (Solo ADMIN ve compras)
@@ -33,8 +39,14 @@ namespace Presentacion
                 if (EsModoEdicion)
                 {
                     cargarDatos(int.Parse(Request.QueryString["id"]));
+                    
                 }
             }
+           
+                
+
+
+            
         }
 
         private void cargarDatos(int id)

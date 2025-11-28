@@ -188,21 +188,53 @@ namespace Presentacion
             CargarGrilla();
         }
 
+        /* protected void btnEliminarServer_Click(object sender, EventArgs e)
+         {
+             try
+             {
+                 if (!string.IsNullOrEmpty(hfIdProducto.Value))
+                 {
+                     int id = int.Parse(hfIdProducto.Value);
+                     ArticuloNegocio negocio = new ArticuloNegocio();
+                     negocio.eliminarLogico(id);
+                     CargarGrilla();
+                 }
+             }
+             catch (Exception ex)
+             {
+                 System.Diagnostics.Debug.WriteLine("Error al eliminar: " + ex.Message);
+             }
+         }*/
+
         protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
+            // 1. Diagnóstico: ¿Llega el ID? 
+            // Pon un punto de interrupción (punto rojo) en la línea de abajo o mira la ventana "Salida" (Output)
+            string valorId = hfIdProducto.Value;
+            System.Diagnostics.Debug.WriteLine("INTENTO BORRAR ID: " + valorId);
+
             try
             {
-                if (!string.IsNullOrEmpty(hfIdProducto.Value))
+                if (!string.IsNullOrEmpty(valorId))
                 {
-                    int id = int.Parse(hfIdProducto.Value);
+                    int id = int.Parse(valorId);
                     ArticuloNegocio negocio = new ArticuloNegocio();
+
+                    // Aquí se ejecuta el borrado
                     negocio.eliminarLogico(id);
+
+                    // Recargamos la lista
                     CargarGrilla();
+
+                    // IMPORTANTE: Forzamos al UpdatePanel a actualizarse visualmente
+                    upnlGrillaProductos.Update();
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error al eliminar: " + ex.Message);
+                // 2. Diagnóstico: Si falla, que nos avise
+                // Temporalmente lanzamos el error para verlo en pantalla
+                throw new Exception("Error al intentar eliminar en BD", ex);
             }
         }
     }

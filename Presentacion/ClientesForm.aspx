@@ -59,7 +59,7 @@
 
                     <label class="flex flex-col flex-1">
                         <span class="text-slate-700 dark:text-slate-300 text-sm font-medium pb-2">Teléfono *</span>
-                        <asp:TextBox ID="txtTelefono" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 1144445555"></asp:TextBox>
+                        <asp:TextBox ID="txtTelefono" runat="server" TextMode="Phone" CssClass="form-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Ej: 1144445555"></asp:TextBox>
                         
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtTelefono"
                             ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-bold mt-1" Display="Dynamic" />

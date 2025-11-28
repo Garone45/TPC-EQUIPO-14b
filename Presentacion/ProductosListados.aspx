@@ -63,7 +63,7 @@
         <asp:UpdatePanel ID="upnlGrillaProductos" runat="server" UpdateMode="Conditional">
             <ContentTemplate>   
 
-                <asp:HiddenField ID="hfIdProducto" runat="server" />
+                <asp:HiddenField ID="hfIdProducto" runat="server" ClientIDMode="Static"/>
                 <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
 
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
@@ -130,6 +130,7 @@
                                 </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
+                     
                     </div>
                 </div>
 
@@ -152,7 +153,7 @@
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Eliminar</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="ejecutarBorradoServer()">Sí, Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -162,22 +163,37 @@
 
     <script type="text/javascript">
         // 1. Función para abrir el modal
-        function abrirModalEliminar(id) {
-            // Guardamos el ID
-            var hf = document.getElementById('<%= hfIdProducto.ClientID %>');
-            hf.value = id;
+        var modalEliminar;
 
-            // Abrimos el modal usando jQuery (que ahora SÍ está cargado)
-            $('#modalEliminar').modal('show');
+        function abrirModalEliminar(id) {
+            // 1. Asignar ID al HiddenField (Usamos el ID estático)
+            var hf = document.getElementById('hfIdProducto');
+            if (hf) {
+                hf.value = id;
+            }
+
+            // 2. Abrir Modal usando JavaScript Nativo (Bootstrap 5)
+            var elementoModal = document.getElementById('modalEliminar');
+
+            // Creamos la instancia si no existe, o la recuperamos
+            if (!modalEliminar) {
+                modalEliminar = new bootstrap.Modal(elementoModal);
+            }
+
+            modalEliminar.show();
         }
 
-        // 2. Función para confirmar
         function ejecutarBorradoServer() {
-            // Ocultamos el modal
-            $('#modalEliminar').modal('hide');
+            // 1. Ocultar modal
+            if (modalEliminar) {
+                modalEliminar.hide();
+            }
 
-            // Hacemos click en el botón invisible del servidor
-            document.getElementById('btnEliminarServer').click();
+            // 2. Click en el botón del servidor
+            var btn = document.getElementById('btnEliminarServer');
+            if (btn) {
+                btn.click();
+            }
         }
 
         // --- Funciones de Búsqueda (No tocar) ---

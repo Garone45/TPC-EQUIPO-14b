@@ -105,6 +105,9 @@ namespace Negocio
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
 
+                    aux.Proveedor.ID = (int)datos.Lector["IDProveedor"];
+                    aux.Proveedor.RazonSocial = (string)datos.Lector["RazonSocial"];
+
                     return aux;
                 }
 
