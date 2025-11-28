@@ -99,6 +99,7 @@
     <Content Include="Login.aspx" />
     <Content Include="ProductosForms.aspx" />
     <Content Include="ProductosListados.aspx" />
+    <Content Include="RecuperarPassword.aspx" />
     <Content Include="Scripts\About.aspx" />
     <Content Include="CategoriaListado.aspx" />
     <Content Include="CategoriasForm.aspx" />
@@ -233,6 +234,13 @@
     </Compile>
     <Compile Include="ProductosListados.aspx.designer.cs">
       <DependentUpon>ProductosListados.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RecuperarPassword.aspx.cs">
+      <DependentUpon>RecuperarPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RecuperarPassword.aspx.designer.cs">
+      <DependentUpon>RecuperarPassword.aspx</DependentUpon>
     </Compile>
     <Compile Include="Scripts\About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
