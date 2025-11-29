@@ -6,7 +6,7 @@
     <script src="Scripts/bootstrap.bundle.min.js"></script>
 
     <script type="text/javascript">
-        
+
         var delayTimer;
 
         function delayPostback() {
@@ -151,23 +151,17 @@
                 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Gestión de Ventas</h1>
                 <p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Historial de pedidos realizados.</p>
             </div>
-            <div class="flex items-center gap-4">
-                <asp:HyperLink ID="btnNuevaVenta" runat="server" NavigateUrl="~/VentasForms.aspx"
-                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 gap-2">
-                    <span class="material-symbols-outlined text-base">add_shopping_cart</span>
-                    <span class="truncate">Nueva Venta</span>
-                </asp:HyperLink>
-            </div>
+
         </div>
 
         <asp:UpdatePanel ID="updVentas" runat="server" UpdateMode="Conditional">
             <ContentTemplate>
-                
+
                 <asp:HiddenField ID="IdVenta" runat="server" />
-                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" style="display:none;" ClientIDMode="Static" />
+                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
 
                 <asp:HiddenField ID="hfIdPedidoEntregar" runat="server" ClientIDMode="Static" />
-                <asp:Button ID="btnEntregarServer" runat="server" OnClick="btnEntregarServer_Click" style="display:none;" ClientIDMode="Static" />
+                <asp:Button ID="btnEntregarServer" runat="server" OnClick="btnEntregarServer_Click" Style="display: none;" ClientIDMode="Static" />
 
                 <div class="flex justify-between items-center gap-4 mb-4">
                     <div class="relative w-full sm:max-w-xs">
@@ -175,38 +169,45 @@
                             <span class="material-symbols-outlined text-slate-400">search</span>
                         </div>
                         <asp:TextBox ID="txtBuscar" runat="server"
-                            CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal" 
+                            CssClass="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-10 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-10 pr-4 text-sm font-normal leading-normal"
                             placeholder="Buscar por ID o Cliente..."
                             onkeyup="delayPostback(this);"
-                            ClientIDMode="Static"/>
-                        <asp:Button ID="btnBuscarTrigger" runat="server" 
-                            OnClick="btnBuscarTrigger_Click" 
-                            style="display:none;" 
+                            ClientIDMode="Static" />
+                        <asp:Button ID="btnBuscarTrigger" runat="server"
+                            OnClick="btnBuscarTrigger_Click"
+                            Style="display: none;"
                             ClientIDMode="Static" />
                     </div>
+                    <div class="flex items-center gap-4">
+                        <asp:HyperLink ID="btnNuevaVenta" runat="server" NavigateUrl="~/VentasForms.aspx"
+                            CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 gap-2">
+                            <span class="material-symbols-outlined text-base">add_shopping_cart</span>
+                            <span class="truncate">Nueva Venta</span>
+                        </asp:HyperLink>
+                    </div>
                 </div>
-                
+
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
                     <div class="overflow-x-auto">
-                        
-                        <asp:GridView ID="gvPedidos" runat="server" 
-                            AutoGenerateColumns="False" 
+
+                        <asp:GridView ID="gvPedidos" runat="server"
+                            AutoGenerateColumns="False"
                             DataKeyNames="IDPedido"
                             CssClass="w-full text-sm text-left text-slate-500 dark:text-slate-400"
-                            GridLines="None" 
-                            AllowPaging="True" PageSize="10" 
+                            GridLines="None"
+                            AllowPaging="True" PageSize="10"
                             OnPageIndexChanging="gvPedidos_PageIndexChanging">
-                            
+
                             <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50" />
                             <RowStyle CssClass="bg-white dark:bg-slate-800 border-b dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/40" />
                             <PagerStyle CssClass="flex items-center justify-between p-4" />
 
                             <Columns>
-                                <asp:BoundField DataField="IDPedido" HeaderText="#" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold" />
+                                <asp:BoundField DataField="IDPedido" HeaderText="N°Pedido" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold" />
                                 <asp:BoundField DataField="NombreCliente" HeaderText="Cliente" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="FechaCreacion" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="Total" HeaderText="Total" DataFormatString="{0:C}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold text-green-600" />
-                                
+
                                 <asp:TemplateField HeaderText="Estado" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
                                         <span class='<%# GetEstadoClass(Eval("Estado").ToString()) %>'>
@@ -229,7 +230,7 @@
                                                 <span class="material-symbols-outlined text-lg">edit</span>
                                             </asp:HyperLink>
 
-                                                
+
                                             <asp:HyperLink ID="btnVer" runat="server"
                                                 Visible='<%# Eval("Estado").ToString() != "Pendiente" %>'
                                                 NavigateUrl='<%# "~/VentasForms.aspx?id=" + Eval("IDPedido") + "&modo=Ver" %>'
@@ -249,8 +250,7 @@
                                             <asp:LinkButton ID="btnEntregado" runat="server"
                                                 Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
                                                 CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-green-500/10 hover:text-green-500 dark:hover:bg-green-500/20"
-                                                OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>' 
-                                                >
+                                                OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>'>
                                                 <span class="material-symbols-outlined text-lg">check_circle</span>
                                             </asp:LinkButton>
                                         </div>
@@ -259,14 +259,14 @@
                                 </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
-                        
+
                     </div>
                 </div>
-                <asp:LinkButton ID="btnPostbackReferencia" runat="server" style="display:none;" />
+                <asp:LinkButton ID="btnPostbackReferencia" runat="server" Style="display: none;" />
             </ContentTemplate>
-            
+
             <Triggers>
-                <asp:AsyncPostBackTrigger ControlID="btnBuscarTrigger" EventName="Click" />                
+                <asp:AsyncPostBackTrigger ControlID="btnBuscarTrigger" EventName="Click" />
                 <asp:AsyncPostBackTrigger ControlID="gvPedidos" EventName="PageIndexChanging" />
                 <asp:AsyncPostBackTrigger ControlID="btnEntregarServer" EventName="Click" />
                 <asp:AsyncPostBackTrigger ControlID="btnEliminarServer" EventName="Click" />
@@ -292,7 +292,7 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
                         <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Cancelar</button>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </div>

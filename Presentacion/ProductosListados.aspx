@@ -55,9 +55,6 @@
             <div class="flex flex-col gap-1">
                 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Gestión de Productos</h1>
             </div>
-            <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
-                PostBackUrl="~/ProductosForms.aspx"
-                CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />
         </div>
 
         <asp:UpdatePanel ID="upnlGrillaProductos" runat="server" UpdateMode="Conditional">
@@ -77,6 +74,9 @@
                             onkeyup="delayPostback(this);"
                             OnTextChanged="txtBuscar_TextChanged" />
                     </div>
+                    <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
+                    PostBackUrl="~/ProductosForms.aspx"
+                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />     
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
