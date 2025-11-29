@@ -29,9 +29,23 @@ namespace Presentacion
             if (!IsPostBack)
             {
                 string idPedidoStr = Request.QueryString["id"];
+                string modo = Request.QueryString["modo"];
+
                 if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
                 {
-                    CargarDatosPedido(idPedido); // Modo Edición
+                    CargarDatosPedido(idPedido); 
+                   
+                    if (modo == "Ver")
+                    {
+                        // Si el modo es ver, bloqueamos todo
+                        ConfigurarVistaSoloLectura();
+                        mostrarMensaje("Modo Visualización: No se pueden realizar cambios.", false);
+                    }
+                    else
+                    {
+                        // Modo Edición (Modificar)
+                        mostrarMensaje("Modo Edición: Puede modificar el pedido.", false);
+                    }
                 }
                 else
                 {
@@ -84,8 +98,6 @@ namespace Presentacion
             Session["ClienteSeleccionado"] = selectedId;
 
             ClienteNegocio negocio = new ClienteNegocio();
-            // Asumiendo que listar() devuelve todos, buscamos el seleccionado en memoria
-            // O idealmente usa negocio.obtenerPorId(selectedId) si lo tienes implementado
             Cliente cliente = negocio.listar().FirstOrDefault(c => c.IDCliente == selectedId);
 
             if (cliente != null)
@@ -117,10 +129,10 @@ namespace Presentacion
 
         protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Evento necesario para que el botón Select funcione, aunque la lógica la hacemos en btnAddProduct
+            
         }
 
-        // --- AGREGAR PRODUCTO AL CARRITO (CON VALIDACIONES) ---
+       
         protected void btnAddProduct_Click(object sender, EventArgs e)
         {
             // VALIDACIÓN 1: ¿Seleccionó algo en la grilla?
@@ -345,6 +357,29 @@ namespace Presentacion
 
             // IMPORTANTE: Actualizar el panel para que se vea el mensaje
             updMensajes.Update();
+        }
+
+        /// METODOS
+        /// 
+
+        private void ConfigurarVistaSoloLectura()
+        {
+    
+            txtBuscarCliente.Enabled = false;
+            txtBuscarProductos.Enabled = false;
+            gvClientes.Enabled = false;
+            btnAddProduct.Visible = false;      
+            btnFinalizarVenta.Visible = false;  
+
+          
+            gvDetallePedido.Enabled = false;
+
+            // Opcional: Si quieres ocultar la columna de acciones en la grilla de detalles para que se vea más limpio
+            // Suponiendo que tus botones están en la última columna (ajusta el índice si es necesario)
+            if (gvDetallePedido.Columns.Count > 0)
+            {
+                // gvDetallePedido.Columns[gvDetallePedido.Columns.Count - 1].Visible = false;
+            }
         }
     }
 }

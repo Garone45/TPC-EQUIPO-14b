@@ -214,24 +214,37 @@
                                         </span>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                
-    
-                               
+
+
+
                                 <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
                                     <ItemTemplate>
                                         <div class="flex justify-center gap-2">
-                                            
-                                            <asp:HyperLink ID="btnVer" runat="server" 
-                                                NavigateUrl='<%# "~/VentasForms.aspx?id=" + Eval("IDPedido") %>'
-                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
+
+                                            <asp:HyperLink ID="btnModificar" runat="server"
+                                                Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
+                                                NavigateUrl='<%# "~/VentasForms.aspx?id=" + Eval("IDPedido") + "&modo=Modificar" %>'
+                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-yellow-500/10 hover:text-yellow-600 dark:hover:bg-yellow-500/20"
+                                                ToolTip="Modificar Pedido">
+                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                            </asp:HyperLink>
+
+                                                
+                                            <asp:HyperLink ID="btnVer" runat="server"
+                                                Visible='<%# Eval("Estado").ToString() != "Pendiente" %>'
+                                                NavigateUrl='<%# "~/VentasForms.aspx?id=" + Eval("IDPedido") + "&modo=Ver" %>'
+                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:bg-blue-500/20"
+                                                ToolTip="Ver Detalles">
                                                 <span class="material-symbols-outlined text-lg">visibility</span>
                                             </asp:HyperLink>
-                                            
-                                            <a href="javascript:void(0);" 
-                                               onclick="abrirModalEliminar(<%# Eval("IDPedido") %>);"
-                                               class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
+
+
+                                            <a href="javascript:void(0);"
+                                                onclick="abrirModalEliminar(<%# Eval("IDPedido") %>);"
+                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </a>
+
 
                                             <asp:LinkButton ID="btnEntregado" runat="server"
                                                 Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
@@ -260,6 +273,10 @@
             </Triggers>
         </asp:UpdatePanel>
 
+
+        <!-- MODALS -->
+
+
         <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -280,41 +297,40 @@
         </div>
     </div>
 
-   <!-- MODALS -->
 
-   <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300">
-        
-        <div class="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-3 mb-4">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                Confirmar Entrega
-            </h3>
-            <button type="button" onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
 
-        <div class="mb-6">
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-                ¿Estás seguro de que deseas marcar el pedido <strong id="pedidoIdDisplay">#XXX</strong> como **ENTREGADO**? Esta acción no se puede deshacer fácilmente.
-            </p>
-            <input type="hidden" id="pedidoIdConfirmar" value="" /> 
-        </div>
+    <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300">
 
-        <div class="flex justify-end gap-3">
-            <button type="button" onclick="cerrarModalEntrega()" 
+            <div class="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-3 mb-4">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Confirmar Entrega
+                </h3>
+                <button type="button" onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                    ¿Estás seguro de que deseas marcar el pedido <strong id="pedidoIdDisplay">#XXX</strong> como **ENTREGADO**? Esta acción no se puede deshacer fácilmente.
+                </p>
+                <input type="hidden" id="pedidoIdConfirmar" value="" />
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="cerrarModalEntrega()"
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600 transition duration-150">
-                Cancelar
-            </button>
-            
-            <button type="button" onclick="confirmarEntrega()" 
-                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
-                Confirmar
-            </button>
-        </div>
+                    Cancelar
+                </button>
 
+                <button type="button" onclick="confirmarEntrega()"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
+                    Confirmar
+                </button>
+            </div>
+
+        </div>
     </div>
-</div>
 
 
 
