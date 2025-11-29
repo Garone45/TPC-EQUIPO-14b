@@ -14,7 +14,9 @@
         public bool Activo { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
 
-     
+        public string Email { get; set; }
+
+
         public Usuario()
         {
         }

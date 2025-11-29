@@ -55,5 +55,28 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
+        public bool BuscarPorEmail(string email)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Contamos cuántos usuarios tienen ese mail
+                datos.setearConsulta("SELECT COUNT(*) FROM Usuario WHERE Email = @email AND Activo = 1");
+                datos.setearParametro("@email", email);
+
+                // ejecutarAccionScalar devuelve un entero (la cantidad encontrada)
+                int cantidad = datos.ejecutarAccionScalar();
+
+                return cantidad > 0; // Si es mayor a 0, devuelve TRUE (Existe)
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
