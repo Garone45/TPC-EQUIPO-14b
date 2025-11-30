@@ -1,9 +1,9 @@
 ﻿<%@ Page Title="Gestión de Marcas" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MarcasListado.aspx.cs" Inherits="Presentacion.MarcasListado" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+
     <script src="Scripts/jquery-3.7.0.min.js"></script>
-    <script src="Scripts/bootstrap.bundle.min.js"></script>
+  
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">

@@ -110,7 +110,7 @@ GO
 CREATE TABLE Compras (
     IDCompra INT IDENTITY(1,1) PRIMARY KEY,
     IDProveedor INT NOT NULL,
-    Documento INT NOT NULL,
+    Documento VARCHAR NOT NULL,
     FechaCompra DATETIME NOT NULL DEFAULT GETDATE(),
     MontoTotal DECIMAL(10,2) NOT NULL,
     Observaciones VARCHAR(200),

@@ -18,7 +18,7 @@ namespace Dominio.Compras
         public string Documento { get; set; } // N° de factura de quien te vende
         public DateTime FechaCompra { get; set; }
         public decimal MontoTotal { get; set; }
-
+        public string UsuarioCreador { get; set; }
         public string Observaciones { get; set; }
         public enum Estado
         {

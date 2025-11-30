@@ -1,9 +1,8 @@
 ﻿<%@ Page Title="Listado de Ventas" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="VentasListado.aspx.cs" Inherits="Presentacion.VentasListado" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <script src="Scripts/jquery-3.7.0.min.js"></script>
-    <script src="Scripts/bootstrap.bundle.min.js"></script>
+   
 
     <script type="text/javascript">
 
@@ -44,9 +43,6 @@
                         var val = txt.value;
                         txt.value = '';
                         txt.value = val;
-
-                        // Método B: Para navegadores modernos (Chrome, Edge, Firefox)
-                        // Esto le dice explícitamente: "Pon la selección desde el caracter final hasta el final"
                         if (txt.setSelectionRange) {
                             txt.setSelectionRange(len, len);
                         }
@@ -242,7 +238,8 @@
 
                                             <a href="javascript:void(0);"
                                                 onclick="abrirModalEliminar(<%# Eval("IDPedido") %>);"
-                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
+                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer"
+                                                ToolTip="Eliminar">>
                                                 <span class="material-symbols-outlined text-lg">delete</span>
                                             </a>
 
@@ -250,7 +247,8 @@
                                             <asp:LinkButton ID="btnEntregado" runat="server"
                                                 Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
                                                 CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-green-500/10 hover:text-green-500 dark:hover:bg-green-500/20"
-                                                OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>'>
+                                                OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>'
+                                                ToolTip="Entregado">>
                                                 <span class="material-symbols-outlined text-lg">check_circle</span>
                                             </asp:LinkButton>
                                         </div>

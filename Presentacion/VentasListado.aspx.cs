@@ -96,32 +96,33 @@ namespace Presentacion
         {
             try
             {
-                // Leemos el ID desde el HiddenField que llenamos con JS
                 if (!string.IsNullOrEmpty(hfIdPedidoEntregar.Value))
                 {
                     int idPedido = int.Parse(hfIdPedidoEntregar.Value);
-
                     VentasNegocio negocio = new VentasNegocio();
 
-                    // Ejecutamos la actualización
-                    if (negocio.ActualizarEstado(idPedido))
+                    // ⭐ CAMBIO: Usamos el nuevo método transaccional
+                    if (negocio.ConfirmarEntrega(idPedido))
                     {
-                        // Recargamos la grilla
-                        CargarVentas();
-                        updVentas.Update(); // <--- ESTO ES VITAL
-                        // Como el botón está dentro del UpdatePanel, 
-                        // esto se refresca solo y sin parpadeos raros.
+                        // Éxito
+                        CargarVentas(); // Recargar la grilla para ver el estado "Entregado"
+                        updVentas.Update();
+
+                        // Opcional: Mostrar mensaje de éxito
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertSuccess", "alert('Pedido entregado y stock actualizado.');", true);
                     }
                     else
                     {
-                        // ScriptManager maneja el alert correctamente en AJAX
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertError", "alert('No se pudo actualizar el estado.');", true);
+                        // Fallo (probablemente el pedido ya no estaba pendiente)
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertError", "alert('No se pudo entregar el pedido. Verifique que esté Pendiente.');", true);
                     }
                 }
             }
             catch (Exception ex)
             {
+                // Error grave (Base de datos, stock negativo si tienes constraints, etc.)
                 System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertCrash", $"alert('Error: {ex.Message}');", true);
             }
         }
 

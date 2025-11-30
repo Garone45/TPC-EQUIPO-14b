@@ -1,9 +1,9 @@
 ﻿<%@ Page Title="Listado de Productos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductosListados.aspx.cs" Inherits="Presentacion.ProductosListados" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+
     <script src="Scripts/jquery-3.7.0.min.js"></script>
-    <script src="Scripts/bootstrap.bundle.min.js"></script>
+  
 
    
 <style>
