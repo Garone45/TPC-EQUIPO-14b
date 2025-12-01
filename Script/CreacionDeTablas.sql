@@ -205,11 +205,8 @@ ALTER TABLE Usuario ADD Email VARCHAR(100) NULL;
 	UPDATE Usuario 
 SET Email = 'franciscogarone00@gmail.com' 
 WHERE NombreUser = 'admin';
-
--- 2. Poner tu mail al Vendedor (puede ser el mismo para probar)
 UPDATE Usuario 
-SET Email = 'jutato141098@gmail.com@gmail.com'  
+SET Email = 'jutato141098@gmail.com'  
 WHERE NombreUser = 'vendedor';
 
--- 3. Verificar que quedaron guardados
-SELECT * FROM Usuario;
+
