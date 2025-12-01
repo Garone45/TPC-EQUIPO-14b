@@ -13,6 +13,7 @@ namespace Dominio.Compras
         public int IDDetalle { get; set; }
         public int IDCompra { get; set; }
         public int IDArticulo { get; set; }
+        public string NombreProducto { get; set; }
 
         // Relación con el Artículo que se compró
 

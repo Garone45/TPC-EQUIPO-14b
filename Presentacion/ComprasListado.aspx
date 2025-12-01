@@ -122,10 +122,20 @@
                                                 <div class="flex justify-center gap-2">
 
                                                     <!-- ESTE ES EL CAMBIO CLAVE: Es un link que navega a la otra página -->
-                                                    <asp:HyperLink ID="btnEditar" runat="server"
-                                                        NavigateUrl='<%# Eval("IDCompra", "ComprasForms.aspx?id={0}") %>'
-                                                        CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20">
-                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                                    <asp:HyperLink ID="btnModificar" runat="server"
+                                                        Visible='<%# Eval("EstadoCompra").ToString() == "Pendiente" %>'
+                                                        NavigateUrl='<%# "~/ComprasForms.aspx?id=" + Eval("IDCompra") %>'
+                                                        CssClass="p-1.5 rounded-md text-slate-500 hover:bg-yellow-50 hover:text-yellow-600 transition-colors"
+                                                        ToolTip="Modificar Compra">
+                                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                                    </asp:HyperLink>
+                                                        
+                                                    <asp:HyperLink ID="btnVer" runat="server"
+                                                        Visible='<%# Eval("EstadoCompra").ToString() != "Pendiente" %>'
+                                                        NavigateUrl='<%# "~/ComprasForms.aspx?id=" + Eval("IDCompra") + "&modo=Ver" %>'
+                                                        CssClass="p-1.5 rounded-md text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                                        ToolTip="Ver Detalle">
+                                                        <span class="material-symbols-outlined text-lg">visibility</span>
                                                     </asp:HyperLink>
 
                                                     <asp:LinkButton ID="btnEliminar" runat="server"

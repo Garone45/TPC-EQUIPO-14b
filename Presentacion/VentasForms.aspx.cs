@@ -12,6 +12,7 @@ namespace Presentacion
 {
     public partial class VentasForms : System.Web.UI.Page
     {
+        private bool EsModoVer { get; set; } = false;
         // --- PROPIEDADES DE SESIÓN ---
         private List<DetallePedido> DetalleActual
         {
@@ -29,9 +30,29 @@ namespace Presentacion
             if (!IsPostBack)
             {
                 string idPedidoStr = Request.QueryString["id"];
+                string modo = Request.QueryString["modo"];
+
+                if (modo == "Ver")
+                {
+                    EsModoVer = true;
+                }
+                BindProductos(null);
+
                 if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
                 {
-                    CargarDatosPedido(idPedido); // Modo Edición
+                    CargarDatosPedido(idPedido); 
+                   
+                    if (EsModoVer)
+                    {
+                        // Si el modo es ver, bloqueamos todo
+                        ConfigurarVistaSoloLectura();
+                        mostrarMensaje("Modo Visualización: No se pueden realizar cambios.", false);
+                    }
+                    else
+                    {
+                        // Modo Edición (Modificar)
+                        mostrarMensaje("Modo Edición: Puede modificar el pedido.", false);
+                    }
                 }
                 else
                 {
@@ -54,11 +75,28 @@ namespace Presentacion
             }
         }
 
-        // --- MÉTODOS DE BÚSQUEDA ---
+        // --- MÉTODOS DE CLIENTES ---
+
+      
 
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
         {
-            BindGridClientes(txtBuscarCliente.Text.Trim());
+            // 1. Obtener el texto limpiando espacios
+            string filtro = txtBuscarCliente.Text.Trim();
+
+            // 2. Lógica de Decisión
+            if (string.IsNullOrEmpty(filtro))
+            {
+              
+                BindGridClientes(null);
+
+              
+            }
+            else
+            {
+                // Si hay texto, filtramos.
+                BindGridClientes(filtro);
+            }
         }
 
         private void BindGridClientes(string filtro)
@@ -74,137 +112,248 @@ namespace Presentacion
                     c.Dni.Contains(filtro)
                 ).ToList();
             }
-            gvClientes.DataSource = clientes;
-            gvClientes.DataBind();
-        }
 
-        protected void gvClientes_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            int selectedId = (int)gvClientes.SelectedDataKey.Value;
-            Session["ClienteSeleccionado"] = selectedId;
-
-            ClienteNegocio negocio = new ClienteNegocio();
-            // Asumiendo que listar() devuelve todos, buscamos el seleccionado en memoria
-            // O idealmente usa negocio.obtenerPorId(selectedId) si lo tienes implementado
-            Cliente cliente = negocio.listar().FirstOrDefault(c => c.IDCliente == selectedId);
-
-            if (cliente != null)
+            // Lógica para mostrar/ocultar mensaje de "Sin resultados"
+            if (clientes.Count > 0)
             {
-                txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
-                txtClientAddress.Text = cliente.Direccion + " " + cliente.Altura;
-                txtClientCity.Text = cliente.Localidad;
-                txtClientDNI.Text = cliente.Dni;
-                txtClientPhone.Text = cliente.Telefono;
-
-                mostrarMensaje("Cliente seleccionado correctamente.", false);
-            }
-
-            txtBuscarCliente.Text = string.Empty;
-            BindGridClientes(null);
-        }
-
-        protected void txtBuscarProductos_TextChanged(object sender, EventArgs e)
-        {
-            string filtro = txtBuscarProductos.Text.Trim();
-            if (!string.IsNullOrEmpty(filtro))
-            {
-                ArticuloNegocio negocio = new ArticuloNegocio();
-                gvProductos.DataSource = negocio.filtrar(filtro);
-                gvProductos.DataBind();
-                upProductos.Update();
-            }
-        }
-
-        protected void gvProductos_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Evento necesario para que el botón Select funcione, aunque la lógica la hacemos en btnAddProduct
-        }
-
-        // --- AGREGAR PRODUCTO AL CARRITO (CON VALIDACIONES) ---
-        protected void btnAddProduct_Click(object sender, EventArgs e)
-        {
-            // VALIDACIÓN 1: ¿Seleccionó algo en la grilla?
-            if (gvProductos.SelectedDataKey == null)
-            {
-                mostrarMensaje("⚠️ Debe buscar y SELECCIONAR un producto de la lista antes de añadir.", true);
-                return;
-            }
-
-            int idArticulo = (int)gvProductos.SelectedDataKey.Value;
-
-            ArticuloNegocio negocio = new ArticuloNegocio();
-            Articulo articulo = negocio.obtenerPorId(idArticulo);
-
-            if (articulo == null) return;
-
-            // VALIDACIÓN 2: Stock disponible
-            if (articulo.StockActual <= 0)
-            {
-                mostrarMensaje($"⚠️ El producto '{articulo.Descripcion}' no tiene stock disponible.", true);
-                return;
-            }
-
-            // VALIDACIÓN 3: Stock suficiente (si ya tengo en el carrito)
-            var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
-            if (detalle != null)
-            {
-                if (detalle.Cantidad + 1 > articulo.StockActual)
-                {
-                    mostrarMensaje($"⚠️ Stock insuficiente. Solo quedan {articulo.StockActual} unidades.", true);
-                    return;
-                }
-                detalle.Cantidad++;
+                rptClientes.DataSource = clientes;
+                rptClientes.DataBind();
+                rptClientes.Visible = true;
+                pnlSinResultados.Visible = false;
             }
             else
             {
-                DetalleActual.Add(new DetallePedido
+               
+                rptClientes.Visible = false;
+                pnlSinResultados.Visible = true; // Mostramos el mensaje (ocupa el espacio vacío)
+
+                // Opcional: Cambiar el texto dinámicamente
+                if (string.IsNullOrEmpty(filtro))
+                    ((Label)pnlSinResultados.Controls[0]).Text = "Empieza a escribir para buscar..."; // Si tuvieras un label dentro
+            }
+        }
+
+        protected void rptClientes_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "Seleccionar")
+            {
+                // Obtenemos el ID del CommandArgument
+                int idCliente = Convert.ToInt32(e.CommandArgument);
+
+                // --- TU LÓGICA DE SELECCIÓN (Es la misma que tenías antes) ---
+                Session["ClienteSeleccionado"] = idCliente;
+
+                ClienteNegocio negocio = new ClienteNegocio();
+                Cliente cliente = negocio.listar().FirstOrDefault(c => c.IDCliente == idCliente);
+
+                if (cliente != null)
                 {
-                    IDArticulo = articulo.IDArticulo,
-                    Descripcion = articulo.Descripcion,
-                    PrecioUnitario = articulo.PrecioVentaCalculado,
-                    Cantidad = 1
-                });
+                    txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
+                    txtClientAddress.Text = cliente.Direccion + " " + cliente.Altura;
+                    txtClientCity.Text = cliente.Localidad;
+                    txtClientDNI.Text = cliente.Dni;
+                    txtClientEmail.Text = cliente.Email;
+                    txtClientPhone.Text = cliente.Telefono;
+
+                    mostrarMensaje("Cliente seleccionado correctamente.", false);
+                }
+
+                // Limpiamos el buscador y ocultamos la lista para que quede limpio
+                txtBuscarCliente.Text = string.Empty;
+             
+                pnlSinResultados.Visible = false;
+            }
+        }
+
+
+        /// METODO DE PRODUCTOS
+
+        private void BindProductos(string filtro)
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            List<Articulo> lista;
+
+            if (string.IsNullOrEmpty(filtro))
+            {
+                lista = negocio.listar();
+            }
+            else
+            {
+                lista = negocio.filtrar(filtro);
             }
 
-            // Limpieza y actualización
-            DetalleActual = DetalleActual; // Guardar cambios en Session
-
-            txtBuscarProductos.Text = "";
-            gvProductos.DataSource = null;
-            gvProductos.DataBind();
-            gvProductos.SelectedIndex = -1; // Deseleccionar
-
-            ActualizarDetalleYTotales();
-            upProductos.Update();
-            mostrarMensaje("Producto añadido al carrito.", false);
+            if (lista != null && lista.Count > 0)
+            {
+                rptProductos.DataSource = lista;
+                rptProductos.DataBind();
+                rptProductos.Visible = true;
+                pnlSinProductos.Visible = false;
+            }
+            else
+            {
+                rptProductos.Visible = false;
+                pnlSinProductos.Visible = true;
+            }
         }
+
+        // Evento del TextBox
+        protected void txtBuscarProductos_TextChanged(object sender, EventArgs e)
+        {
+            BindProductos(txtBuscarProductos.Text.Trim());
+
+            // Foco de vuelta al input para seguir escribiendo o buscando otro
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusScript",
+                $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
+        }
+
+
+        protected void rptProductos_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "AgregarCarrito")
+            {
+                int idArticulo = Convert.ToInt32(e.CommandArgument);
+
+                // 1. Obtener el artículo desde la BD
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                Articulo articulo = negocio.obtenerPorId(idArticulo);
+
+                if (articulo != null)
+                {
+                    // 2. Validar Stock (Tu lógica existente)
+                    if (articulo.StockActual <= 0)
+                    {
+                        mostrarMensaje($"⚠️ El producto '{articulo.Descripcion}' no tiene stock.", true);
+                        return;
+                    }
+
+                    // 3. Buscar si ya existe en el carrito
+                    var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
+
+                    if (detalle != null)
+                    {
+                        // Ya existe: Sumamos 1 si hay stock
+                        if (detalle.Cantidad + 1 > articulo.StockActual)
+                        {
+                            mostrarMensaje($"⚠️ Stock insuficiente. Máximo {articulo.StockActual}.", true);
+                            return;
+                        }
+                        detalle.Cantidad++;
+                    }
+                    else
+                    {
+                        // No existe: Lo creamos
+                        DetalleActual.Add(new DetallePedido
+                        {
+                            IDArticulo = articulo.IDArticulo,
+                            Descripcion = articulo.Descripcion,
+                            PrecioUnitario = articulo.PrecioVentaCalculado,
+                            Cantidad = 1
+                        });
+                    }
+
+                    // 4. Guardar en Session y Actualizar Interfaz
+                    DetalleActual = DetalleActual; // Setter de sesión
+                    ActualizarDetalleYTotales();   // Refresca la grilla de abajo y los montos
+
+                    // Opcional: Feedback visual de éxito
+                    // mostrarMensaje($"Se añadió: {articulo.Descripcion}", false);
+
+                    // 5. Limpiar buscador para la siguiente venta (Opcional, estilo POS rápido)
+                    txtBuscarProductos.Text = string.Empty;
+                    BindProductos(null);
+
+                    // Foco de vuelta al buscador para escanear el siguiente producto rápido
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusProd",
+                        $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
+                }
+            }
+        }
+
+
+
+
+
+
+        /// METODO DE DETALLES
+
 
         // --- GESTIÓN DE GRILLA CARRITO (SUMAR/RESTAR) ---
         protected void gvDetallePedido_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (int.TryParse(e.CommandArgument.ToString(), out int idProducto))
+            if (int.TryParse(e.CommandArgument.ToString(), out int idArticulo))
             {
-                var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idProducto);
+                // Buscamos el ítem en la lista de sesión
+                var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
 
                 if (detalle != null)
                 {
+                    // Verificamos qué botón se apretó (CommandName viene del ASPX)
                     switch (e.CommandName)
                     {
-                        case "Sumar":
-                            // Aquí también podrías validar stock máximo contra la BD si quisieras ser muy estricto
-                            detalle.Cantidad++;
-                            break;
-                        case "Restar":
-                            if (detalle.Cantidad > 1)
-                                detalle.Cantidad--;
-                            else
-                                DetalleActual.Remove(detalle);
-                            break;
                         case "Eliminar":
+                            // 🗑️ Lógica de Eliminar
                             DetalleActual.Remove(detalle);
+                            mostrarMensaje("Producto eliminado del pedido.", false);
+                            break;
+
+                        case "Sumar":
+                            // ➕ Lógica de Sumar (Validando Stock)
+                            ArticuloNegocio negocio = new ArticuloNegocio();
+                            Articulo art = negocio.obtenerPorId(idArticulo);
+
+                            if (art != null && detalle.Cantidad + 1 <= art.StockActual)
+                            {
+                                detalle.Cantidad++;
+                            }
+                            else
+                            {
+                                mostrarMensaje($"⚠️ Stock insuficiente. Máximo {art.StockActual} unidades.", true);
+                            }
+                            break;
+
+                        case "Restar":
+                            // ➖ Lógica de Restar
+                            if (detalle.Cantidad > 1)
+                            {
+                                detalle.Cantidad--;
+                            }
+                            else
+                            {
+                                // Si la cantidad es 1 y resta, lo eliminamos
+                                DetalleActual.Remove(detalle);
+                            }
                             break;
                     }
-                    ActualizarDetalleYTotales();
+
+                    // ⭐ IMPORTANTE: Guardar cambios y refrescar la pantalla
+                    DetalleActual = DetalleActual; // Actualiza la Session
+                    ActualizarDetalleYTotales();   // Recalcula subtotales y repinta la grilla
+                }
+            }
+        }
+
+        protected void gvDetallePedido_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            // Solo actuamos si estamos en MODO VER y es una fila de datos
+            if (EsModoVer && e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // 1. Ocultar botón RESTAR (-)
+                LinkButton btnRestar = (LinkButton)e.Row.FindControl("btnDecreaseQty");
+                if (btnRestar != null) btnRestar.Visible = false;
+
+                // 2. Ocultar botón SUMAR (+)
+                LinkButton btnSumar = (LinkButton)e.Row.FindControl("btnIncreaseQty");
+                if (btnSumar != null) btnSumar.Visible = false;
+
+                // 3. Estilizar el TextBox de cantidad para que parezca texto normal
+                TextBox txtCantidad = (TextBox)e.Row.FindControl("txtQuantity");
+                if (txtCantidad != null)
+                {
+                    txtCantidad.BorderStyle = BorderStyle.None; // Sin bordes
+                    txtCantidad.BackColor = System.Drawing.Color.Transparent; // Fondo transparente
+                    txtCantidad.ReadOnly = true;
+                    // Opcional: Centrarlo visualmente
+                    txtCantidad.Style.Add("text-align", "center");
                 }
             }
         }
@@ -345,6 +494,27 @@ namespace Presentacion
 
             // IMPORTANTE: Actualizar el panel para que se vea el mensaje
             updMensajes.Update();
+        }
+
+        /// METODOS
+        /// 
+
+        private void ConfigurarVistaSoloLectura()
+        {
+    
+            txtBuscarCliente.Enabled = false;
+            txtBuscarProductos.Enabled = false;
+            upProductos.Visible = false;
+            txtBuscarCliente.Visible = false;
+
+            btnFinalizarVenta.Visible = false;  
+            gvDetallePedido.Enabled = false;
+
+            if (gvDetallePedido.Columns.Count > 0)
+            {
+                int ultimaColumna = gvDetallePedido.Columns.Count - 1;
+                gvDetallePedido.Columns[ultimaColumna].Visible = false;
+            }
         }
     }
 }

@@ -1,198 +1,220 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ComprasForms.aspx.cs" Inherits="Presentacion.ComprasForms" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
+    </asp:Content>
 
-</asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-       <!-- Contenedor Principal Flex -->
-<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
-    <div class="flex h-full grow flex-col">
-        <main class="flex flex-1 justify-center py-8 px-4 sm:px-6 lg:px-8">
-            <div class="flex w-full max-w-4xl flex-col gap-8">
-                
-                <!-- Page Heading -->
-                <header class="flex flex-wrap items-center justify-between gap-4">
-                    <h1 class="text-3xl font-black leading-tight tracking-[-0.033em] text-gray-900 dark:text-white sm:text-4xl">Registrar Nueva Compra</h1>
-                </header>
 
-                <!-- General Information Section -->
-                <section class="w-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800/50">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class="min-h-screen w-full bg-slate-50/50 dark:bg-slate-900/50 p-4 sm:p-6 lg:p-8">
+        
+        <div class="mx-auto max-w-6xl flex flex-col gap-6">
+
+            <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                <div>
+                    <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Registrar Compra</h1>
+                    <p class="text-slate-500 dark:text-slate-400 mt-1">Ingresa los detalles de la factura y carga el stock.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider">Nueva</span>
+                    <span class="text-sm text-slate-400 font-mono">#<%: DateTime.Now.ToString("yyyyMMdd") %>-TMP</span>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="lg:col-span-2 flex flex-col gap-6">
+
+                    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">store</span> Datos del Proveedor
+                        </h2>
                         
-                        <!-- Proveedor Dropdown -->
-                        <div class="flex flex-col">
-                            <p class="pb-2 text-base font-medium text-gray-900 dark:text-white">Proveedor</p>
-                            <div class="flex items-center gap-2">
-                                <<asp:DropDownList ID="ddlProveedor" runat="server" data-placeholder="Buscar y seleccionar un proveedor" CssClass="w-full">
-                                    
-                                 </asp:DropDownList>
-                                
-                                <asp:LinkButton ID="btnAgregarProveedor" runat="server" CssClass="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30" aria-label="Añadir nuevo proveedor">
-                                    <span class="material-symbols-outlined">add</span>
-                                </asp:LinkButton>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <div class="col-span-2 md:col-span-1">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Proveedor</label>
+                                <div class="flex gap-2">
+                                    <div class="relative flex-1">
+                                        <asp:DropDownList ID="ddlProveedor" runat="server" CssClass="form-select w-full rounded-lg border-slate-300 bg-slate-50 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white h-11">
+                                        </asp:DropDownList>
+                                    </div>
+                                    <asp:LinkButton ID="btnAgregarProveedor" runat="server" CssClass="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all dark:border-slate-600 dark:text-slate-400">
+                                        <span class="material-symbols-outlined">add</span>
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Fecha de Emisión</label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+                                    </div>
+                                    <asp:TextBox ID="txtFechaCompra" runat="server" TextMode="Date" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white h-11"></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">N° Factura / Referencia</label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="material-symbols-outlined text-slate-400 text-lg">receipt_long</span>
+                                    </div>
+                                    <asp:TextBox ID="txtFacturaRef" runat="server" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white h-11" placeholder="Ej: A-0001-00001234"></asp:TextBox>
+                                </div>
                             </div>
                         </div>
+                    </section>
 
-                        <!-- Fecha Input -->
-                        <div class="flex flex-col">
-                            <p class="pb-2 text-base font-medium text-gray-900 dark:text-white">Fecha de Compra</p>
-                            <div class="relative flex w-full flex-1 items-stretch">
-                                <asp:TextBox ID="txtFechaCompra" runat="server" TextMode="Date" CssClass="form-input h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 bg-background-light p-3 pr-10 text-base font-normal leading-normal text-gray-900 placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-600 dark:bg-background-dark dark:text-white dark:placeholder:text-gray-400"></asp:TextBox>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                    <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">calendar_today</span>
+                    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 overflow-hidden">
+                        
+                        <div class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 p-4 sm:p-6">
+                             <h2 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">inventory_2</span> Ítems de la Compra
+                            </h2>
+                        </div>
+
+                        <div class="p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800">
+                            <div class="grid grid-cols-12 gap-4 items-end">
+                                
+                                <div class="col-span-12 md:col-span-5">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Producto</label>
+                                    <asp:DropDownList ID="ddlProductoItem" runat="server" CssClass="form-select w-full rounded-lg border-slate-300 text-sm h-10 focus:ring-2 focus:ring-primary/20 dark:bg-slate-800 dark:border-slate-600 dark:text-white"></asp:DropDownList>
+                                </div>
+
+                                <div class="col-span-6 md:col-span-2">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Cant.</label>
+                                    <asp:TextBox ID="txtCantidad" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border-slate-300 text-sm h-10 text-center dark:bg-slate-800 dark:border-slate-600 dark:text-white" placeholder="0"></asp:TextBox>
+                                </div>
+
+                                <div class="col-span-6 md:col-span-3">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Costo Unit.</label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span class="text-slate-400 text-sm">$</span>
+                                        </div>
+                                        <asp:TextBox ID="txtCosto" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border-slate-300 pl-7 text-sm h-10 dark:bg-slate-800 dark:border-slate-600 dark:text-white" placeholder="0.00"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-12 md:col-span-2">
+                                    <asp:LinkButton ID="btnAnadirProducto" runat="server" OnClick ="btnAnadirProducto_Click" CssClass="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 h-10 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-all">                                        
+                                        <span class="material-symbols-outlined text-[20px]">add</span> Añadir
+                                    </asp:LinkButton>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Factura Input -->
-                        <div class="md:col-span-2">
-                            <div class="flex flex-col">
-                                <p class="pb-2 text-base font-medium text-gray-900 dark:text-white">Número de Factura/Referencia (Opcional)</p>
-                                <asp:TextBox ID="txtFacturaRef" runat="server" CssClass="form-input h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 bg-background-light p-3 text-base font-normal leading-normal text-gray-900 placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-gray-600 dark:bg-background-dark dark:text-white dark:placeholder:text-gray-400" placeholder="Ingrese el número de referencia"></asp:TextBox>
-                            </div>
-                        </div>
+                        <div class="overflow-x-auto">
+    <asp:GridView ID="gvDetalleCompra" runat="server" AutoGenerateColumns="false" GridLines="None"
+        CssClass="w-full text-left border-collapse"
+        HeaderStyle-CssClass="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700"
+        RowStyle-CssClass="border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+        EmptyDataText="No hay productos cargados."
+        OnRowCommand="gvDetalleCompra_RowCommand"
+        ShowHeaderWhenEmpty="true">
+        <Columns>
+            <asp:TemplateField HeaderText="PRODUCTO">
+                <HeaderStyle CssClass="py-3 pl-6 pr-3 text-xs font-bold uppercase tracking-wide text-slate-500" />
+                <ItemTemplate>
+                    <div class="pl-6 py-3">
+                        <p class="font-semibold text-slate-900 dark:text-white"><%# Eval("NombreProducto") %></p>
+                        <p class="text-xs text-slate-400">SKU: <%# Eval("IDArticulo") %></p>
                     </div>
-                </section>
+                </ItemTemplate>
+            </asp:TemplateField>
 
-                <!-- Products Section -->
-                <section class="w-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800/50">
-                    <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] text-gray-900 dark:text-white">Detalle de Productos</h2>
-                    
-                    <!-- Add Product Form -->
-                    <div class="mt-4 grid grid-cols-12 items-end gap-x-4 gap-y-4 rounded-lg border border-gray-200 bg-background-light p-4 dark:border-gray-700 dark:bg-background-dark">
-                        
-                        <div class="col-span-12 flex flex-col sm:col-span-6 md:col-span-5">
-                            <p class="pb-2 text-sm font-medium">Producto</p>
-                            <asp:DropDownList ID="ddlProductoItem" runat="server" CssClass="form-select h-11 w-full rounded-md border-gray-300 bg-white text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                
-                            </asp:DropDownList>
-                        </div>
-
-                        <div class="col-span-6 flex flex-col sm:col-span-3 md:col-span-2">
-                            <p class="pb-2 text-sm font-medium">Cantidad</p>
-                            <asp:TextBox ID="txtCantidad" runat="server" TextMode="Number" CssClass="form-input h-11 w-full rounded-md border-gray-300 bg-white text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="0"></asp:TextBox>
-                        </div>
-
-                        <div class="col-span-6 flex flex-col sm:col-span-3 md:col-span-2">
-                            <p class="pb-2 text-sm font-medium">Costo/Ud.</p>
-                            <asp:TextBox ID="txtCosto" runat="server" TextMode="Number" CssClass="form-input h-11 w-full rounded-md border-gray-300 bg-white text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white" placeholder="0.00"></asp:TextBox>
-                        </div>
-
-                        <div class="col-span-12 flex justify-end md:col-span-3">
-                            <asp:LinkButton ID="btnAnadirProducto" runat="server" CssClass="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700">
-                                <span class="material-symbols-outlined" style="font-size: 20px;">add_circle</span>
-                                Añadir Producto
-                            </asp:LinkButton>
-                        </div>
+            <asp:TemplateField HeaderText="CANT.">
+                <HeaderStyle CssClass="px-3 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500" />
+                <ItemTemplate>
+                    <div class="text-center">
+                        <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            <%# Eval("Cantidad") %>
+                        </span>
                     </div>
+                </ItemTemplate>
+            </asp:TemplateField>
 
-                    <!-- Products Table -->
-                     <div class="mt-6 flow-root">
-                         <div class="-mx-6 -my-2 overflow-x-auto">
-                             <div class="inline-block min-w-full py-2 align-middle sm:px-6">
-                                 <asp:GridView 
-                                     ID="gvDetalleCompra" 
-                                     runat="server"
-                                     AutoGenerateColumns="false"
-                                     GridLines="None"
-                                     CssClass="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                                     HeaderStyle-CssClass="bg-background-light dark:bg-gray-800"
-                                     RowStyle-CssClass="divide-y divide-gray-200 dark:divide-gray-700"
-                                     EmptyDataText="No hay productos añadidos a la compra."
-                                     ShowHeaderWhenEmpty="true"
-                                     >
-                                     <Columns>
-                                         
-                                         
-                                         <asp:TemplateField HeaderText="Producto">
-                                             <HeaderStyle CssClass="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-0" />
-                                             <ItemTemplate>
-                                                 <asp:Label ID="lblProductoNombre" runat="server" Text='<%# Eval("NombreProducto") %>' CssClass="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0"></asp:Label>
-                                             </ItemTemplate>
-                                         </asp:TemplateField>
+            <asp:BoundField DataField="PrecioUnitario" HeaderText="COSTO" DataFormatString="{0:C}">
+                <HeaderStyle CssClass="px-3 py-3 text-right text-xs font-bold uppercase tracking-wide text-slate-500" />
+                <ItemStyle CssClass="px-3 py-3 text-right text-sm text-slate-600 dark:text-slate-300" />
+            </asp:BoundField>
 
-                                        
-                                         <asp:TemplateField HeaderText="Cantidad">
-                                             <HeaderStyle CssClass="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" />
-                                             <ItemTemplate>
-                                                 <asp:Label ID="lblCantidad" runat="server" Text='<%# Eval("Cantidad") %>' CssClass="whitespace-nowrap px-3 py-4 text-sm text-gray-600 dark:text-gray-300"></asp:Label>
-                                             </ItemTemplate>
-                                         </asp:TemplateField>
+            <asp:BoundField DataField="Subtotal" HeaderText="SUBTOTAL" DataFormatString="{0:C}">
+                <HeaderStyle CssClass="px-3 py-3 text-right text-xs font-bold uppercase tracking-wide text-slate-500" />
+                <ItemStyle CssClass="px-3 py-3 text-right text-sm font-bold text-slate-900 dark:text-white" />
+            </asp:BoundField>
 
-                                 
-                                         <asp:TemplateField HeaderText="Precio de Costo">
-                                             <HeaderStyle CssClass="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" />
-                                             <ItemTemplate>
-                                                 <asp:Label ID="lblPrecioCosto" runat="server" Text='<%# Eval("PrecioCosto", "{0:C}") %>' CssClass="whitespace-nowrap px-3 py-4 text-sm text-gray-600 dark:text-gray-300"></asp:Label>
-                                             </ItemTemplate>
-                                         </asp:TemplateField>
-
-                                  
-                                         <asp:TemplateField HeaderText="Subtotal">
-                                             <HeaderStyle CssClass="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" />
-                                             <ItemTemplate>
-                                                 <asp:Label ID="lblSubtotal" runat="server" Text='<%# Eval("Subtotal", "{0:C}") %>' CssClass="whitespace-nowrap px-3 py-4 text-sm text-gray-600 dark:text-gray-300"></asp:Label>
-                                             </ItemTemplate>
-                                         </asp:TemplateField>
-
-                                      
-                                         <asp:TemplateField HeaderText="Acciones">
-                                             <HeaderStyle CssClass="relative py-3.5 pl-3 pr-4 sm:pr-0" />
-                                             <ItemTemplate>
-                                                 <asp:LinkButton 
-                                                     ID="btnEliminarProducto" 
-                                                     runat="server" 
-                                                     CommandName="Eliminar" 
-                                                     CommandArgument='<%# Eval("IDDetalle") %>'
-                                                     CssClass="text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                                                     aria-label="Eliminar producto">
-                                                     <span class="material-symbols-outlined" style="font-size: 20px;">delete</span>
-                                                 </asp:LinkButton>
-                                             </ItemTemplate>
-                                         </asp:TemplateField>
-                                         
-                                     </Columns>
-                                     <EmptyDataTemplate>
-                                         <div class="py-10 text-center">
-                                             <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                                 <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                             </svg>
-                                             <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">Sin Productos</h3>
-                                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Añade tu primer producto usando el formulario de arriba.</p>
-                                         </div>
-                                     </EmptyDataTemplate>
-                                 </asp:GridView>
-                             </div>
-                         </div>
-                     </div>
-
-                    <!-- Summary -->
-                    <div class="mt-8 flex justify-end">
-                        <div class="w-full max-w-sm space-y-3 rounded-lg bg-background-light p-4 dark:bg-background-dark">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600 dark:text-gray-300">Subtotal</span>
-                                <span class="font-medium text-gray-900 dark:text-white">$142.50</span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600 dark:text-gray-300">Impuestos (IVA 21%)</span>
-                                <span class="font-medium text-gray-900 dark:text-white">$29.93</span>
-                            </div>
-                            <div class="flex justify-between border-t border-gray-200 pt-3 text-base font-bold dark:border-gray-700">
-                                <span class="text-gray-900 dark:text-white">TOTAL</span>
-                                <span class="text-primary dark:text-blue-400">$172.43</span>
-                            </div>
-                        </div>
+            <asp:TemplateField>
+                <HeaderStyle CssClass="w-10" />
+                <ItemTemplate>
+                    <div class="pr-6 text-right">
+                        <asp:LinkButton ID="btnEliminarProducto" runat="server" CommandName="Eliminar" CommandArgument='<%# Eval("IDDetalle") %>' CssClass="text-slate-400 hover:text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                        </asp:LinkButton>
                     </div>
-                </section>
+                </ItemTemplate>
+            </asp:TemplateField>
+        </Columns>
+        <EmptyDataTemplate>
+            <div class="p-8 text-center text-slate-400">
+                <span class="material-symbols-outlined text-4xl mb-2 opacity-50">shopping_bag</span>
+                <p class="text-sm">Aún no has agregado productos a esta compra.</p>
             </div>
-        </main>
-
-        <!-- Floating Action Footer -->
-        <footer class="sticky bottom-0 mt-auto w-full border-t border-gray-200 bg-white/80 py-4 backdrop-blur-sm dark:border-gray-700 dark:bg-background-dark/80">
-            <div class="mx-auto flex max-w-4xl justify-end gap-4 px-4 sm:px-6 lg:px-8">
-                <asp:Button ID="btnCancelar" runat="server" Text="Cancelar" CssClass="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600" />
-                <asp:Button ID="btnGuardarCompra" runat="server" Text="Guardar Compra" CssClass="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90" />
-            </div>
-        </footer>
-    </div>
+        </EmptyDataTemplate>
+    </asp:GridView>
 </div>
+                    </section>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="sticky top-6 flex flex-col gap-6">
+                        
+                        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Notas Adicionales</h3>
+                            <div class="relative">
+                                <asp:TextBox ID="txtObservaciones" runat="server" TextMode="MultiLine" Rows="3" 
+                                    CssClass="form-textarea w-full rounded-lg border-slate-300 bg-slate-50 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white resize-none" 
+                                    placeholder="Escribe aquí observaciones sobre la entrega, estado de los productos, etc."></asp:TextBox>
+                                <div class="absolute bottom-2 right-2 pointer-events-none">
+                                    <span class="material-symbols-outlined text-slate-400 text-sm">edit_note</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/50 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+                            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Resumen</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm text-slate-600 dark:text-slate-400">
+                                    <span>Subtotal</span>
+                                    <asp:Label ID="lblSubtotal" runat="server" CssClass="font-medium" Text="$0.00"></asp:Label>                                
+                                </div>
+                                <div class="flex justify-between text-sm text-slate-600 dark:text-slate-400">
+                                    <span>Impuestos</span>
+                                    <span class="font-medium">$0.00</span>
+                                </div>
+                                
+                                <div class="my-4 border-t border-dashed border-slate-200 dark:border-slate-700"></div>
+                                
+                                <div class="flex justify-between items-end">
+                                    <span class="text-base font-bold text-slate-800 dark:text-white">Total</span>
+                                    <asp:Label ID="lblTotalPagar" runat="server" CssClass="text-3xl font-black text-primary" ></asp:Label>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex flex-col gap-3">
+                                <asp:Button ID="btnGuardarCompra" runat="server" Text="Confirmar Compra" OnClick="btnGuardarCompra_Click"  CssClass="w-full cursor-pointer rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary/90 hover:scale-[1.02] active:scale-95 transition-all" />
+                                
+                                <asp:Button ID="btnCancelar" runat="server" Text="Cancelar Operación" OnClick="btnCancelar_Click" CssClass="w-full cursor-pointer rounded-xl border border-transparent px-4 py-3.5 text-sm font-bold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors" />
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </asp:Content>

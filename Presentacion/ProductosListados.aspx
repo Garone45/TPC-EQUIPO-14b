@@ -1,9 +1,9 @@
 ﻿<%@ Page Title="Listado de Productos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ProductosListados.aspx.cs" Inherits="Presentacion.ProductosListados" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+
     <script src="Scripts/jquery-3.7.0.min.js"></script>
-    <script src="Scripts/bootstrap.bundle.min.js"></script>
+  
 
    
 <style>
@@ -55,9 +55,6 @@
             <div class="flex flex-col gap-1">
                 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">Gestión de Productos</h1>
             </div>
-            <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
-                PostBackUrl="~/ProductosForms.aspx"
-                CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />
         </div>
 
         <asp:UpdatePanel ID="upnlGrillaProductos" runat="server" UpdateMode="Conditional">
@@ -77,6 +74,9 @@
                             onkeyup="delayPostback(this);"
                             OnTextChanged="txtBuscar_TextChanged" />
                     </div>
+                    <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
+                    PostBackUrl="~/ProductosForms.aspx"
+                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />     
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">

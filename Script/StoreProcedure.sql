@@ -6,7 +6,6 @@ GO
 -- =============================================
 CREATE PROCEDURE SP_AgregarArticulo
     @Descripcion VARCHAR(255),
-    @CodigoArticulo VARCHAR(50),
     @IdMarca INT,
     @IdCategoria INT,
     @IdProveedor INT, -- Nuevo
@@ -18,11 +17,11 @@ CREATE PROCEDURE SP_AgregarArticulo
 AS
 BEGIN
     INSERT INTO dbo.Articulos (
-        Descripcion, CodigoArticulo, IdMarca, IdCategoria, IdProveedor,
+        Descripcion, IdMarca, IdCategoria, IdProveedor,
         PrecioCostoActual, PorcentajeGanancia, StockActual, StockMinimo, Activo 
     )
     VALUES (
-        @Descripcion, @CodigoArticulo, @IdMarca, @IdCategoria, @IdProveedor,
+        @Descripcion, @IdMarca, @IdCategoria, @IdProveedor,
         @PrecioCostoActual, @PorcentajeGanancia, @StockActual, @StockMinimo, @Activo 
     );
 END

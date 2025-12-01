@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Dominio.Ventas.Pedido;
 
+
 namespace Negocio
 {
     public class VentasNegocio
@@ -27,6 +28,7 @@ namespace Negocio
                     C.Nombre + ' ' + C.Apellido AS NombreCliente  
                 FROM dbo.Pedidos P
                 INNER JOIN dbo.Cliente C ON P.IDCliente = C.IDCliente
+                ORDER BY P.IDPedido DESC;
                 ";
 
 
@@ -456,9 +458,102 @@ namespace Negocio
             }
 
         }
-            
-            
+
+        
+
+        public bool ConfirmarEntrega(int idPedido)
+    {
+        AccesoDatos datos = new AccesoDatos();
+        SqlTransaction transaccion = null;
+
+        try
+        {
+            datos.Conexion.Open();
+            transaccion = datos.Conexion.BeginTransaction();
+            datos.Comando.Transaction = transaccion;
+
+            // -------------------------------------------------------
+            // PASO 1: OBTENER LOS ARTÍCULOS Y CANTIDADES DEL PEDIDO
+            // -------------------------------------------------------
+            string consultaDetalles = "SELECT IDArticulo, Cantidad FROM DetallesPedido WHERE IDPedido = @IDPedido";
+            datos.setearConsulta(consultaDetalles);
+            datos.setearParametro("@IDPedido", idPedido);
+
+            List<DetallePedido> itemsAdescontar = new List<DetallePedido>();
+
+            // Ejecutamos lectura
+            using (SqlDataReader lector = datos.Comando.ExecuteReader())
+            {
+                while (lector.Read())
+                {
+                    DetallePedido item = new DetallePedido();
+                    item.IDArticulo = (int)lector["IDArticulo"];
+                    item.Cantidad = (int)lector["Cantidad"];
+                    itemsAdescontar.Add(item);
+                }
+            }
+            // IMPORTANTE: El lector se cierra aquí gracias al 'using', liberando la conexión para hacer Updates.
+
+            // -------------------------------------------------------
+            // PASO 2: DESCONTAR STOCK DE CADA ARTÍCULO
+            // -------------------------------------------------------
+            string consultaStock = "UPDATE Articulos SET StockActual = StockActual - @Cantidad WHERE IdArticulo = @IDArticulo";
+
+            foreach (var item in itemsAdescontar)
+            {
+                datos.Comando.Parameters.Clear();
+                datos.Comando.CommandText = consultaStock;
+
+                datos.setearParametro("@Cantidad", item.Cantidad);
+                datos.setearParametro("@IDArticulo", item.IDArticulo);
+
+                datos.Comando.ExecuteNonQuery();
+            }
+
+            // -------------------------------------------------------
+            // PASO 3: ACTUALIZAR ESTADO DEL PEDIDO A 'ENTREGADO'
+            // -------------------------------------------------------
+            // Validamos que siga estando en 'Pendiente' para evitar doble entrega
+            string consultaEstado = @"UPDATE Pedidos 
+                                  SET Estado = 'Entregado', FechaEntrega = GETDATE() 
+                                  WHERE IDPedido = @IDPedido AND Estado = 'Pendiente'";
+
+            datos.Comando.Parameters.Clear();
+            datos.Comando.CommandText = consultaEstado;
+            datos.setearParametro("@IDPedido", idPedido);
+
+            int filasAfectadas = datos.Comando.ExecuteNonQuery();
+
+            if (filasAfectadas == 0)
+            {
+                // Si no afectó filas, es porque el pedido NO estaba pendiente (quizás ya se entregó o canceló)
+                // Hacemos Rollback para no descontar stock dos veces.
+                transaccion.Rollback();
+                return false;
+            }
+
+            // -------------------------------------------------------
+            // PASO 4: CONFIRMAR TRANSACCIÓN
+            // -------------------------------------------------------
+            transaccion.Commit();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            if (transaccion != null)
+                transaccion.Rollback();
+
+            throw new Exception("Error al confirmar la entrega: " + ex.Message);
+        }
+        finally
+        {
+            if (datos.Conexion.State == System.Data.ConnectionState.Open)
+                datos.Conexion.Close();
+        }
     }
+
+
+}
 }
 
 
