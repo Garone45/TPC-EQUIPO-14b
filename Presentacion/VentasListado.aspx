@@ -235,20 +235,19 @@
                                                 <span class="material-symbols-outlined text-lg">visibility</span>
                                             </asp:HyperLink>
 
-
-                                            <a href="javascript:void(0);"
-                                                onclick="abrirModalEliminar(<%# Eval("IDPedido") %>);"
-                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer"
-                                                ToolTip="Eliminar">>
-                                                <span class="material-symbols-outlined text-lg">delete</span>
-                                            </a>
-
+                                            <asp:HyperLink ID="btnEliminar" runat="server" Visible='<%# Eval("Estado").ToString() == "Pendiente" %>' ToolTip="Eliminar">
+                                                <a href="javascript:void(0);"
+                                                    onclick="abrirModalEliminar(<%# Eval("IDPedido") %>);"
+                                                    class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer">
+                                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                                </a>
+                                            </asp:HyperLink>
 
                                             <asp:LinkButton ID="btnEntregado" runat="server"
                                                 Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
                                                 CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-green-500/10 hover:text-green-500 dark:hover:bg-green-500/20"
                                                 OnClientClick='<%# "abrirModalEntrega(this.uniqueID, " + Eval("IDPedido") + "); return false;" %>'
-                                                ToolTip="Entregado">>
+                                                ToolTip="Entregado">
                                                 <span class="material-symbols-outlined text-lg">check_circle</span>
                                             </asp:LinkButton>
                                         </div>
