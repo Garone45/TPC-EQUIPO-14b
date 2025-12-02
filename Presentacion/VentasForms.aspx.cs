@@ -77,8 +77,6 @@ namespace Presentacion
 
         // --- MÉTODOS DE CLIENTES ---
 
-      
-
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
         {
             // 1. Obtener el texto limpiando espacios
@@ -268,9 +266,6 @@ namespace Presentacion
                 }
             }
         }
-
-
-
 
 
 
@@ -501,15 +496,22 @@ namespace Presentacion
 
         private void ConfigurarVistaSoloLectura()
         {
-    
-            txtBuscarCliente.Enabled = false;
+            // 1. Ocultamos la columna completa del buscador
+            // Esto elimina el Label, el TextBox, el icono y el Repeater visualmente.
+            columnaBusqueda.Visible = false;
+
+            // 2. Expandimos la columna de detalles para que ocupe todo el ancho
+            // Cambiamos la clase 'md:col-span-8' por 'md:col-span-12'
+            columnaDetalle.Attributes["class"] = "md:col-span-12 grid grid-cols-1 gap-6";
+
+            // 3. Ocultamos secciones de productos y botones de acción
             txtBuscarProductos.Enabled = false;
             upProductos.Visible = false;
-            txtBuscarCliente.Visible = false;
 
-            btnFinalizarVenta.Visible = false;  
+            btnFinalizarVenta.Visible = false;
             gvDetallePedido.Enabled = false;
 
+            // Ocultar la columna de "Eliminar" en la grilla de detalles
             if (gvDetallePedido.Columns.Count > 0)
             {
                 int ultimaColumna = gvDetallePedido.Columns.Count - 1;

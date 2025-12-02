@@ -42,6 +42,15 @@ namespace Presentacion
         protected global::System.Web.UI.UpdatePanel upCliente;
 
         /// <summary>
+        /// Control columnaBusqueda.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl columnaBusqueda;
+
+        /// <summary>
         /// Control txtBuscarCliente.
         /// </summary>
         /// <remarks>
@@ -67,6 +76,15 @@ namespace Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlSinResultados;
+
+        /// <summary>
+        /// Control columnaDetalle.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl columnaDetalle;
 
         /// <summary>
         /// Control txtClientName.

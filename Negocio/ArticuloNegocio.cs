@@ -75,38 +75,56 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-
                 datos.setearProcedimiento("SP_ObtenerArticuloPorID");
                 datos.setearParametro("@IdArticulo", id);
-
                 datos.ejecutarLectura();
-
 
                 if (datos.Lector.Read())
                 {
                     Articulo aux = new Articulo();
                     aux.Marca = new Marca();
                     aux.Categorias = new Categoria();
-                    aux.Proveedor = new Proveedor();
+                    aux.Proveedor = new Proveedor(); // Instanciamos para evitar NullReference
 
+                    // 1. Lecturas seguras de datos que NO son nulos (según tu tabla)
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
-
-
                     aux.StockActual = (int)datos.Lector["StockActual"];
                     aux.StockMinimo = (int)datos.Lector["StockMinimo"];
                     aux.PrecioCostoActual = (decimal)datos.Lector["PrecioCostoActual"];
                     aux.PorcentajeGanancia = (decimal)datos.Lector["PorcentajeGanancia"];
                     aux.Activo = (bool)datos.Lector["Activo"];
 
+                    // 2. Lecturas de Claves Foráneas (Marca y Categoria suelen ser obligatorias)
                     aux.Marca.IDMarca = (int)datos.Lector["IdMarca"];
                     aux.Marca.Descripcion = (string)datos.Lector["MarcaDescripcion"];
 
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
 
-                    aux.Proveedor.ID = (int)datos.Lector["IDProveedor"];
-                    aux.Proveedor.RazonSocial = (string)datos.Lector["RazonSocial"];
+                    // 3. SECCIÓN CRÍTICA: PROVEEDOR (Puede ser NULL)
+                    // Verificamos si la columna IDProveedor tiene dato real
+                    if (!(datos.Lector["IDProveedor"] is DBNull))
+                    {
+                        aux.Proveedor.ID = (int)datos.Lector["IDProveedor"];
+
+                        // Validamos TAMBIÉN la Razón Social por si acaso
+                        if (!(datos.Lector["RazonSocial"] is DBNull))
+                            aux.Proveedor.RazonSocial = (string)datos.Lector["RazonSocial"];
+                        else
+                            aux.Proveedor.RazonSocial = "Nombre Desconocido";
+                    }
+                    else
+                    {
+                        // Si es NULL, valores por defecto
+                        aux.Proveedor.ID = -1;
+                        aux.Proveedor.RazonSocial = "Sin Proveedor";
+                    }
+
+                    // 4. EXTRA: Código de Artículo (Suele ser NULL a veces)
+                    // Si tu SP lo trae, agrégalo así para evitar otro crash:
+                    // if (!(datos.Lector["CodigoArticulo"] is DBNull))
+                    //     aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
 
                     return aux;
                 }
@@ -115,7 +133,7 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener artículo por ID en Capa de Negocio.", ex);
+                throw new Exception("Error al obtener artículo por ID: " + ex.Message);
             }
             finally
             {

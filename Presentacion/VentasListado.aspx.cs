@@ -20,11 +20,9 @@ namespace Presentacion
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarVentas();
             }
-           
-
+          
         }
 
-       
         private List<Pedido> ListaPedidos
         {
             get

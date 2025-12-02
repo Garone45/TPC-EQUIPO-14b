@@ -3,8 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript">
-        // ... (Tu código JavaScript se mantiene igual, no afecta el diseño) ...
-        var delayTimer;
+          var delayTimer;
         var postBackElementId = "";
         function delayPostback(source) {
             clearTimeout(delayTimer);
@@ -90,7 +89,7 @@
                 <ContentTemplate>
                     <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm p-6 flex-shrink-0">
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                            <div class="md:col-span-4">
+                          <div id="columnaBusqueda" runat="server" class="md:col-span-4">
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2" for="txtSearchClient">Buscar Cliente</label>
                                 <div class="relative">
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -103,7 +102,6 @@
                                         OnTextChanged="txtBuscarCliente_TextChanged"
                                         CausesValidation="false"></asp:TextBox>
                                 </div>
-
 
                                 <div class="mt-4 h-72 overflow-y-auto custom-scrollbar space-y-2">
 
@@ -145,12 +143,11 @@
 
                                 </div>
 
-
                             </div>
 
 
 
-                            <div class="md:col-span-8 grid grid-cols-1 gap-6">
+                            <div id="columnaDetalle" runat="server" class="md:col-span-8 grid grid-cols-1 gap-6">
 
                                 <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md border border-slate-200 dark:border-slate-700">
 
@@ -222,10 +219,7 @@
 
                             </div>
 
-
-
                         </div>
-
 
 
                     </div>
@@ -266,13 +260,13 @@
                                                         <p class="font-bold text-slate-800 dark:text-slate-200 truncate"><%# Eval("Descripcion") %></p>
                                                         <span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400 ring-1 ring-inset ring-slate-500/10">
                                                             <%# Eval("IDArticulo") %>
-                                    </span>
+                                                        </span>
                                                     </div>
                                                     <div class="flex items-center mt-1 text-xs text-slate-500">
                                                         <span>Stock: </span>
                                                         <span class="font-medium ml-1 <%# (int)Eval("StockActual") > 0 ? "text-green-600" : "text-red-500" %>">
                                                             <%# Eval("StockActual") %> u.
-                                    </span>
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -287,7 +281,7 @@
                                                         CausesValidation="false"
                                                         CssClass="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors">
                                     <span class="material-symbols-outlined text-xl">add</span>
-                                </asp:LinkButton>
+                                                    </asp:LinkButton>
                                                 </div>
                                             </div>
                                         </ItemTemplate>
@@ -323,7 +317,7 @@
 
                             <div class="flex-1 overflow-y-auto custom-scrollbar min-h-[300px] relative">
 
-                                <asp:GridView ID="gvDetallePedido" runat="server" 
+                                <asp:GridView ID="gvDetallePedido" runat="server"
                                     AutoGenerateColumns="false"
                                     DataKeyNames="IDArticulo"
                                     CssClass="w-full text-left border-collapse"
