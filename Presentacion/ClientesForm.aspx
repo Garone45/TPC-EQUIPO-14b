@@ -44,13 +44,13 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nombre(s) <span class="text-red-500">*</span></label>
-                                <asp:TextBox ID="txtNombre" runat="server" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: Juan"></asp:TextBox>
+                                <asp:TextBox ID="txtNombre" runat="server" MaxLength="50" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: Juan"></asp:TextBox>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNombre" ErrorMessage="El nombre es requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Apellido(s) <span class="text-red-500">*</span></label>
-                                <asp:TextBox ID="txtApellido" runat="server" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: Pérez"></asp:TextBox>
+                                <asp:TextBox ID="txtApellido" runat="server" MaxLength="50" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: Pérez"></asp:TextBox>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtApellido" ErrorMessage="El apellido es requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                             </div>
 
@@ -60,10 +60,11 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <span class="material-symbols-outlined text-slate-400 text-[20px]">badge</span>
                                     </div>
-                                    <asp:TextBox ID="txtDni" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Sin puntos"></asp:TextBox>
+                                    <asp:TextBox ID="txtDni" runat="server" TextMode="Number" MaxLength="8" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Sin puntos"></asp:TextBox>
                                 </div>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDni" ErrorMessage="El DNI es requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
-                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtDni" ValidationExpression="^[0-9]+$" ErrorMessage="Solo números." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
+                                
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtDni" ValidationExpression="^\d{7,8}$" ErrorMessage="El DNI debe tener 7 u 8 dígitos." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                             </div>
 
                         </div>
@@ -82,7 +83,7 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
                                     </div>
-                                    <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="ejemplo@mail.com"></asp:TextBox>
+                                    <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" MaxLength="100" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="ejemplo@mail.com"></asp:TextBox>
                                 </div>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" ErrorMessage="El email es requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                                 <asp:RegularExpressionValidator runat="server" ControlToValidate="txtEmail" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ErrorMessage="Email inválido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
@@ -94,10 +95,11 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <span class="material-symbols-outlined text-slate-400 text-[20px]">call</span>
                                     </div>
-                                    <asp:TextBox ID="txtTelefono" runat="server" TextMode="Phone" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Cod. Área + Número"></asp:TextBox>
+                                    <asp:TextBox ID="txtTelefono" runat="server" TextMode="Phone" MaxLength="15" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Cod. Área + Número"></asp:TextBox>
                                 </div>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtTelefono" ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
-                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtTelefono" ValidationExpression="^[0-9]+$" ErrorMessage="Solo números." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
+                                
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtTelefono" ValidationExpression="^\d{8,15}$" ErrorMessage="Ingrese un teléfono válido (mín 8 núm)." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                             </div>
 
                             <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -107,7 +109,7 @@
                                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                             <span class="material-symbols-outlined text-slate-400 text-[20px]">home</span>
                                         </div>
-                                        <asp:TextBox ID="txtDireccion" runat="server" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Nombre de la calle"></asp:TextBox>
+                                        <asp:TextBox ID="txtDireccion" runat="server" MaxLength="100" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Nombre de la calle"></asp:TextBox>
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDireccion" ErrorMessage="La calle es requerida." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                                 </div>
@@ -118,9 +120,10 @@
                                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                             <span class="material-symbols-outlined text-slate-400 text-[20px]">tag</span>
                                         </div>
-                                        <asp:TextBox ID="txtAltura" runat="server" TextMode="Number" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="123"></asp:TextBox>
+                                        <asp:TextBox ID="txtAltura" runat="server" TextMode="Number" MaxLength="5" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="123"></asp:TextBox>
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAltura" ErrorMessage="Requerido." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
+                                    <asp:RangeValidator runat="server" ControlToValidate="txtAltura" MinimumValue="1" MaximumValue="99999" Type="Integer" ErrorMessage="Altura inválida." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                                 </div>
                             </div>
 
@@ -130,7 +133,7 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <span class="material-symbols-outlined text-slate-400 text-[20px]">location_on</span>
                                     </div>
-                                    <asp:TextBox ID="txtLocalidad" runat="server" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: San Fernando"></asp:TextBox>
+                                    <asp:TextBox ID="txtLocalidad" runat="server" MaxLength="100" CssClass="form-input w-full rounded-lg border-slate-300 bg-slate-50 pl-10 focus:bg-white focus:ring-primary focus:border-primary dark:bg-slate-900/50 dark:border-slate-600 dark:text-white transition-all" placeholder="Ej: San Fernando"></asp:TextBox>
                                 </div>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtLocalidad" ErrorMessage="La localidad es requerida." CssClass="text-red-500 text-xs font-semibold mt-1 block" Display="Dynamic" />
                             </div>
