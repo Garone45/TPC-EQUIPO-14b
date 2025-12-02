@@ -24,15 +24,6 @@ namespace Presentacion
         protected global::System.Web.UI.ScriptManagerProxy ScriptManagerProxy1;
 
         /// <summary>
-        /// Control lnkNuevaCompra.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkNuevaCompra;
-
-        /// <summary>
         /// Control txtBuscar.
         /// </summary>
         /// <remarks>
@@ -40,6 +31,15 @@ namespace Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtBuscar;
+
+        /// <summary>
+        /// Control lnkNuevaCompra.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink lnkNuevaCompra;
 
         /// <summary>
         /// Control updCompras.

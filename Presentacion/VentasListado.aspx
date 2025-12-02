@@ -202,7 +202,7 @@
                                 <asp:BoundField DataField="IDPedido" HeaderText="N°Pedido" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold" />
                                 <asp:BoundField DataField="NombreCliente" HeaderText="Cliente" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="FechaCreacion" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
-                                <asp:BoundField DataField="Total" HeaderText="Total" DataFormatString="{0:C}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold text-green-600" />
+                                <asp:BoundField DataField="Total" HeaderText="Total" DataFormatString="{0:C0}"  HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold text-green-600" />
 
                                 <asp:TemplateField HeaderText="Estado" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
