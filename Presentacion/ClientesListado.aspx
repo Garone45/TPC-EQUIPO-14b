@@ -4,6 +4,8 @@
  
     <script src="Scripts/jquery-3.7.0.min.js"></script>
 
+    <script src="Scripts/bootstrap.bundle.min.js"></script>
+
 
     <script type="text/javascript">
         // --- TUS SCRIPTS DE BÚSQUEDA (Conservados) ---
@@ -129,24 +131,44 @@
             </Triggers>
         </asp:UpdatePanel>
 
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title fw-bold">Confirmar Eliminación</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center py-4">
-                        <p class="mb-1 fs-5">¿Estás seguro de que deseas eliminar este cliente?</p>
-                        <small class="text-muted">Esta acción realizará una baja lógica.</small>
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary fw-bold" onclick="confirmarEliminar()">Sí, Eliminar</button>
-                    </div>
-                </div>
+      <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        
+        <div class="modal-content border-0 shadow-2xl overflow-hidden" 
+             style="border-radius: 1rem; border: 2px solid #1173d4;">
+            
+            <div class="bg-primary text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold text-sm tracking-wide">BAJA DE CLIENTE</span>
+                <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+                    <span class="material-symbols-outlined text-3xl text-primary">person_remove</span>
+                </div>
+                
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">¿Eliminar Cliente?</h3>
+                <p class="text-slate-500 text-sm mt-1 leading-snug">
+                    Se dará de baja al cliente seleccionado.
+                </p>
+            </div>
+
+            <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                <button type="button" 
+                        class="px-4 py-1.5 rounded text-sm text-slate-600 font-medium hover:bg-slate-200 transition-colors"
+                        data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" 
+                        class="px-4 py-1.5 rounded text-sm bg-primary text-white font-bold hover:bg-blue-600 shadow-md transition-colors"
+                        onclick="confirmarEliminar()">
+                    Sí, eliminar
+                </button>
+            </div>
+
         </div>
+    </div>
+</div>
 
     </div>
 
@@ -156,19 +178,14 @@
             if (hf) hf.value = id;
 
             var el = document.getElementById('deleteModal');
+            // Ahora que agregaste el script en el Paso 1, esto funcionará:
+            var myModal = new bootstrap.Modal(el);
+            myModal.show();
+        }
 
-            // Detección inteligente de versión Bootstrap
-            if (window.bootstrap && window.bootstrap.Modal) {
-                var myModal = bootstrap.Modal.getOrCreateInstance(el);
-                myModal.show();
-            } else if (window.jQuery) {
-                $('#deleteModal').modal('show');
-            } else {
-                // Plan B por si falla la carga
-                if (confirm("¿Desea eliminar este cliente?")) {
-                    document.getElementById('btnEliminarServer').click();
-                }
-            }
+        function confirmarEliminar() {
+            // ... (código para cerrar modal y clickear btnEliminarServer) ...
+            document.getElementById('btnEliminarServer').click();
         }
 
         function confirmarEliminar() {

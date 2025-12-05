@@ -268,5 +268,20 @@ BEGIN
     WHERE IDCliente = @IdCliente
 END
 GO
-
+ALTER PROCEDURE SP_ObtenerArticuloPorID
+    @IdArticulo INT
+AS
+BEGIN
+    SELECT 
+        A.*, 
+        M.Descripcion AS MarcaDescripcion,
+        C.Descripcion AS CategoriaDescripcion,
+        P.RazonSocial  -- <--- ESTO ES LO QUE TE FALTA EN LA VERSIÓN ACTUAL
+    FROM dbo.Articulos A
+    INNER JOIN dbo.Marcas M ON M.IdMarca = A.IdMarca
+    INNER JOIN dbo.Categorias C ON C.IdCategoria = A.IdCategoria
+    LEFT JOIN dbo.Proveedores P ON P.IdProveedor = A.IdProveedor
+    WHERE A.IdArticulo = @IdArticulo;
+END
+GO
  

@@ -2,7 +2,6 @@ CREATE DATABASE TPC_GRUPO_14b;
 GO
 USE TPC_GRUPO_14b;
 GO
-
 -- ==============================================================================
 -- 2. CREACIÓN DE TABLAS MAESTRAS
 -- ==============================================================================
@@ -17,7 +16,6 @@ CREATE TABLE Categorias (
     Descripcion VARCHAR(50) NOT NULL UNIQUE,
     Activo BIT NOT NULL DEFAULT 1
 );
-
 CREATE TABLE Usuario (
     IDUsuario INT IDENTITY(1,1) PRIMARY KEY,
     NombreUser VARCHAR(100) NOT NULL,
@@ -25,7 +23,6 @@ CREATE TABLE Usuario (
     TipoUser INT  NOT NULL,
     Activo BIT NOT NULL DEFAULT 1
 );
-
 CREATE TABLE Cliente (
     IDCliente INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100) NOT NULL,
@@ -38,7 +35,6 @@ CREATE TABLE Cliente (
     Localidad NVARCHAR(100) NOT NULL DEFAULT 'Desconocida',
     Activo BIT NOT NULL DEFAULT 1
 );
-
 CREATE TABLE Proveedores (
     IDProveedor INT IDENTITY(1,1) PRIMARY KEY,
     RazonSocial VARCHAR(150) NOT NULL,
@@ -51,12 +47,10 @@ CREATE TABLE Proveedores (
 );
 GO
 
-
 -- ==============================================================================
 -- 3. TABLAS PRINCIPALES (Con Relaciones)
 -- ==============================================================================
 -- ARTICULOS (Con relación a Proveedor, Marca y Categoría)
-
 
 CREATE TABLE Articulos (
     IdArticulo INT IDENTITY(1,1) PRIMARY KEY,
@@ -75,7 +69,6 @@ CREATE TABLE Articulos (
     CONSTRAINT FK_Articulo_Categoria FOREIGN KEY (IdCategoria) REFERENCES Categorias(IdCategoria),
     CONSTRAINT FK_Articulos_Proveedores FOREIGN KEY (IdProveedor) REFERENCES Proveedores(IDProveedor)
 );
-
 -- PEDIDOS (Sin Subtotal, solo Total y Descuento)
 CREATE TABLE Pedidos
 (
@@ -91,7 +84,6 @@ CREATE TABLE Pedidos
     
     CONSTRAINT FK_Pedidos_Cliente FOREIGN KEY (IDCliente) REFERENCES Cliente(IDCliente)
 );
-
 -- DETALLES DE PEDIDO
 CREATE TABLE DetallesPedido
 (
@@ -105,7 +97,6 @@ CREATE TABLE DetallesPedido
     CONSTRAINT FK_Detalles_Pedidos FOREIGN KEY (IDPedido) REFERENCES Pedidos (IDPedido),
     CONSTRAINT FK_Detalles_Articulos FOREIGN KEY (IDArticulo) REFERENCES Articulos (IdArticulo)
 );
-
 GO
 CREATE TABLE Compras (
     IDCompra INT IDENTITY(1,1) PRIMARY KEY,
@@ -115,14 +106,12 @@ CREATE TABLE Compras (
     MontoTotal DECIMAL(10,2) NOT NULL,
     Observaciones VARCHAR(200),
     Estado VARCHAR(20) DEFAULT 'Pendiente',
-
     -- Control
     UsuarioCreador VARCHAR(50),
     FechaRegistro DATETIME DEFAULT GETDATE(),
 
     FOREIGN KEY (IDProveedor) REFERENCES Proveedores(IDProveedor)
 );
-
 GO
 CREATE TABLE CompraDetalle (
     IDDetalle INT IDENTITY(1,1) PRIMARY KEY,
@@ -197,8 +186,6 @@ VALUES
 VALUES
     (2, 2, 5, 1000),
     (2, 3, 2, 5000);
-
-
 
 ALTER TABLE Usuario ADD Email VARCHAR(100) NULL;
 

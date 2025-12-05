@@ -3,49 +3,50 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 
     <script src="Scripts/jquery-3.7.0.min.js"></script>
-  
 
-   
-<style>
-    /* Aseguramos que los encabezados sean posicionables para los 'resizers' */
-    .resizable th {
-        position: relative;
-        overflow: hidden; /* Importante para que el resizer no se salga */
-        text-overflow: ellipsis;
-    }
+    <script src="Scripts/bootstrap.bundle.min.js"></script>
 
-    .resizable th .resizer {
-        width: 5px;
-        height: 100%;
-        position: absolute;
-        right: 0;
-        top: 0;
-        cursor: col-resize;
-        user-select: none;
-        z-index: 10;
-        /* Un color suave al pasar el mouse para que el usuario sepa que está ahí */
-        border-right: 2px solid transparent; 
-    }
-    
-    .resizable th .resizer:hover {
-        border-right: 2px solid #ccc;
-    }
 
-    /* CORRECCIÓN PRINCIPAL: fixed layout */
-    #gvProductos table {
-        table-layout: fixed !important; 
-        width: 100% !important; /* Ocupar el ancho disponible */
-        border-collapse: collapse;
-    }
+    <style>
+        /* Aseguramos que los encabezados sean posicionables para los 'resizers' */
+        .resizable th {
+            position: relative;
+            overflow: hidden; /* Importante para que el resizer no se salga */
+            text-overflow: ellipsis;
+        }
 
-    /* Opcional: Para que las celdas también respeten el ancho y corten texto */
-    #gvProductos table td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-</style>
-    
+            .resizable th .resizer {
+                width: 5px;
+                height: 100%;
+                position: absolute;
+                right: 0;
+                top: 0;
+                cursor: col-resize;
+                user-select: none;
+                z-index: 10;
+                /* Un color suave al pasar el mouse para que el usuario sepa que está ahí */
+                border-right: 2px solid transparent;
+            }
+
+                .resizable th .resizer:hover {
+                    border-right: 2px solid #ccc;
+                }
+
+        /* CORRECCIÓN PRINCIPAL: fixed layout */
+        #gvProductos table {
+            table-layout: fixed !important;
+            width: 100% !important; /* Ocupar el ancho disponible */
+            border-collapse: collapse;
+        }
+
+            /* Opcional: Para que las celdas también respeten el ancho y corten texto */
+            #gvProductos table td {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+    </style>
+
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
@@ -58,9 +59,9 @@
         </div>
 
         <asp:UpdatePanel ID="upnlGrillaProductos" runat="server" UpdateMode="Conditional">
-            <ContentTemplate>   
+            <ContentTemplate>
 
-                <asp:HiddenField ID="hfIdProducto" runat="server" ClientIDMode="Static"/>
+                <asp:HiddenField ID="hfIdProducto" runat="server" ClientIDMode="Static" />
                 <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
 
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
@@ -75,22 +76,21 @@
                             OnTextChanged="txtBuscar_TextChanged" />
                     </div>
                     <asp:Button ID="btnNuevo" runat="server" Text="➕ Agregar Producto"
-                    PostBackUrl="~/ProductosForms.aspx"
-                    CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />     
+                        PostBackUrl="~/ProductosForms.aspx"
+                        CssClass="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90" />
                 </div>
 
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
-                    <div class="overflow-x-auto" style="display:block; width:100%;">
-                        <asp:GridView ID="gvProductos" runat="server" 
+                    <div class="overflow-x-auto" style="display: block; width: 100%;">
+                        <asp:GridView ID="gvProductos" runat="server"
                             AutoGenerateColumns="False"
                             DataKeyNames="IDArticulo"
                             CssClass="resizable"
                             GridLines="None"
                             AllowPaging="True" PageSize="10"
-                            AllowSorting="True" 
+                            AllowSorting="True"
                             OnSorting="gvProductos_Sorting"
-                            OnPageIndexChanging="gvProductos_PageIndexChanging"
-                            >
+                            OnPageIndexChanging="gvProductos_PageIndexChanging">
 
                             <HeaderStyle CssClass="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700/50 cursor-pointer" />
                             <RowStyle CssClass="bg-white dark:bg-slate-800 border-b dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-700/40" />
@@ -102,7 +102,7 @@
                                 <asp:BoundField DataField="Marca.Descripcion" HeaderText="Marca" SortExpression="Marca" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="Categorias.descripcion" HeaderText="Categoría" SortExpression="Categoria" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="PrecioVentaCalculado" HeaderText="Precio Venta" SortExpression="PrecioVentaCalculado" DataFormatString="$ {0:N2}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 text-right font-bold text-green-600" />
-                                <asp:TemplateField  HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
+                                <asp:TemplateField HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
                                         <%# Eval("Proveedor.RazonSocial") %>
                                     </ItemTemplate>
@@ -130,7 +130,7 @@
                                 </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
-                     
+
                     </div>
                 </div>
 
@@ -141,20 +141,40 @@
         </asp:UpdatePanel>
 
         <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title fw-bold">⚠️ Confirmar Eliminación</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+
+                <div class="modal-content border-0 shadow-2xl overflow-hidden"
+                    style="border-radius: 1rem; border: 2px solid #1173d4;">
+
+                    <div class="bg-primary text-white px-4 py-2 flex justify-between items-center">
+                        <span class="font-bold text-sm tracking-wide">CONFIRMACIÓN</span>
+                        <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-center py-4">
-                        <p class="mb-1 fs-5 text-dark">¿Estás seguro de que deseas eliminar este producto?</p>
-                        <small class="text-muted">Esta acción realizará una baja lógica.</small>
+
+                    <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+                            <span class="material-symbols-outlined text-3xl text-primary">delete</span>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">¿Borrar producto?</h3>
+                        <p class="text-slate-500 text-sm mt-1 leading-snug">
+                           Baja logica del producto.
+                        </p>
                     </div>
-                    <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-primary fw-bold" onclick="ejecutarBorradoServer()">Sí, Eliminar</button>
+
+                    <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                        <button type="button"
+                            class="px-4 py-1.5 rounded text-sm text-slate-600 font-medium hover:bg-slate-200 transition-colors"
+                            data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button"
+                            class="px-4 py-1.5 rounded text-sm bg-primary text-white font-bold hover:bg-blue-600 shadow-md transition-colors"
+                            onclick="ejecutarBorradoServer()">
+                            Sí, eliminar
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -329,5 +349,5 @@
             } catch (e) { }
 
         })();
-</script>
+    </script>
 </asp:Content>
