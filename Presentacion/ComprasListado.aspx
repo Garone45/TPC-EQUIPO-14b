@@ -2,44 +2,34 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 
+    <script src="Scripts/bootstrap.bundle.min.js"></script>
+
     <script type="text/javascript">
         var delayTimer;
 
-        // Función que espera un momento antes de ejecutar el PostBack
+        // Función para delay en búsqueda
         function delayPostback(source) {
             clearTimeout(delayTimer);
-
             delayTimer = setTimeout(function () {
-                // Ejecuta el PostBack asíncrono
                 __doPostBack(source.name, '');
-            }, 500); // Retraso de 500 milisegundos
+            }, 500);
         }
 
-        // =========================================================
-        // AÑADIDO CLAVE: Función para mantener el foco después de AJAX
-        // =========================================================
+        // Mantener el foco tras actualización del UpdatePanel
         function setFocusAfterUpdate() {
-            // El componente PageRequestManager maneja las peticiones AJAX
             var prm = Sys.WebForms.PageRequestManager.getInstance();
-
-            // Suscribirse al evento que ocurre al finalizar la petición AJAX
             prm.add_endRequest(function (sender, args) {
-                // Verificar si la petición no falló
                 if (args.get_error() == null) {
-                    // Obtener el TextBox por su ID de cliente
                     var focusedControl = $get('<%= txtBuscar.ClientID %>');
-                  if (focusedControl) {
-                      focusedControl.focus();
-                      // Opcional: Esto mueve el cursor al final del texto
-                      var temp = focusedControl.value;
-                      focusedControl.value = '';
-                      focusedControl.value = temp;
-                  }
-              }
-          });
+                    if (focusedControl) {
+                        focusedControl.focus();
+                        var temp = focusedControl.value;
+                        focusedControl.value = '';
+                        focusedControl.value = temp;
+                    }
+                }
+            });
         }
-
-        // Llamar a la función al cargar la página (para que se suscriba al evento)
         window.onload = setFocusAfterUpdate;
     </script>
 </asp:Content>
@@ -79,7 +69,10 @@
 
         <asp:UpdatePanel ID="updCompras" runat="server" UpdateMode="Conditional">
             <ContentTemplate>
-                
+
+                <asp:HiddenField ID="hfIdCompra" runat="server" ClientIDMode="Static" />
+                <asp:Button ID="btnEliminarServer" runat="server" OnClick="btnEliminarServer_Click" Style="display: none;" ClientIDMode="Static" />
+                <asp:Button ID="btnConfirmarServer" runat="server" OnClick="btnConfirmarServer_Click" Style="display: none;" ClientIDMode="Static" />
                 <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700/60 overflow-hidden">
                     <div class="overflow-x-auto">
 
@@ -101,7 +94,7 @@
                                 <asp:BoundField DataField="RazonSocialProveedor" HeaderText="Proveedor" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="FechaCompra" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4" />
                                 <asp:BoundField DataField="MontoTotal" HeaderText="Total" DataFormatString="{0:C0}" HtmlEncode="false" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4 font-bold text-red-600" />
-                                
+
                                 <asp:TemplateField HeaderText="Estado" HeaderStyle-CssClass="px-6 py-3" ItemStyle-CssClass="px-6 py-4">
                                     <ItemTemplate>
                                         <span class='<%# GetEstadoClass(Eval("EstadoCompra").ToString()) %>'>
@@ -113,7 +106,7 @@
                                 <asp:TemplateField HeaderText="Acciones" HeaderStyle-CssClass="px-6 py-3 text-center" ItemStyle-CssClass="px-6 py-4 text-center">
                                     <ItemTemplate>
                                         <div class="flex justify-center gap-2">
-                                            
+
                                             <asp:HyperLink ID="btnModificar" runat="server"
                                                 Visible='<%# Eval("EstadoCompra").ToString() == "Pendiente" %>'
                                                 NavigateUrl='<%# "~/ComprasForms.aspx?id=" + Eval("IDCompra") %>'
@@ -130,13 +123,21 @@
                                                 <span class="material-symbols-outlined text-lg">visibility</span>
                                             </asp:HyperLink>
 
-                                            <asp:LinkButton ID="btnEliminar" runat="server"
-                                                CssClass="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20"
-                                                OnClientClick="return confirm('¿Está seguro de que desea eliminar este cliente?');"
-                                                CommandName="Eliminar"
-                                                CommandArgument='<%# Container.DataItemIndex %>'>
+                                            <a href="javascript:void(0);"
+                                                onclick="abrirModalEliminar(<%# Eval("IDCompra") %>);"
+                                                style='<%# Eval("EstadoCompra").ToString() == "Pendiente" ? "": "display:none;" %>'
+                                                class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:bg-red-500/10 hover:text-red-500 dark:hover:bg-red-500/20 cursor-pointer"
+                                                title="Anular Compra">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
-                                            </asp:LinkButton>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                                onclick="abrirModalConfirmar(<%# Eval("IDCompra") %>);"
+                                                style='<%# Eval("EstadoCompra").ToString() == "Pendiente" ? "": "display:none;" %>'
+                                                class="p-1.5 rounded-md text-slate-500 hover:bg-green-50 hover:text-green-600 transition-colors cursor-pointer"
+                                                title="Confirmar Recepción">
+                                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                            </a>
+
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -153,5 +154,132 @@
             </Triggers>
         </asp:UpdatePanel>
 
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+
+                <div class="modal-content border-0 shadow-2xl overflow-hidden"
+                    style="border-radius: 1rem; border: 2px solid #1173d4;">
+
+                    <div class="bg-primary text-white px-4 py-2 flex justify-between items-center">
+                        <span class="font-bold text-sm tracking-wide">ANULAR COMPRA</span>
+                        <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+                            <span class="material-symbols-outlined text-3xl text-primary">remove_shopping_cart</span>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white">¿Cancelar Compra?</h3>
+                        <p class="text-slate-500 text-sm mt-1 leading-snug">
+                            Esta acción anulará el registro de la compra seleccionada.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                        <button type="button"
+                            class="px-4 py-1.5 rounded text-sm text-slate-600 font-medium hover:bg-slate-200 transition-colors"
+                            data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="button"
+                            class="px-4 py-1.5 rounded text-sm bg-primary text-white font-bold hover:bg-blue-600 shadow-md transition-colors"
+                            onclick="confirmarEliminar()">
+                            Sí, cancelar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
+    <div class="modal fade" id="confirmarModal" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+
+            <div class="modal-content border-0 shadow-2xl overflow-hidden"
+                style="border-radius: 1rem; border: 2px solid #22c55e;">
+                <div class="bg-green-600 text-white px-4 py-2 flex justify-between items-center">
+                    <span class="font-bold text-sm tracking-wide">RECEPCIÓN DE MERCADERÍA</span>
+                    <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                    <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                        <span class="material-symbols-outlined text-3xl text-green-600">check_circle</span>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white">¿Confirmar Recepción?</h3>
+                    <p class="text-slate-500 text-sm mt-1 leading-snug">
+                        La compra pasará a estado <b>Entregado</b> y el stock se actualizará.
+               
+                    </p>
+                </div>
+
+                <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                    <button type="button"
+                        class="px-4 py-1.5 rounded text-sm text-slate-600 font-medium hover:bg-slate-200 transition-colors"
+                        data-bs-dismiss="modal">
+                        Cancelar
+               
+                    </button>
+                    <button type="button"
+                        class="px-4 py-1.5 rounded text-sm bg-green-600 text-white font-bold hover:bg-green-700 shadow-md transition-colors"
+                        onclick="ejecutarConfirmacion()">
+                        Confirmar
+               
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function abrirModalEliminar(id) {
+            // Asigna el ID al HiddenField
+            var hf = document.getElementById('hfIdCompra');
+            if (hf) hf.value = id;
+
+            // Abre el modal usando Bootstrap
+            var el = document.getElementById('deleteModal');
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            }
+        }
+
+        function confirmarEliminar() {
+            // Cierra el modal
+            var el = document.getElementById('deleteModal');
+            if (window.bootstrap) {
+                var myModal = bootstrap.Modal.getInstance(el);
+                if (myModal) myModal.hide();
+            }
+            // Hace click en el botón del servidor (oculto)
+            var btn = document.getElementById('btnEliminarServer');
+            if (btn) btn.click();
+        }
+        function abrirModalConfirmar(id) {
+            var hf = document.getElementById('hfIdCompra');
+            if (hf) hf.value = id;
+
+            var el = document.getElementById('confirmarModal');
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            }
+        }
+
+        function ejecutarConfirmacion() {
+            var el = document.getElementById('confirmarModal');
+            if (window.bootstrap) {
+                var myModal = bootstrap.Modal.getInstance(el);
+                if (myModal) myModal.hide();
+            }
+            document.getElementById('btnConfirmarServer').click();
+        }
+    </script>
+
+
 </asp:Content>

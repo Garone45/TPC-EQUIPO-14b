@@ -25,21 +25,20 @@
             var prm = Sys.WebForms.PageRequestManager.getInstance();
 
             prm.add_endRequest(function (sender, args) {
-                // Verificamos que no haya errores de servidor antes de intentar poner foco
+            
                 if (args.get_error() == null) {
 
-                    // Buscamos el textbox por su ID Static
+              
                     var txt = document.getElementById('txtBuscar');
 
                     if (txt) {
-                        // 1. Guardamos el largo del texto actual
+                      
                         var len = txt.value.length;
 
-                        // 2. Ponemos el foco básico
+                
                         txt.focus();
 
-                        // 3. TRUCO DE MAGIA: Forzamos el cursor al final
-                        // Método A: Para la mayoría de navegadores (Reset de valor)
+                        
                         var val = txt.value;
                         txt.value = '';
                         txt.value = val;
@@ -57,46 +56,40 @@
 
     <script type="text/javascript">
 
-        // Almacenamos el UniqueID del botón que abrió el modal
+  
         var clickedButtonUniqueID = '';
 
-        // 1. Abrir el Modal (Ahora recibe el uniqueID del botón)
         function abrirModalEntrega(uniqueID, idPedido) {
 
-            // Guardamos el UniqueID en la variable global
             clickedButtonUniqueID = uniqueID;
 
             var modal = document.getElementById('modalConfirmarEntrega');
             var inputHidden = document.getElementById('pedidoIdConfirmar');
             var displayText = document.getElementById('pedidoIdDisplay');
 
-            // Seteamos el ID del pedido
+
             inputHidden.value = idPedido;
             displayText.innerText = '#' + idPedido;
 
-            // Mostrar el modal
             modal.classList.remove('hidden');
         }
 
-        // 2. Cerrar el Modal
         function cerrarModalEntrega() {
             var modal = document.getElementById('modalConfirmarEntrega');
             modal.classList.add('hidden');
         }
 
         function confirmarEntrega() {
-            // 1. Cerrar el modal
+    
             cerrarModalEntrega();
 
-            // 2. Obtener el ID del input del modal
             var idPedido = document.getElementById('pedidoIdConfirmar').value;
 
-            // 3. Pasarlo al HiddenField del servidor (hfIdPedidoEntregar)
+          
             var hf = document.getElementById('hfIdPedidoEntregar');
             if (hf) {
                 hf.value = idPedido;
 
-                // 4. Simular clic en el botón del servidor (btnEntregarServer)
                 var btn = document.getElementById('btnEntregarServer');
                 if (btn) {
                     btn.click();

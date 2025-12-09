@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Gestión de Categorías" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CategoriasListado.aspx.cs" Inherits="Presentacion.CategoriasListado" %>
+﻿<%@ Page Title="Gestión de Categorías" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CategoriaListado.aspx.cs" Inherits="Presentacion.CategoriasListado" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
 

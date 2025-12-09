@@ -225,7 +225,6 @@ namespace Negocio
             return compra;
         }
 
-
         public void Agregar(Compra compra)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -300,9 +299,6 @@ namespace Negocio
             }
         }
 
-
-
-
         public void Modificar(Compra compra)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -357,6 +353,46 @@ namespace Negocio
             }
         }
 
+        public void eliminarLogico(int id)
+        {
+            try
+            {
+                AccesoDatos datos = new AccesoDatos();
+
+                // ADAPTAR SEGÚN TU BASE DE DATOS:
+                // Opción A: Si usas un estado de texto (ej: 'Anulada', 'Inactiva')
+                datos.setearConsulta("UPDATE COMPRAS SET Estado = 'Cancelado' WHERE IDCompra = @id");
+
+                // Opción B: Si usas un bit/booleano (ej: Activo = 0)
+                // datos.setearConsulta("UPDATE COMPRAS SET Activo = 0 WHERE ID = @id");
+
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void ConfirmarEntrega(int id)
+        {
+            try
+            {
+                AccesoDatos datos = new AccesoDatos();
+                // Asegúrate que 'Entregado' coincide con tu Enum y BD
+                datos.setearConsulta("UPDATE Compras SET Estado = 'Entregado' WHERE IDCompra = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+
+                // OPCIONAL PERO RECOMENDADO:
+                // Aquí deberías llamar a la lógica para sumar el stock de los artículos comprados.
+                // actualizarStock(id); 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
     }
 }

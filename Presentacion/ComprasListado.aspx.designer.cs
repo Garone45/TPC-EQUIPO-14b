@@ -51,6 +51,33 @@ namespace Presentacion
         protected global::System.Web.UI.UpdatePanel updCompras;
 
         /// <summary>
+        /// Control hfIdCompra.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfIdCompra;
+
+        /// <summary>
+        /// Control btnEliminarServer.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnEliminarServer;
+
+        /// <summary>
+        /// Control btnConfirmarServer.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConfirmarServer;
+
+        /// <summary>
         /// Control gvCompras.
         /// </summary>
         /// <remarks>
