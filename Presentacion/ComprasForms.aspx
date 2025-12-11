@@ -38,9 +38,7 @@
                                         <asp:DropDownList ID="ddlProveedor" runat="server" CssClass="form-select w-full rounded-lg border-slate-300 bg-slate-50 text-sm focus:border-primary focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white h-11">
                                         </asp:DropDownList>
                                     </div>
-                                    <asp:LinkButton ID="btnAgregarProveedor" runat="server" CssClass="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-dashed border-slate-300 text-slate-500 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all dark:border-slate-600 dark:text-slate-400">
-                                        <span class="material-symbols-outlined">add</span>
-                                    </asp:LinkButton>
+                                    
                                 </div>
                             </div>
 

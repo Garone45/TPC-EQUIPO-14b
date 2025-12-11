@@ -454,7 +454,7 @@ namespace Presentacion
 
                 // Cargar datos visuales del cliente
                 ClienteNegocio cliNegocio = new ClienteNegocio();
-                Cliente cliente = cliNegocio.listar().FirstOrDefault(c => c.IDCliente == pedido.IDCliente);
+                Cliente cliente = cliNegocio.listar(pedido.IDCliente);
 
                 if (cliente != null)
                 {
@@ -463,6 +463,7 @@ namespace Presentacion
                     txtClientCity.Text = cliente.Localidad;
                     txtClientDNI.Text = cliente.Dni;
                     txtClientPhone.Text = cliente.Telefono;
+                    txtClientEmail.Text = cliente.Email;
                 }
 
                 BindGridClientes(null);
@@ -496,18 +497,11 @@ namespace Presentacion
 
         private void ConfigurarVistaSoloLectura()
         {
-            // 1. Ocultamos la columna completa del buscador
-            // Esto elimina el Label, el TextBox, el icono y el Repeater visualmente.
+      
             columnaBusqueda.Visible = false;
-
-            // 2. Expandimos la columna de detalles para que ocupe todo el ancho
-            // Cambiamos la clase 'md:col-span-8' por 'md:col-span-12'
             columnaDetalle.Attributes["class"] = "md:col-span-12 grid grid-cols-1 gap-6";
-
-            // 3. Ocultamos secciones de productos y botones de acción
             txtBuscarProductos.Enabled = false;
             upProductos.Visible = false;
-
             btnFinalizarVenta.Visible = false;
             gvDetallePedido.Enabled = false;
 

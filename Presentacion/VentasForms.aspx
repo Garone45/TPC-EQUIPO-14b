@@ -68,6 +68,7 @@
                 delayPostback(this);
             });
         }
+
     </script>
 </asp:Content>
 
@@ -147,82 +148,66 @@
 
 
 
-                            <div id="columnaDetalle" runat="server" class="md:col-span-8 grid grid-cols-1 gap-6">
+      <div id="columnaDetalle" runat="server" class="md:col-span-8 grid grid-cols-1 gap-6">
+    
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between items-center w-full">
+            <div class="flex flex-col">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Cliente Seleccionado</label>
+                <div class="flex items-center mt-1">
+                    <span class="material-symbols-outlined text-primary mr-2">person_pin</span>
+                    <asp:TextBox ID="txtClientName" runat="server" ReadOnly="true" 
+                        CssClass="text-lg font-bold text-slate-900 dark:text-white bg-transparent border-none p-0 focus:ring-0 shadow-none"></asp:TextBox>
+                </div>
+            </div>
+            <div class="flex flex-col items-end text-right">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">DNI / CUIT</label>
+                <asp:TextBox ID="txtClientDNI" runat="server" ReadOnly="true" 
+                    CssClass="text-lg font-bold text-slate-900 dark:text-white bg-transparent border-none p-0 focus:ring-0 shadow-none" 
+                    style="text-align: right !important; width: 100%; min-width: 150px;"></asp:TextBox>
+            </div>
+        </div>
+    </div>
 
-                                <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md border border-slate-200 dark:border-slate-700">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between items-center w-full">
+            <div class="flex flex-col">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Teléfono de Contacto</label>
+                <div class="flex items-center mt-1">
+                    <span class="material-symbols-outlined text-slate-400 mr-2 text-sm">call</span>
+                    <asp:TextBox ID="txtClientPhone" runat="server" ReadOnly="true" 
+                        CssClass="font-semibold text-slate-700 dark:text-slate-200 bg-transparent border-none p-0 focus:ring-0 shadow-none"></asp:TextBox>
+                </div>
+            </div>
+            <div class="flex flex-col items-end text-right">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Correo Electrónico</label>
+                <asp:TextBox ID="txtClientEmail" runat="server" ReadOnly="true" 
+                    CssClass="font-semibold text-slate-700 dark:text-slate-200 bg-transparent border-none p-0 focus:ring-0 shadow-none" 
+                    style="text-align: right !important; width: 100%; min-width: 200px;"></asp:TextBox>
+            </div>
+        </div>
+    </div>
 
-                                    <div class="flex justify-between items-start gap-4">
+    <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="flex justify-between items-center w-full">
+            <div class="flex flex-col">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Dirección de Entrega</label>
+                <div class="flex items-center mt-1">
+                    <span class="material-symbols-outlined text-slate-400 mr-2 text-sm">location_on</span>
+                    <asp:TextBox ID="txtClientAddress" runat="server" ReadOnly="true" 
+                        CssClass="font-semibold text-slate-700 dark:text-slate-200 bg-transparent border-none p-0 focus:ring-0 shadow-none"></asp:TextBox>
+                </div>
+            </div>
+            <div class="flex flex-col items-end text-right">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-slate-400">Localidad</label>
+                <asp:TextBox ID="txtClientCity" runat="server" ReadOnly="true" 
+                    CssClass="font-semibold text-slate-700 dark:text-slate-200 bg-transparent border-none p-0 focus:ring-0 shadow-none" 
+                    style="text-align: right !important; width: 100%; min-width: 150px;"></asp:TextBox>
+            </div>
+        </div>
+    </div>
 
-                                        <div class="flex-1 min-w-0">
-                                            <div class="flex flex-col">
-                                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Cliente Seleccionado</label>
-                                                <div class="flex items-center">
-                                                    <span class="material-symbols-outlined text-2xl text-primary mr-2">person_pin</span>
-                                                    <asp:TextBox ID="txtClientName" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white text-lg font-bold" ReadOnly="true"></asp:TextBox>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex-shrink-0 text-right">
-                                            <div class="flex flex-col">
-                                                <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">DNI</label>
-                                                <asp:TextBox ID="txtClientDNI" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white text-lg font-bold whitespace-nowrap" ReadOnly="true"></asp:TextBox>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700/50">
-                                    <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
-                                        <span class="material-symbols-outlined text-base mr-1">call</span>
-                                        Información de Contacto
-                                    </h4>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                                        <div>
-                                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Teléfono</label>
-                                            <div class="flex items-center">
-                                                <asp:TextBox ID="txtClientPhone" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white font-semibold" ReadOnly="true"></asp:TextBox>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Email</label>
-                                            <div class="flex items-center">
-                                                <asp:TextBox ID="txtClientEmail" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white font-semibold" ReadOnly="true"></asp:TextBox>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700/50">
-                                    <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
-                                        <span class="material-symbols-outlined text-base mr-1">home</span>
-                                        Ubicación de Entrega
-                                    </h4>
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-                                        <div class="sm:col-span-2">
-                                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Dirección (Calle y Altura)</label>
-                                            <asp:TextBox ID="txtClientAddress" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white font-semibold" ReadOnly="true"></asp:TextBox>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Localidad</label>
-                                            <asp:TextBox ID="txtClientCity" runat="server" CssClass="form-input w-full bg-transparent p-0 border-0 focus:ring-0 text-slate-900 dark:text-white font-semibold" ReadOnly="true"></asp:TextBox>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
+</div>
                 </ContentTemplate>
             </asp:UpdatePanel>
 
