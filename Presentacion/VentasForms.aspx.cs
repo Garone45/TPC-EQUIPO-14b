@@ -13,7 +13,7 @@ namespace Presentacion
     public partial class VentasForms : System.Web.UI.Page
     {
         private bool EsModoVer { get; set; } = false;
-        // --- PROPIEDADES DE SESIÓN ---
+  
         private List<DetallePedido> DetalleActual
         {
             get
@@ -36,30 +36,44 @@ namespace Presentacion
                 {
                     EsModoVer = true;
                 }
+
+                // Carga inicial de productos (si aplica)
                 BindProductos(null);
 
                 if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
                 {
-                    CargarDatosPedido(idPedido); 
-                   
+                    // 1. Cargar la venta existente
+                    CargarDatosPedido(idPedido);
+
+           
+                    // Si estamos editando (sea modo "Ver" o "Modificar"), 
+                    // bloqueamos el buscador de clientes para que no se pueda cambiar.
+                    txtBuscarCliente.Enabled = false;
+                    txtBuscarCliente.Attributes.Add("placeholder", "Cliente ya asignado");
+
+                    // Opcional: Ocultar el panel de resultados por si acaso
+                    pnlSinResultados.Visible = false;
+                    rptClientes.Visible = false;
+
                     if (EsModoVer)
                     {
-                        // Si el modo es ver, bloqueamos todo
                         ConfigurarVistaSoloLectura();
                         mostrarMensaje("Modo Visualización: No se pueden realizar cambios.", false);
                     }
                     else
                     {
-                        // Modo Edición (Modificar)
-                        mostrarMensaje("Modo Edición: Puede modificar el pedido.", false);
+                        mostrarMensaje("Modo Edición: Puede modificar productos, pero no el cliente.", false);
                     }
                 }
                 else
                 {
-                    // Modo Nuevo: Limpieza inicial
+                    // MODO NUEVO (Aquí sí permitimos buscar cliente)
                     Session["DetallePedido"] = null;
                     Session["ClienteSeleccionado"] = null;
                     ViewState["IDPedidoEditar"] = null;
+
+                    // Habilitamos el buscador por si venimos de una recarga
+                    txtBuscarCliente.Enabled = true;
 
                     BindGridClientes(null);
 
@@ -84,11 +98,8 @@ namespace Presentacion
 
             // 2. Lógica de Decisión
             if (string.IsNullOrEmpty(filtro))
-            {
-              
+            {      
                 BindGridClientes(null);
-
-              
             }
             else
             {
@@ -125,7 +136,6 @@ namespace Presentacion
                 rptClientes.Visible = false;
                 pnlSinResultados.Visible = true; // Mostramos el mensaje (ocupa el espacio vacío)
 
-                // Opcional: Cambiar el texto dinámicamente
                 if (string.IsNullOrEmpty(filtro))
                     ((Label)pnlSinResultados.Controls[0]).Text = "Empieza a escribir para buscar..."; // Si tuvieras un label dentro
             }
@@ -135,10 +145,10 @@ namespace Presentacion
         {
             if (e.CommandName == "Seleccionar")
             {
-                // Obtenemos el ID del CommandArgument
+           
                 int idCliente = Convert.ToInt32(e.CommandArgument);
 
-                // --- TU LÓGICA DE SELECCIÓN (Es la misma que tenías antes) ---
+              
                 Session["ClienteSeleccionado"] = idCliente;
 
                 ClienteNegocio negocio = new ClienteNegocio();
@@ -252,10 +262,7 @@ namespace Presentacion
                     // 4. Guardar en Session y Actualizar Interfaz
                     DetalleActual = DetalleActual; // Setter de sesión
                     ActualizarDetalleYTotales();   // Refresca la grilla de abajo y los montos
-
-                    // Opcional: Feedback visual de éxito
-                    // mostrarMensaje($"Se añadió: {articulo.Descripcion}", false);
-
+ 
                     // 5. Limpiar buscador para la siguiente venta (Opcional, estilo POS rápido)
                     txtBuscarProductos.Text = string.Empty;
                     BindProductos(null);
@@ -270,8 +277,6 @@ namespace Presentacion
 
 
         /// METODO DE DETALLES
-
-
         // --- GESTIÓN DE GRILLA CARRITO (SUMAR/RESTAR) ---
         protected void gvDetallePedido_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -286,13 +291,13 @@ namespace Presentacion
                     switch (e.CommandName)
                     {
                         case "Eliminar":
-                            // 🗑️ Lógica de Eliminar
+                           
                             DetalleActual.Remove(detalle);
                             mostrarMensaje("Producto eliminado del pedido.", false);
                             break;
 
                         case "Sumar":
-                            // ➕ Lógica de Sumar (Validando Stock)
+                          
                             ArticuloNegocio negocio = new ArticuloNegocio();
                             Articulo art = negocio.obtenerPorId(idArticulo);
 
@@ -307,7 +312,7 @@ namespace Presentacion
                             break;
 
                         case "Restar":
-                            // ➖ Lógica de Restar
+                            
                             if (detalle.Cantidad > 1)
                             {
                                 detalle.Cantidad--;
@@ -320,7 +325,7 @@ namespace Presentacion
                             break;
                     }
 
-                    // ⭐ IMPORTANTE: Guardar cambios y refrescar la pantalla
+                    
                     DetalleActual = DetalleActual; // Actualiza la Session
                     ActualizarDetalleYTotales();   // Recalcula subtotales y repinta la grilla
                 }
@@ -479,22 +484,18 @@ namespace Presentacion
 
             if (esError)
             {
-                // Estilo Rojo (Error)
+               
                 lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800";
             }
             else
             {
-                // Estilo Verde (Éxito)
+              
                 lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800";
             }
 
             // IMPORTANTE: Actualizar el panel para que se vea el mensaje
             updMensajes.Update();
         }
-
-        /// METODOS
-        /// 
-
         private void ConfigurarVistaSoloLectura()
         {
       

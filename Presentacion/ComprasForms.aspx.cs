@@ -29,41 +29,52 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-                // 1. Cargar listas desplegables SIEMPRE al inicio
+                // 1. Cargar listas desplegables
                 CargarProveedores();
                 CargarProductos();
 
-                // 2. Capturar parámetros de la URL
+                // 2. Capturar parámetros
                 string idCompraStr = Request.QueryString["id"];
                 string modo = Request.QueryString["modo"];
 
-                // 3. Determinar si es modo Lectura
                 if (modo == "Ver")
                 {
                     EsModoVer = true;
                 }
 
-                // 4. Decidir: ¿Cargamos compra existente o preparamos una nueva?
+                // 3. ¿Edición/Lectura o Nuevo?
                 if (!string.IsNullOrEmpty(idCompraStr) && int.TryParse(idCompraStr, out int idCompra))
                 {
-
                     ViewState["CompraID"] = idCompra;
                     CargarDatosCompra(idCompra);
+
+                    // --- RESTRICCIÓN DE SEGURIDAD (SOLICITADA) ---
+                    // En modo edición (o ver), no se puede cambiar el Proveedor ni el N° Factura
+                    // porque cambiaría la identidad legal del documento.
+                    ddlProveedor.Enabled = false;
+                    txtFacturaRef.Enabled = false;
+
+                    // Opcional: Añadir estilo visual de bloqueado (Tailwind)
+                    txtFacturaRef.Attributes.Add("class", txtFacturaRef.CssClass + " bg-gray-100 cursor-not-allowed");
+                    ddlProveedor.Attributes.Add("class", ddlProveedor.CssClass + " bg-gray-100 cursor-not-allowed");
 
                     if (EsModoVer)
                     {
                         ConfigurarVistaSoloLectura();
-                  
                     }
                     else
                     {
-                        btnGuardarCompra.Text = "Guardar Cambios"; 
+                        btnGuardarCompra.Text = "Guardar Cambios";
                     }
                 }
                 else
                 {
-                   
+                    // MODO NUEVO
                     LimpiarFormulario();
+
+                    // Nos aseguramos de habilitarlos por si acaso
+                    ddlProveedor.Enabled = true;
+                    txtFacturaRef.Enabled = true;
                 }
             }
         }
