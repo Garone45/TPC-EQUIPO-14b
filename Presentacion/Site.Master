@@ -17,6 +17,7 @@
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
+
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -207,5 +208,6 @@
 
 
     </form>
+    <script src="Scripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>

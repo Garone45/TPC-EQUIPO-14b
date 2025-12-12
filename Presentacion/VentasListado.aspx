@@ -59,43 +59,74 @@
   
         var clickedButtonUniqueID = '';
 
+        var clickedButtonUniqueID = '';
+
         function abrirModalEntrega(uniqueID, idPedido) {
 
             clickedButtonUniqueID = uniqueID;
 
-            var modal = document.getElementById('modalConfirmarEntrega');
+            // 1. Asignar los valores a los elementos
             var inputHidden = document.getElementById('pedidoIdConfirmar');
             var displayText = document.getElementById('pedidoIdDisplay');
 
+            if (inputHidden) inputHidden.value = idPedido;
+            if (displayText) displayText.innerText = '#' + idPedido;
 
-            inputHidden.value = idPedido;
-            displayText.innerText = '#' + idPedido;
+            // 2. Abrir el Modal
+            var el = document.getElementById('modalConfirmarEntrega');
 
-            modal.classList.remove('hidden');
+            if (window.bootstrap && window.bootstrap.Modal) {
+                // Lógica para Bootstrap 5 (Vanilla JS)
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            } else if (window.jQuery) {
+                // Lógica para Bootstrap 4 / jQuery (Esta es la línea que falló)
+                // Si el Site.Master ya cargó jQuery y Bootstrap JS, esta línea debería funcionar.
+                $('#modalConfirmarEntrega').modal('show');
+            } else {
+                // Fallback (solo para el caso extremo de no tener librerías)
+                console.error("No se pudo iniciar el modal: Bootstrap o jQuery no detectados.");
+            }
         }
 
         function cerrarModalEntrega() {
-            var modal = document.getElementById('modalConfirmarEntrega');
-            modal.classList.add('hidden');
+            var el = document.getElementById('modalConfirmarEntrega');
+
+            if (window.bootstrap) {
+                var myModal = bootstrap.Modal.getInstance(el);
+                if (myModal) myModal.hide();
+            } else if (window.jQuery) {
+                $('#modalConfirmarEntrega').modal('hide');
+            } else {
+                // Fallback
+                el.style.display = 'none';
+                el.classList.remove('show');
+            }
         }
 
         function confirmarEntrega() {
-    
+
+            // Ocultamos el modal visualmente
             cerrarModalEntrega();
 
+            // Obtenemos el ID guardado
             var idPedido = document.getElementById('pedidoIdConfirmar').value;
 
-          
+            // Pasamos el valor al HiddenField de ASP.NET
             var hf = document.getElementById('hfIdPedidoEntregar');
-            if (hf) {
-                hf.value = idPedido;
+        // NOTA: Asegúrate que el ID del HiddenField sea correcto (a veces es '<%= hfIdPedidoEntregar.ClientID %>')
+        // Si usas ClientIDMode="Static", este código está perfecto.
 
-                var btn = document.getElementById('btnEntregarServer');
-                if (btn) {
-                    btn.click();
-                }
+        if (hf) {
+            hf.value = idPedido;
+
+            // Disparamos el botón del servidor (Code Behind)
+            var btn = document.getElementById('btnEntregarServer');
+            if (btn) {
+                btn.click();
             }
         }
+    }
     </script>
 
     <script type="text/javascript">
@@ -289,39 +320,51 @@
 
 
 
-    <div id="modalConfirmarEntrega" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-sm p-6 transform transition-all duration-300">
+  <div class="modal fade" id="modalConfirmarEntrega" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
 
-            <div class="flex justify-between items-start border-b border-gray-200 dark:border-slate-700 pb-3 mb-4">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Confirmar Entrega
-                </h3>
-                <button type="button" onclick="cerrarModalEntrega()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
+        <div class="modal-content border-0 shadow-2xl overflow-hidden"
+             style="border-radius: 1rem; border: 2px solid #22c55e;">
+            
+            <div class="bg-green-600 text-white px-4 py-2 flex justify-between items-center">
+                <span class="font-bold text-sm tracking-wide">CONFIRMACIÓN DE ENTREGA</span>
+                <button type="button" class="btn-close btn-close-white text-xs" 
+                        data-bs-dismiss="modal" onclick="cerrarModalEntrega()" aria-label="Close"></button>
             </div>
 
-            <div class="mb-6">
-                <p class="text-sm text-gray-600 dark:text-gray-300">
-                    ¿Estás seguro de que deseas marcar el pedido <strong id="pedidoIdDisplay">#XXX</strong> como **ENTREGADO**? Esta acción no se puede deshacer fácilmente.
+            <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                    <span class="material-symbols-outlined text-3xl text-green-600">local_shipping</span>
+                </div>
+
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white">¿Confirmar Entrega?</h3>
+                
+                <p class="text-slate-500 text-sm mt-1 leading-snug">
+                    ¿Estás seguro de marcar el pedido <strong id="pedidoIdDisplay" class="text-slate-800 dark:text-gray-200">#XXX</strong> como <b>ENTREGADO</b>?
+                    <br>
+                    <span class="text-xs text-red-400 block mt-1">(Esta acción no se puede deshacer fácilmente)</span>
                 </p>
+                
                 <input type="hidden" id="pedidoIdConfirmar" value="" />
             </div>
 
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="cerrarModalEntrega()"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-md hover:bg-gray-200 dark:hover:bg-slate-600 transition duration-150">
+            <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                <button type="button"
+                    class="px-4 py-1.5 rounded text-sm text-slate-600 font-medium hover:bg-slate-200 transition-colors"
+                    data-bs-dismiss="modal" onclick="cerrarModalEntrega()">
                     Cancelar
                 </button>
-
-                <button type="button" onclick="confirmarEntrega()"
-                    class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150">
+                
+                <button type="button"
+                    class="px-4 py-1.5 rounded text-sm bg-green-600 text-white font-bold hover:bg-green-700 shadow-md transition-colors"
+                    onclick="confirmarEntrega()">
                     Confirmar
                 </button>
             </div>
 
         </div>
     </div>
-
+</div>
 
 
 </asp:Content>
