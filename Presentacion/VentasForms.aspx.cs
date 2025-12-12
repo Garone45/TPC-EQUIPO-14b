@@ -46,12 +46,10 @@ namespace Presentacion
                     CargarDatosPedido(idPedido);
 
            
-                    // Si estamos editando (sea modo "Ver" o "Modificar"), 
-                    // bloqueamos el buscador de clientes para que no se pueda cambiar.
+                   
                     txtBuscarCliente.Enabled = false;
                     txtBuscarCliente.Attributes.Add("placeholder", "Cliente ya asignado");
 
-                    // Opcional: Ocultar el panel de resultados por si acaso
                     pnlSinResultados.Visible = false;
                     rptClientes.Visible = false;
 
@@ -67,7 +65,7 @@ namespace Presentacion
                 }
                 else
                 {
-                    // MODO NUEVO (Aquí sí permitimos buscar cliente)
+                  
                     Session["DetallePedido"] = null;
                     Session["ClienteSeleccionado"] = null;
                     ViewState["IDPedidoEditar"] = null;
@@ -209,7 +207,7 @@ namespace Presentacion
         {
             BindProductos(txtBuscarProductos.Text.Trim());
 
-            // Foco de vuelta al input para seguir escribiendo o buscando otro
+        
             ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusScript",
                 $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
         }
@@ -349,8 +347,8 @@ namespace Presentacion
                 TextBox txtCantidad = (TextBox)e.Row.FindControl("txtQuantity");
                 if (txtCantidad != null)
                 {
-                    txtCantidad.BorderStyle = BorderStyle.None; // Sin bordes
-                    txtCantidad.BackColor = System.Drawing.Color.Transparent; // Fondo transparente
+                    txtCantidad.BorderStyle = BorderStyle.None;
+                    txtCantidad.BackColor = System.Drawing.Color.Transparent; 
                     txtCantidad.ReadOnly = true;
                     // Opcional: Centrarlo visualmente
                     txtCantidad.Style.Add("text-align", "center");
@@ -364,7 +362,7 @@ namespace Presentacion
             gvDetallePedido.DataBind();
 
             decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-            decimal iva = subtotal * 0.21m; // Ejemplo IVA 21%
+            decimal iva = subtotal * 0.21m; 
             decimal total = subtotal + iva;
 
             lblSubtotal.Text = subtotal.ToString("C");

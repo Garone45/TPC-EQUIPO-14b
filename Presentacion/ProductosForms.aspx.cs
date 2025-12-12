@@ -98,7 +98,7 @@ namespace Presentacion
                     ddlMarca.SelectedValue = seleccionado.Marca.IDMarca.ToString();
                     ddlCategoria.SelectedValue = seleccionado.Categorias.IDCategoria.ToString();
                 }
-                // --- FIN LÓGICA DE MODIFICAR ---
+             
             }
         }
 

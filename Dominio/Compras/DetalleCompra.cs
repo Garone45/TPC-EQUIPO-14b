@@ -19,7 +19,6 @@ namespace Dominio.Compras
 
         public int Cantidad { get; set; }
 
-        // CRÍTICO: Este es el precio de costo de ESE momento.
         public decimal PrecioUnitario { get; set; }
 
         public decimal Subtotal

@@ -25,7 +25,7 @@ namespace Presentacion
             {
                 // Ocultamos el botón "Agregar Producto"
                 btnNuevo.Visible = false;
-                // Ocultamos la columna de acciones (ajusta el índice si cambia tu grid)
+                // Ocultamos la columna de acciones 
                 if (gvProductos.Columns.Count > 7) gvProductos.Columns[7].Visible = false;
             }
 
@@ -64,7 +64,7 @@ namespace Presentacion
             }
         }
 
-        // --- MODIFICADO: Ahora aplica el orden antes de enlazar ---
+      
         private void CargarGrilla()
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
@@ -102,8 +102,7 @@ namespace Presentacion
         // --- NUEVO: Lógica para ordenar la lista según la columna ---
         private List<Articulo> AplicarOrdenamiento(List<Articulo> lista)
         {
-            // Nota: Asegúrate que los nombres en los 'case' coincidan con 
-            // la propiedad 'SortExpression' que pusiste en el ASPX.
+       
 
             bool ascendente = SortDirection == "ASC";
 
@@ -118,8 +117,8 @@ namespace Presentacion
                 case "Marca": // Ordenar por descripción de la marca
                     return ascendente ? lista.OrderBy(x => x.Marca.Descripcion).ToList() : lista.OrderByDescending(x => x.Marca.Descripcion).ToList();
 
-                // Agrega aquí más casos si pusiste SortExpression en otras columnas (ej: Precio, Stock)
-                case "PrecioVentaCalculado": // Asegurate que el SortExpression en ASPX sea igual
+        
+                case "PrecioVentaCalculado": 
                     return ascendente ? lista.OrderBy(x => x.PrecioVentaCalculado).ToList() : lista.OrderByDescending(x => x.PrecioVentaCalculado).ToList();
 
                 default:
@@ -127,13 +126,12 @@ namespace Presentacion
             }
         }
 
-        // --- NUEVO: Evento que se dispara al hacer click en el header ---
         protected void gvProductos_Sorting(object sender, GridViewSortEventArgs e)
         {
-            // Determinar dirección
+           
             if (SortExpression == e.SortExpression)
             {
-                // Si es la misma columna, invertimos la dirección
+                
                 SortDirection = (SortDirection == "ASC") ? "DESC" : "ASC";
             }
             else
@@ -147,7 +145,7 @@ namespace Presentacion
             CargarGrilla();
         }
 
-        // --- NUEVO: Dibuja la flecha en el header correspondiente ---
+      
         private void AgregarFlechasOrdenamiento()
         {
             if (string.IsNullOrEmpty(SortExpression)) return;
@@ -169,7 +167,7 @@ namespace Presentacion
                 Label sortIcon = new Label();
                 sortIcon.CssClass = "material-symbols-outlined text-sm align-middle ml-1";
                 sortIcon.Text = (SortDirection == "ASC") ? "arrow_drop_down" : "arrow_drop_up";
-                // Nota: A veces "up" es menor a mayor y a veces al revés visualmente, ajústalo a tu gusto.
+               
 
                 gvProductos.HeaderRow.Cells[columnIndex].Controls.Add(sortIcon);
             }
@@ -208,8 +206,7 @@ namespace Presentacion
 
         protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
-            // 1. Diagnóstico: ¿Llega el ID? 
-            // Pon un punto de interrupción (punto rojo) en la línea de abajo o mira la ventana "Salida" (Output)
+    
             string valorId = hfIdProducto.Value;
             System.Diagnostics.Debug.WriteLine("INTENTO BORRAR ID: " + valorId);
 
@@ -232,8 +229,7 @@ namespace Presentacion
             }
             catch (Exception ex)
             {
-                // 2. Diagnóstico: Si falla, que nos avise
-                // Temporalmente lanzamos el error para verlo en pantalla
+           
                 throw new Exception("Error al intentar eliminar en BD", ex);
             }
         }

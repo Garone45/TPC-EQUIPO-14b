@@ -46,7 +46,7 @@ namespace Presentacion
                 decimal ventasHoy = negocio.TotalVentasHoy();
                 decimal ventasAyer = negocio.TotalVentasAyer();
 
-                lblVentasHoy.Text = ventasHoy.ToString("C"); // Formato Moneda ($)
+                lblVentasHoy.Text = ventasHoy.ToString("C"); 
 
                 // Lógica del porcentaje
                 decimal porcentaje = 0;
@@ -57,7 +57,6 @@ namespace Presentacion
 
                 lblPorcentaje.Text = (porcentaje > 0 ? "+" : "") + porcentaje.ToString("0") + "%";
 
-                // Color dinámico (Opcional: Verde si sube, Rojo si baja)
                 if (porcentaje >= 0) lblPorcentaje.ForeColor = System.Drawing.Color.Green;
                 else lblPorcentaje.ForeColor = System.Drawing.Color.Red;
 
@@ -105,7 +104,7 @@ namespace Presentacion
             try
             {
                 DashboardNegocio negocio = new DashboardNegocio();
-                DataTable dt = negocio.ObtenerReporteCompras(); // O el reporte que quieras
+                DataTable dt = negocio.ObtenerReporteCompras(); 
                 DescargarExcel(dt, "Reporte_Stock_Proveedores_" + DateTime.Now.ToString("yyyyMMdd"));
             }
             catch (Exception ex)
@@ -115,7 +114,7 @@ namespace Presentacion
             }
         }
 
-        // Método Mágico que convierte cualquier Tabla a un archivo CSV descargable
+      
         private void DescargarExcel(DataTable dt, string nombreArchivo)
         {
             // 1. Configurar la respuesta del navegador
@@ -147,8 +146,7 @@ namespace Presentacion
                 sb.AppendLine();
             }
 
-            // 3. Escribir el archivo y terminar la respuesta
-            // El BOM (Byte Order Mark) ayuda a Excel a entender que es UTF-8 (tildes y ñ)
+            
             Response.BinaryWrite(Encoding.UTF8.GetPreamble());
             Response.Write(sb.ToString());
             Response.End();

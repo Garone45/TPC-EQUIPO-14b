@@ -14,7 +14,7 @@ namespace Dominio.Usuario_Persona
         // Atributos de Proveedor
         public string RazonSocial { get; set; }
         public string Cuit { get; set; }
-        public string Seudonimo { get; set; } // (Este estaba en tu DER)
+        public string Seudonimo { get; set; } 
 
         // Atributos de Entidad (los "heredados")
         public string Telefono { get; set; }

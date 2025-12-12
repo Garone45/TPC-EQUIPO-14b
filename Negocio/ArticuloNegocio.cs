@@ -86,7 +86,7 @@ namespace Negocio
                     aux.Categorias = new Categoria();
                     aux.Proveedor = new Proveedor(); // Instanciamos para evitar NullReference
 
-                    // 1. Lecturas seguras de datos que NO son nulos (según tu tabla)
+                    // 1. Lecturas seguras de datos que NO son nulos 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
                     aux.StockActual = (int)datos.Lector["StockActual"];
@@ -102,7 +102,7 @@ namespace Negocio
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
 
-                    // 3. SECCIÓN CRÍTICA: PROVEEDOR (Puede ser NULL)
+                    
                     // Verificamos si la columna IDProveedor tiene dato real
                     if (!(datos.Lector["IDProveedor"] is DBNull))
                     {
@@ -121,10 +121,6 @@ namespace Negocio
                         aux.Proveedor.RazonSocial = "Sin Proveedor";
                     }
 
-                    // 4. EXTRA: Código de Artículo (Suele ser NULL a veces)
-                    // Si tu SP lo trae, agrégalo así para evitar otro crash:
-                    // if (!(datos.Lector["CodigoArticulo"] is DBNull))
-                    //     aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
 
                     return aux;
                 }

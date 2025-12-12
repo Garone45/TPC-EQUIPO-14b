@@ -59,7 +59,7 @@ namespace Presentacion
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            // 1. Barrera Frontend
+           
             Page.Validate();
             if (!Page.IsValid) return;
 

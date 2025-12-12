@@ -10,7 +10,7 @@ namespace Dominio.Ventas
     {
         public int IDFactura { get; set; }
         public int IDPedido { get; set; }
-        // El número único que pide la consigna
+
         public string NroComprobante { get; set; } 
         public string TipoComprobante { get; set; } 
         public DateTime Fecha { get; set; }

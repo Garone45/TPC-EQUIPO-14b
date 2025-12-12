@@ -41,7 +41,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // 1. Armamos la consulta SQL (Siempre trae 'Activo')
+                
                 string consulta = "SELECT IDMarca, Descripcion, Activo FROM dbo.Marcas WHERE Activo = 1";
 
                 if (!string.IsNullOrEmpty(busqueda))
@@ -50,10 +50,10 @@ namespace Negocio
                 }
                 consulta += " ORDER BY Descripcion";
 
-                // 2. Seteamos consulta ANTES de parámetros
+              
                 datos.setearConsulta(consulta);
 
-                // 3. Seteamos parámetros DESPUÉS
+            
                 if (!string.IsNullOrEmpty(busqueda))
                 {
                     datos.setearParametro("@busqueda", "%" + busqueda + "%");
@@ -155,7 +155,7 @@ namespace Negocio
         public void modificar(Marca marca)
         {
             List<Marca> listado = listar();
-            // Validamos que exista otra marca CON EL MISMO NOMBRE pero DISTINTO ID
+          
             if (listado.Any(m => m.Descripcion.ToUpper() == marca.Descripcion.ToUpper() && m.IDMarca != marca.IDMarca))
             {
                 throw new Exception("Ya existe otra marca con ese nombre.");

@@ -42,19 +42,17 @@ namespace Presentacion
                     EsModoVer = true;
                 }
 
-                // 3. ¿Edición/Lectura o Nuevo?
+       
                 if (!string.IsNullOrEmpty(idCompraStr) && int.TryParse(idCompraStr, out int idCompra))
                 {
                     ViewState["CompraID"] = idCompra;
                     CargarDatosCompra(idCompra);
 
-                    // --- RESTRICCIÓN DE SEGURIDAD (SOLICITADA) ---
-                    // En modo edición (o ver), no se puede cambiar el Proveedor ni el N° Factura
-                    // porque cambiaría la identidad legal del documento.
+                  
                     ddlProveedor.Enabled = false;
                     txtFacturaRef.Enabled = false;
 
-                    // Opcional: Añadir estilo visual de bloqueado (Tailwind)
+            
                     txtFacturaRef.Attributes.Add("class", txtFacturaRef.CssClass + " bg-gray-100 cursor-not-allowed");
                     ddlProveedor.Attributes.Add("class", ddlProveedor.CssClass + " bg-gray-100 cursor-not-allowed");
 
@@ -287,7 +285,7 @@ namespace Presentacion
                     txtObservaciones.Text = compraEntidad.Observaciones;
 
                     // 2. Cargar Detalles en Sesión y Grilla
-                    // IMPORTANTE: Asignamos la lista de la BD a la Session para que el Grid la vea
+                    //  Asignamos la lista de la BD a la Session para que el Grid la vea
                     ListaCompraActual = compraEntidad.Detalles;
 
                     // 3. Refrescar Grilla
@@ -325,7 +323,7 @@ namespace Presentacion
 
             if (gvDetalleCompra.Columns.Count > 0)
             {
-                // Opción A: Ocultar toda la columna de acciones
+            
                 gvDetalleCompra.Columns[4].Visible = false;
             }
             else

@@ -15,7 +15,7 @@ namespace Dominio.Ventas
 
         public string Descripcion { get; set; }
         public int Cantidad { get; set; }
-        // CRÍTICO: Este es el precio de venta calculado en ese momento.
+        
         public decimal PrecioUnitario { get; set; }
         public decimal TotalParcial
         {

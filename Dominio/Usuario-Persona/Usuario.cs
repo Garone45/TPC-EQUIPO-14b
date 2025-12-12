@@ -9,7 +9,7 @@
     public class Usuario
     {
         public int IDUsuario { get; set; }
-        public string NombreUsuario { get; set; } // Ojo: En SQL se llama NombreUser
+        public string NombreUsuario { get; set; } 
         public string Contraseña { get; set; }
         public bool Activo { get; set; }
         public TipoUsuario TipoUsuario { get; set; }

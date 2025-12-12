@@ -13,7 +13,7 @@ namespace Presentacion
 
         protected void btnRecuperar_Click(object sender, EventArgs e)
         {
-            // Validamos que no esté vacío (aunque el validador visual ya ayuda)
+        
             if (string.IsNullOrEmpty(txtEmail.Text)) return;
 
             UsuarioNegocio negocio = new UsuarioNegocio();
@@ -21,7 +21,7 @@ namespace Presentacion
 
             try
             {
-                // 1. Usamos el método NUEVO que creaste en UsuarioNegocio
+             
                 if (negocio.BuscarPorEmail(txtEmail.Text))
                 {
                     // 2. Si existe, preparamos el correo
@@ -37,11 +37,11 @@ namespace Presentacion
                             </div>
                         </div>";
 
-                    // IMPORTANTE: Asegurate de haber configurado tus credenciales en EmailService.cs
+                    
                     emailService.ArmarCorreo(txtEmail.Text, "Recupero de Contraseña - TPC", mensajeCuerpo);
                     emailService.enviarEmail();
 
-                    // 3. Feedback positivo (Verde)
+                
                     lblMensaje.Text = "¡Correo enviado! Revisa tu bandeja de entrada.";
                     lblMensaje.CssClass = "text-center text-sm font-bold p-3 rounded-xl mt-2 bg-green-100 text-green-700 border border-green-200 block";
                     lblMensaje.Visible = true;
@@ -52,7 +52,7 @@ namespace Presentacion
                 }
                 else
                 {
-                    // Feedback negativo (Rojo) - El email no está en la base
+                   
                     lblMensaje.Text = "No encontramos ningún usuario registrado con ese email.";
                     lblMensaje.CssClass = "text-center text-sm font-bold p-3 rounded-xl mt-2 bg-red-100 text-red-700 border border-red-200 block";
                     lblMensaje.Visible = true;
@@ -60,7 +60,7 @@ namespace Presentacion
             }
             catch (Exception ex)
             {
-                // Error técnico (ej: falló Gmail)
+               
                 lblMensaje.Text = "Hubo un error al enviar el correo. Intenta más tarde.";
                 lblMensaje.CssClass = "text-center text-sm font-bold p-3 rounded-xl mt-2 bg-amber-100 text-amber-700 border border-amber-200 block";
                 lblMensaje.Visible = true;

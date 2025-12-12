@@ -167,19 +167,16 @@ namespace Negocio
                 datos.setearParametro("@MetodoPago", nuevoPedido.MetodoPago);
                 datos.setearParametro("@Estado", nuevoPedido.Estado.ToString());
 
-                // Nuevo campo: Descuento
-                // Nota: Asumo que agregaste la propiedad 'Descuento' a tu clase Pedido.
                 datos.setearParametro("@Descuento", nuevoPedido.Descuento);
 
-                datos.setearParametro("@Total", nuevoPedido.Total); // Este es el total final
+                datos.setearParametro("@Total", nuevoPedido.Total); 
 
-                // Ejecutamos y recuperamos el ID generado
+              
                 int idPedidoGenerado = datos.ejecutarAccionScalar();
 
                 datos.cerrarConexion();
 
-                // 2. INSERTAR DETALLES (ESTO QUEDA IGUAL)
-                // ... (El código de inserción de detalles es el mismo, ya que usa el ID recién generado) ...
+              
                 foreach (var item in nuevoPedido.Detalles)
                 {
                     AccesoDatos datosDetalle = new AccesoDatos();
@@ -218,8 +215,7 @@ namespace Negocio
 
             try
             {
-                // ❌ ELIMINADO: datos.Conexion.Open(); 
-                // No la abras manualmente aquí. Deja que 'ejecutarLectura' lo haga.
+          
 
                 // --- 1. TRAER CABECERA DEL PEDIDO ---
                 datos.setearConsulta("SELECT * FROM Pedidos WHERE IDPedido = @id");
@@ -300,8 +296,7 @@ namespace Negocio
             }
             finally
             {
-                // 🟢 SEGURIDAD FINAL
-                // Tu lógica aquí está perfecta, asegura que si algo falló, la conexión muera.
+            
                 if (datos.Conexion != null && datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
             }
@@ -316,11 +311,11 @@ namespace Negocio
            
                 datos.Conexion.Open();
                 transaccion = datos.Conexion.BeginTransaction();
-                datos.Comando.Transaction = transaccion; // Vincula el comando a la transacción
+                datos.Comando.Transaction = transaccion; 
 
                 // 
 
-                // --- 2. ACTUALIZAR CABECERA (Pedidos) ---
+          
                 string consultaCabecera = @"
                     UPDATE Pedidos SET 
                         IDCliente = @IDCliente,
@@ -351,8 +346,7 @@ namespace Negocio
                 datos.setearParametro("@Descuento", pedido.Descuento);
                 datos.setearParametro("@Total", pedido.Total);
 
-                // No necesitamos llamar a conexion.Open() o comando.Connection = conexion
-                // ya que lo hicimos en el paso 1 antes de la transacción.
+                
                 datos.Comando.ExecuteNonQuery(); // Ejecuta el UPDATE usando el comando ya vinculado
 
                 // --- 3. REEMPLAZAR DETALLES ---
@@ -403,7 +397,7 @@ namespace Negocio
             finally
             {
                 // 6. CERRAR CONEXIÓN
-                // Usamos cerrarConexion, pero solo si la conexión está abierta
+              
                 if (datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
             }
@@ -440,7 +434,7 @@ namespace Negocio
                 datos.setearParametro("@IDPedido", idPedido);
                 datos.setearParametro("@EstadoOld", "Pendiente"); // <--- VALIDACIÓN
 
-                // 2. Ejecutar la acción
+          
                 datos.ejecutarAccion();
 
                 // Si filasAfectadas es 1, se actualizó. Si es 0, significa que el estado no era PENDIENTE.
@@ -472,9 +466,7 @@ namespace Negocio
             transaccion = datos.Conexion.BeginTransaction();
             datos.Comando.Transaction = transaccion;
 
-            // -------------------------------------------------------
-            // PASO 1: OBTENER LOS ARTÍCULOS Y CANTIDADES DEL PEDIDO
-            // -------------------------------------------------------
+        
             string consultaDetalles = "SELECT IDArticulo, Cantidad FROM DetallesPedido WHERE IDPedido = @IDPedido";
             datos.setearConsulta(consultaDetalles);
             datos.setearParametro("@IDPedido", idPedido);
@@ -492,7 +484,7 @@ namespace Negocio
                     itemsAdescontar.Add(item);
                 }
             }
-            // IMPORTANTE: El lector se cierra aquí gracias al 'using', liberando la conexión para hacer Updates.
+     
 
             // -------------------------------------------------------
             // PASO 2: DESCONTAR STOCK DE CADA ARTÍCULO
@@ -513,7 +505,7 @@ namespace Negocio
             // -------------------------------------------------------
             // PASO 3: ACTUALIZAR ESTADO DEL PEDIDO A 'ENTREGADO'
             // -------------------------------------------------------
-            // Validamos que siga estando en 'Pendiente' para evitar doble entrega
+ 
             string consultaEstado = @"UPDATE Pedidos 
                                   SET Estado = 'Entregado', FechaEntrega = GETDATE() 
                                   WHERE IDPedido = @IDPedido AND Estado = 'Pendiente'";

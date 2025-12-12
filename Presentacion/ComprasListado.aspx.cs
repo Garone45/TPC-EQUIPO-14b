@@ -140,10 +140,10 @@ namespace Presentacion
 
                     ComprasNegocio negocio = new ComprasNegocio();
 
-                    // Llama a eliminarLogico (asegúrate que en ComprasNegocio use IDCompra)
+                    
                     negocio.eliminarLogico(id);
 
-                    // Recargamos todo para ver el cambio
+               
                     CargarCompras();
 
                     // Actualizamos el panel visualmente
@@ -164,17 +164,17 @@ namespace Presentacion
                     int id = int.Parse(hfIdCompra.Value);
                     ComprasNegocio negocio = new ComprasNegocio();
 
-                    // 1. Cambiar estado
+               
                     negocio.ConfirmarEntrega(id);
 
-                    // 2. Recargar
+                
                     CargarCompras();
                     updCompras.Update();
                 }
             }
             catch (Exception ex)
             {
-                // Manejo de error
+          
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
