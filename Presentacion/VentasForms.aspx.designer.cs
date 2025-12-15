@@ -33,15 +33,6 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.Label lblMensaje;
 
         /// <summary>
-        /// Control upCliente.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel upCliente;
-
-        /// <summary>
         /// Control columnaBusqueda.
         /// </summary>
         /// <remarks>
@@ -49,6 +40,15 @@ namespace Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl columnaBusqueda;
+
+        /// <summary>
+        /// Control upCliente.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upCliente;
 
         /// <summary>
         /// Control txtBuscarCliente.
@@ -60,6 +60,15 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtBuscarCliente;
 
         /// <summary>
+        /// Control pnlResultadosClientes.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlResultadosClientes;
+
+        /// <summary>
         /// Control rptClientes.
         /// </summary>
         /// <remarks>
@@ -69,22 +78,13 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.Repeater rptClientes;
 
         /// <summary>
-        /// Control pnlSinResultados.
+        /// Control pnlSinResultadosClientes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlSinResultados;
-
-        /// <summary>
-        /// Control columnaDetalle.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl columnaDetalle;
+        protected global::System.Web.UI.WebControls.Panel pnlSinResultadosClientes;
 
         /// <summary>
         /// Control txtClientName.
@@ -123,6 +123,15 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtClientEmail;
 
         /// <summary>
+        /// Control txtClientCity.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtClientCity;
+
+        /// <summary>
         /// Control txtClientAddress.
         /// </summary>
         /// <remarks>
@@ -132,13 +141,13 @@ namespace Presentacion
         protected global::System.Web.UI.WebControls.TextBox txtClientAddress;
 
         /// <summary>
-        /// Control txtClientCity.
+        /// Control columnaDetalle.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtClientCity;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl columnaDetalle;
 
         /// <summary>
         /// Control upProductos.
@@ -157,6 +166,15 @@ namespace Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtBuscarProductos;
+
+        /// <summary>
+        /// Control pnlResultadosProductos.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlResultadosProductos;
 
         /// <summary>
         /// Control rptProductos.
@@ -193,6 +211,15 @@ namespace Presentacion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvDetallePedido;
+
+        /// <summary>
+        /// Control upTotales.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel upTotales;
 
         /// <summary>
         /// Control btnFinalizarVenta.

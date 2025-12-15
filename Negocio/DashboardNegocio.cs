@@ -164,7 +164,7 @@ namespace Negocio
 
                 string consulta = @"
                     SELECT 
-                        A.CodigoArticulo,
+                        A.IDArticulo,
                         A.Descripcion,
                         M.Descripcion AS Marca,
                         Cat.Descripcion AS Categoria,

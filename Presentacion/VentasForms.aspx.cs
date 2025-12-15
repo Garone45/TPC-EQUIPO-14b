@@ -61,7 +61,7 @@ namespace Presentacion
                     Session["ClienteSeleccionado"] = null;
                     ViewState["IDPedidoEditar"] = null;
 
-                    BindGridClientes(null);
+                    BindClientes(null);
 
                     // Limpiar campos visuales
                     txtClientName.Text = "";
@@ -79,55 +79,52 @@ namespace Presentacion
 
         protected void txtBuscarCliente_TextChanged(object sender, EventArgs e)
         {
-            // 1. Obtener el texto limpiando espacios
             string filtro = txtBuscarCliente.Text.Trim();
 
-            // 2. Lógica de Decisión
-            if (string.IsNullOrEmpty(filtro))
+            if (string.IsNullOrEmpty(filtro) || filtro.Length < 2)
             {
-              
-                BindGridClientes(null);
-
-              
+                // Si borra el texto, ocultamos el dropdown
+                pnlResultadosClientes.Visible = false;
+                pnlSinResultadosClientes.Visible = false;
+                rptClientes.DataSource = null;
+                rptClientes.DataBind();
             }
             else
             {
-                // Si hay texto, filtramos.
-                BindGridClientes(filtro);
+                BindClientes(filtro);
             }
+            // Importante: Actualizar el UpdatePanel del cliente
+            upCliente.Update();
         }
 
-        private void BindGridClientes(string filtro)
+        private void BindClientes(string filtro)
         {
+            if (string.IsNullOrEmpty(filtro)) return;
+
             ClienteNegocio negocio = new ClienteNegocio();
+            // Optimización: Usar filtrar directamente en lugar de traer todos y filtrar en memoria si es posible
             List<Cliente> clientes = negocio.listar();
 
-            if (!string.IsNullOrEmpty(filtro))
-            {
-                clientes = clientes.Where(c =>
+            // Filtrado en memoria (si tu negocio.filtrar no existe, usa esto)
+            var listaFiltrada = clientes.Where(c =>
                     c.Nombre.ToLower().Contains(filtro.ToLower()) ||
                     c.Apellido.ToLower().Contains(filtro.ToLower()) ||
                     c.Dni.Contains(filtro)
                 ).ToList();
-            }
 
-            // Lógica para mostrar/ocultar mensaje de "Sin resultados"
-            if (clientes.Count > 0)
+            if (listaFiltrada.Count > 0)
             {
-                rptClientes.DataSource = clientes;
+                rptClientes.DataSource = listaFiltrada;
                 rptClientes.DataBind();
-                rptClientes.Visible = true;
-                pnlSinResultados.Visible = false;
+                pnlResultadosClientes.Visible = true; // Mostrar lista
+                pnlSinResultadosClientes.Visible = false;
             }
             else
             {
-               
-                rptClientes.Visible = false;
-                pnlSinResultados.Visible = true; // Mostramos el mensaje (ocupa el espacio vacío)
-
-                // Opcional: Cambiar el texto dinámicamente
-                if (string.IsNullOrEmpty(filtro))
-                    ((Label)pnlSinResultados.Controls[0]).Text = "Empieza a escribir para buscar..."; // Si tuvieras un label dentro
+                rptClientes.DataSource = null;
+                rptClientes.DataBind();
+                pnlResultadosClientes.Visible = true; // Mostrar panel vacío
+                pnlSinResultadosClientes.Visible = true; // Mostrar mensaje "No encontrado"
             }
         }
 
@@ -135,10 +132,7 @@ namespace Presentacion
         {
             if (e.CommandName == "Seleccionar")
             {
-                // Obtenemos el ID del CommandArgument
                 int idCliente = Convert.ToInt32(e.CommandArgument);
-
-                // --- TU LÓGICA DE SELECCIÓN (Es la misma que tenías antes) ---
                 Session["ClienteSeleccionado"] = idCliente;
 
                 ClienteNegocio negocio = new ClienteNegocio();
@@ -146,21 +140,34 @@ namespace Presentacion
 
                 if (cliente != null)
                 {
+                    // Llenar tarjetas visuales
                     txtClientName.Text = cliente.Nombre + " " + cliente.Apellido;
                     txtClientAddress.Text = cliente.Direccion + " " + cliente.Altura;
                     txtClientCity.Text = cliente.Localidad;
-                    txtClientDNI.Text = cliente.Dni;
+                    txtClientDNI.Text = "DNI: " + cliente.Dni; // Agregué prefijo visual
                     txtClientEmail.Text = cliente.Email;
                     txtClientPhone.Text = cliente.Telefono;
 
-                    mostrarMensaje("Cliente seleccionado correctamente.", false);
+                    // mostrarMensaje("Cliente asignado a la venta.", false); // Opcional
                 }
 
-                // Limpiamos el buscador y ocultamos la lista para que quede limpio
+                // Limpieza post-selección
                 txtBuscarCliente.Text = string.Empty;
-             
-                pnlSinResultados.Visible = false;
+                pnlResultadosClientes.Visible = false;
+                pnlSinResultadosClientes.Visible = false;
+
+                upCliente.Update();
             }
+        }
+
+        private void LimpiarDatosClienteVisual()
+        {
+            txtClientName.Text = "";
+            txtClientAddress.Text = "";
+            txtClientCity.Text = "";
+            txtClientDNI.Text = "";
+            txtClientPhone.Text = "";
+            txtClientEmail.Text = "";
         }
 
 
@@ -197,11 +204,46 @@ namespace Presentacion
         // Evento del TextBox
         protected void txtBuscarProductos_TextChanged(object sender, EventArgs e)
         {
-            BindProductos(txtBuscarProductos.Text.Trim());
+            string busqueda = txtBuscarProductos.Text.Trim();
+            ArticuloNegocio negocio = new ArticuloNegocio();
 
-            // Foco de vuelta al input para seguir escribiendo o buscando otro
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusScript",
-                $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
+            if (string.IsNullOrEmpty(busqueda) || busqueda.Length < 2) // Puedes ajustar el mínimo de 2 caracteres
+            {
+                // 1. Campo vacío o muy corto: Ocultar el dropdown completamente.
+                pnlResultadosProductos.Visible = false;
+                pnlSinProductos.Visible = false;
+                rptProductos.DataSource = null; // Limpiamos el origen de datos por seguridad
+                rptProductos.DataBind();
+                upProductos.Update();
+                return;
+            }
+            else
+            {
+
+                // 2. Buscar productos (asume que esta función devuelve List<Producto>)
+                List<Articulo> listaProductos = negocio.filtrar(busqueda);
+
+               
+                if (listaProductos != null && listaProductos.Count >= 1)
+                {
+                    // Hay varios, mostramos la lista para que elija
+                    rptProductos.DataSource = listaProductos;
+                    rptProductos.DataBind();
+                    pnlResultadosProductos.Visible = true;
+                    pnlSinProductos.Visible = false;
+                    upProductos.Update();
+                }
+                else
+                {
+                    // No hay resultados
+                    rptProductos.DataSource = null;
+                    rptProductos.DataBind();
+                    pnlResultadosProductos.Visible = true;
+                    pnlSinProductos.Visible = true;
+                    upProductos.Update();
+                }
+            }
+            upProductos.Update();
         }
 
 
@@ -210,63 +252,67 @@ namespace Presentacion
             if (e.CommandName == "AgregarCarrito")
             {
                 int idArticulo = Convert.ToInt32(e.CommandArgument);
-
-                // 1. Obtener el artículo desde la BD
-                ArticuloNegocio negocio = new ArticuloNegocio();
-                Articulo articulo = negocio.obtenerPorId(idArticulo);
-
-                if (articulo != null)
-                {
-                    // 2. Validar Stock (Tu lógica existente)
-                    if (articulo.StockActual <= 0)
-                    {
-                        mostrarMensaje($"⚠️ El producto '{articulo.Descripcion}' no tiene stock.", true);
-                        return;
-                    }
-
-                    // 3. Buscar si ya existe en el carrito
-                    var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
-
-                    if (detalle != null)
-                    {
-                        // Ya existe: Sumamos 1 si hay stock
-                        if (detalle.Cantidad + 1 > articulo.StockActual)
-                        {
-                            mostrarMensaje($"⚠️ Stock insuficiente. Máximo {articulo.StockActual}.", true);
-                            return;
-                        }
-                        detalle.Cantidad++;
-                    }
-                    else
-                    {
-                        // No existe: Lo creamos
-                        DetalleActual.Add(new DetallePedido
-                        {
-                            IDArticulo = articulo.IDArticulo,
-                            Descripcion = articulo.Descripcion,
-                            PrecioUnitario = articulo.PrecioVentaCalculado,
-                            Cantidad = 1
-                        });
-                    }
-
-                    // 4. Guardar en Session y Actualizar Interfaz
-                    DetalleActual = DetalleActual; // Setter de sesión
-                    ActualizarDetalleYTotales();   // Refresca la grilla de abajo y los montos
-
-                    // Opcional: Feedback visual de éxito
-                    // mostrarMensaje($"Se añadió: {articulo.Descripcion}", false);
-
-                    // 5. Limpiar buscador para la siguiente venta (Opcional, estilo POS rápido)
-                    txtBuscarProductos.Text = string.Empty;
-                    BindProductos(null);
-
-                    // Foco de vuelta al buscador para escanear el siguiente producto rápido
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusProd",
-                        $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
-                }
+                AgregarArticuloAlCarrito(idArticulo);
             }
         }
 
+        private void AgregarArticuloAlCarrito(int idArticulo)
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            Articulo articulo = negocio.obtenerPorId(idArticulo);
+
+            if (articulo != null)
+            {
+                // Validar Stock
+                if (articulo.StockActual <= 0)
+                {
+                    
+                    return;
+                }
+
+                // Buscar si existe en la sesión (Carrito)
+                var detalle = DetalleActual.FirstOrDefault(d => d.IDArticulo == idArticulo);
+
+                if (detalle != null)
+                {
+                    if (detalle.Cantidad + 1 > articulo.StockActual)
+                    {
+                        
+                        return;
+                    }
+                    detalle.Cantidad++;
+                }
+                else
+                {
+                    DetalleActual.Add(new DetallePedido
+                    {
+                        IDArticulo = articulo.IDArticulo,
+                        Descripcion = articulo.Descripcion,
+                        PrecioUnitario = articulo.PrecioVentaCalculado,
+                        Cantidad = 1
+                    });
+                }
+
+               
+                DetalleActual = DetalleActual;
+                ActualizarDetalleYTotales();
+
+                // Limpieza de buscador
+                txtBuscarProductos.Text = string.Empty;
+                pnlResultadosProductos.Visible = false;
+                pnlSinProductos.Visible = false;
+
+                // Actualizar paneles
+                upProductos.Update();
+
+                
+                upDetalleVenta.Update(); 
+
+                // Foco de vuelta al buscador (Clave para escaneo continuo)
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusProd",
+                    $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
+            }
+        }
 
 
         /// METODO DE DETALLES
@@ -466,7 +512,7 @@ namespace Presentacion
                     txtClientEmail.Text = cliente.Email;
                 }
 
-                BindGridClientes(null);
+                BindClientes(null);
                 ActualizarDetalleYTotales();
             }
         }
