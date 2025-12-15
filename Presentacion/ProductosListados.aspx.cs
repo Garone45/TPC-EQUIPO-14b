@@ -3,7 +3,7 @@ using Dominio.Usuario_Persona;
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq; // <--- AGREGADO: Necesario para OrderBy y OrderByDescending
+using System.Linq; 
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -206,9 +206,7 @@ namespace Presentacion
 
         protected void btnEliminarServer_Click(object sender, EventArgs e)
         {
-    
             string valorId = hfIdProducto.Value;
-            System.Diagnostics.Debug.WriteLine("INTENTO BORRAR ID: " + valorId);
 
             try
             {
@@ -217,20 +215,25 @@ namespace Presentacion
                     int id = int.Parse(valorId);
                     ArticuloNegocio negocio = new ArticuloNegocio();
 
-                    // Aquí se ejecuta el borrado
+                    // 1. Ejecutar eliminación
                     negocio.eliminarLogico(id);
 
-                    // Recargamos la lista
+                    // 2. Recargar grilla
                     CargarGrilla();
-
-                    // IMPORTANTE: Forzamos al UpdatePanel a actualizarse visualmente
                     upnlGrillaProductos.Update();
+
+                    string script = "mostrarMensaje('¡Eliminado!', 'El producto fue eliminado correctamente.', 'success');";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "MensajeExito", script, true);
                 }
             }
             catch (Exception ex)
             {
-           
-                throw new Exception("Error al intentar eliminar en BD", ex);
+               
+
+                string mensajeLimpio = ex.Message.Replace("'", "").Replace("\n", " ");
+                string script = $"mostrarMensaje('Error', '{mensajeLimpio}', 'error');";
+
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "MensajeError", script, true);
             }
         }
     }

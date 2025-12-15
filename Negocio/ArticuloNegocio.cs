@@ -23,7 +23,7 @@ namespace Negocio
                 datos.setearProcedimiento("SP_ListarArticulos"); // 
                 datos.ejecutarLectura();
 
-                 // Mapeo de daots  
+             
                 while (datos.Lector.Read())
                 {
                     
@@ -50,7 +50,7 @@ namespace Negocio
                     }
                     else
                     {
-                        // Si es NULL en la BD, mostramos un texto por defecto o lo dejamos vacío
+                       
                         aux.Proveedor.RazonSocial = "Sin Asignar";
                     }
 
@@ -237,14 +237,18 @@ namespace Negocio
             {
                 datos.setearProcedimiento("SP_ModificarArticulo");
 
-               
                 datos.setearParametro("@IdArticulo", articuloModificado.IDArticulo);
                 datos.setearParametro("@Descripcion", articuloModificado.Descripcion);
+
+                datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
+                // ------------------------------------
+
                 datos.setearParametro("@IdMarca", articuloModificado.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", articuloModificado.Categorias.IDCategoria);
-                datos.setearParametro("@IDProveedor", articuloModificado.Proveedor.ID);
+                datos.setearParametro("@IdProveedor", articuloModificado.Proveedor.ID); 
                 datos.setearParametro("@PrecioCostoActual", articuloModificado.PrecioCostoActual);
                 datos.setearParametro("@PorcentajeGanancia", articuloModificado.PorcentajeGanancia);
+
                 datos.setearParametro("@StockActual", articuloModificado.StockActual);
                 datos.setearParametro("@StockMinimo", articuloModificado.StockMinimo);
                 datos.setearParametro("@Activo", articuloModificado.Activo);
@@ -253,14 +257,14 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al modificar artículo en Capa de Negocio.", ex);
+                throw ex; // Lanza la excepción original para ver el mensaje real
             }
             finally
             {
                 datos.cerrarConexion();
             }
         }
-        
+
         public void eliminarLogico(int id)
         {
             AccesoDatos datos = new AccesoDatos();

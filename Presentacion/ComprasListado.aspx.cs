@@ -33,7 +33,7 @@ namespace Presentacion
             // 3. CARGA INICIAL
             if (!IsPostBack)
             {
-                // Configuramos el estilo del buscador si es necesario
+              
                 txtBuscar.Attributes.Add("style", "padding-left: 2.5rem;");
                 CargarCompras();
             }
@@ -66,12 +66,12 @@ namespace Presentacion
                 if (string.IsNullOrEmpty(filtroTexto))
                 {
                     // Si no hay filtro, trae todo (asegurate que exista ListarCompras en Negocio)
-                    // Si tu método se llama 'listar', cámbialo aquí.
+                  
                     listaCompras = negocio.ListarCompras();
                 }
                 else
                 {
-                    // Si hay filtro, usa el método de filtrar
+                   
                     listaCompras = negocio.Filtrar(filtroTexto);
                 }
 
@@ -83,7 +83,7 @@ namespace Presentacion
             catch (Exception ex)
             {
                 Session.Add("error", ex.ToString());
-                // Response.Redirect("Error.aspx", false); // Opcional
+
             }
         }
 
@@ -125,8 +125,7 @@ namespace Presentacion
 
         protected void gvCompras_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            // Dejamos esto vacío intencionalmente porque ahora usamos el Modal + Botón Oculto
-            // pero el evento debe existir para que no falle la compilación del ASPX
+           
         }
 
         // --- MÉTODO DEL BOTÓN OCULTO (ELIMINACIÓN REAL) ---
@@ -138,15 +137,9 @@ namespace Presentacion
                 {
                     int id = int.Parse(hfIdCompra.Value);
 
-                    ComprasNegocio negocio = new ComprasNegocio();
-
-                    
-                    negocio.eliminarLogico(id);
-
-               
+                    ComprasNegocio negocio = new ComprasNegocio();              
+                    negocio.eliminarLogico(id);             
                     CargarCompras();
-
-                    // Actualizamos el panel visualmente
                     updCompras.Update();
                 }
             }
@@ -163,11 +156,8 @@ namespace Presentacion
                 {
                     int id = int.Parse(hfIdCompra.Value);
                     ComprasNegocio negocio = new ComprasNegocio();
-
                
-                    negocio.ConfirmarEntrega(id);
-
-                
+                    negocio.ConfirmarEntrega(id);             
                     CargarCompras();
                     updCompras.Update();
                 }

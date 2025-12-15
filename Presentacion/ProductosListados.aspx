@@ -180,6 +180,37 @@
         </div>
 
     </div>
+    <div class="modal fade" id="mensajeModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content border-0 shadow-2xl overflow-hidden" style="border-radius: 1rem;">
+            
+            <div id="modalHeader" class="px-4 py-2 flex justify-between items-center bg-gray-600 text-white">
+                <span id="modalTitulo" class="font-bold text-sm tracking-wide">MENSAJE</span>
+                <button type="button" class="btn-close btn-close-white text-xs" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center pt-6 pb-4 px-4 bg-white dark:bg-slate-800">
+                <div id="modalIconoContainer" class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                    <span id="modalIcono" class="material-symbols-outlined text-3xl text-gray-600">info</span>
+                </div>
+                
+                <h3 id="modalTextoPrincipal" class="text-lg font-bold text-slate-800 dark:text-white">Aviso</h3>
+                <p id="modalTextoSecundario" class="text-slate-500 text-sm mt-1 leading-snug">
+                    ...
+                </p>
+            </div>
+
+            <div class="flex gap-2 p-3 bg-slate-50 dark:bg-slate-800/50 justify-center">
+                <button type="button" 
+                        class="px-6 py-1.5 rounded text-sm bg-slate-700 text-white font-bold hover:bg-slate-800 shadow-md transition-colors"
+                        data-bs-dismiss="modal">
+                    Entendido
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
     <script type="text/javascript">
         // 1. Función para abrir el modal
@@ -236,6 +267,39 @@
             });
         }
         try { if (typeof Sys !== 'undefined') setFocusAfterUpdate(); } catch (e) { }
+        function mostrarMensaje(titulo, mensaje, tipo) {
+            var header = document.getElementById('modalHeader');
+            var tituloEl = document.getElementById('modalTitulo');
+            var iconoContainer = document.getElementById('modalIconoContainer');
+            var icono = document.getElementById('modalIcono');
+            var textoPrincipal = document.getElementById('modalTextoPrincipal');
+            var textoSecundario = document.getElementById('modalTextoSecundario');
+
+            // Configuración visual según tipo
+            if (tipo === 'error') {
+                header.className = "px-4 py-2 flex justify-between items-center bg-red-600 text-white";
+                iconoContainer.className = "mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100";
+                icono.className = "material-symbols-outlined text-3xl text-red-600";
+                icono.innerText = "warning";
+            } else {
+                // Success
+                header.className = "px-4 py-2 flex justify-between items-center bg-green-600 text-white";
+                iconoContainer.className = "mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100";
+                icono.className = "material-symbols-outlined text-3xl text-green-600";
+                icono.innerText = "check_circle";
+            }
+
+            tituloEl.innerText = tipo === 'error' ? "ERROR" : "ÉXITO";
+            textoPrincipal.innerText = titulo;
+            textoSecundario.innerText = mensaje;
+
+            // Mostrar modal
+            var el = document.getElementById('mensajeModal');
+            if (window.bootstrap && window.bootstrap.Modal) {
+                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+                myModal.show();
+            }
+        }
 
     </script>
 

@@ -71,7 +71,7 @@ namespace Negocio
         }
 
 
-           public List<Pedido> Filtrar(string filtro)
+        public List<Pedido> Filtrar(string filtro)
         {
             List<Pedido> lista = new List<Pedido>();
             AccesoDatos datos = new AccesoDatos();
@@ -169,14 +169,14 @@ namespace Negocio
 
                 datos.setearParametro("@Descuento", nuevoPedido.Descuento);
 
-                datos.setearParametro("@Total", nuevoPedido.Total); 
+                datos.setearParametro("@Total", nuevoPedido.Total);
 
-              
+
                 int idPedidoGenerado = datos.ejecutarAccionScalar();
 
                 datos.cerrarConexion();
 
-              
+
                 foreach (var item in nuevoPedido.Detalles)
                 {
                     AccesoDatos datosDetalle = new AccesoDatos();
@@ -215,7 +215,7 @@ namespace Negocio
 
             try
             {
-          
+
 
                 // --- 1. TRAER CABECERA DEL PEDIDO ---
                 datos.setearConsulta("SELECT * FROM Pedidos WHERE IDPedido = @id");
@@ -229,28 +229,28 @@ namespace Negocio
                     pedido.IDPedido = (int)datos.Lector["IDPedido"];
                     // ... (resto de tus mapeos) ...
                     pedido.IDCliente = (int)datos.Lector["IDCliente"];
-                    
+
                     pedido.IDVendedor = (int)datos.Lector["IDVendedor"];
-                    
+
                     if (!(datos.Lector["FechaCreacion"] is DBNull))
                         pedido.FechaCreacion = (DateTime)datos.Lector["FechaCreacion"];
-                    
+
                     if (!(datos.Lector["FechaEntrega"] is DBNull))
                         pedido.FechaEntrega = (DateTime)datos.Lector["FechaEntrega"];
 
                     pedido.Total = (decimal)datos.Lector["Total"];
                 }
 
-             
+
                 if (datos.Lector != null)
                     datos.Lector.Close();
                 if (datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
 
-              
+
                 datos.Comando.Parameters.Clear();
 
-               
+
                 string consultaDetalles = @"
             SELECT D.IDArticulo, D.Cantidad, D.PrecioUnitario, 
                    A.Descripcion 
@@ -296,7 +296,7 @@ namespace Negocio
             }
             finally
             {
-            
+
                 if (datos.Conexion != null && datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
             }
@@ -308,14 +308,12 @@ namespace Negocio
 
             try
             {
-           
+
                 datos.Conexion.Open();
                 transaccion = datos.Conexion.BeginTransaction();
-                datos.Comando.Transaction = transaccion; 
+                datos.Comando.Transaction = transaccion;
 
-                // 
-
-          
+                 
                 string consultaCabecera = @"
                     UPDATE Pedidos SET 
                         IDCliente = @IDCliente,
@@ -346,7 +344,7 @@ namespace Negocio
                 datos.setearParametro("@Descuento", pedido.Descuento);
                 datos.setearParametro("@Total", pedido.Total);
 
-                
+
                 datos.Comando.ExecuteNonQuery(); // Ejecuta el UPDATE usando el comando ya vinculado
 
                 // --- 3. REEMPLAZAR DETALLES ---
@@ -397,7 +395,7 @@ namespace Negocio
             finally
             {
                 // 6. CERRAR CONEXIÓN
-              
+
                 if (datos.Conexion.State == System.Data.ConnectionState.Open)
                     datos.Conexion.Close();
             }
@@ -407,7 +405,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                
+
                 datos.setearConsulta("UPDATE Pedidos SET Estado = 'Cancelado' WHERE IDPedido = @id");
                 datos.setearParametro("@id", idPedido);
                 datos.ejecutarAccion();
@@ -434,7 +432,7 @@ namespace Negocio
                 datos.setearParametro("@IDPedido", idPedido);
                 datos.setearParametro("@EstadoOld", "Pendiente"); // <--- VALIDACIÓN
 
-          
+
                 datos.ejecutarAccion();
 
                 // Si filasAfectadas es 1, se actualizó. Si es 0, significa que el estado no era PENDIENTE.
@@ -453,99 +451,104 @@ namespace Negocio
 
         }
 
-        
+
 
         public bool ConfirmarEntrega(int idPedido)
-    {
-        AccesoDatos datos = new AccesoDatos();
-        SqlTransaction transaccion = null;
-
-        try
         {
-            datos.Conexion.Open();
-            transaccion = datos.Conexion.BeginTransaction();
-            datos.Comando.Transaction = transaccion;
+            AccesoDatos datos = new AccesoDatos();
+            SqlTransaction transaccion = null;
 
-        
-            string consultaDetalles = "SELECT IDArticulo, Cantidad FROM DetallesPedido WHERE IDPedido = @IDPedido";
-            datos.setearConsulta(consultaDetalles);
-            datos.setearParametro("@IDPedido", idPedido);
-
-            List<DetallePedido> itemsAdescontar = new List<DetallePedido>();
-
-            // Ejecutamos lectura
-            using (SqlDataReader lector = datos.Comando.ExecuteReader())
+            try
             {
-                while (lector.Read())
+                datos.Conexion.Open();
+                transaccion = datos.Conexion.BeginTransaction();
+                datos.Comando.Transaction = transaccion;
+
+   
+                string consultaDetalles = "SELECT IDArticulo, Cantidad FROM DetallesPedido WHERE IDPedido = @IDPedido";
+                datos.setearConsulta(consultaDetalles);
+                datos.setearParametro("@IDPedido", idPedido);
+
+                List<DetallePedido> itemsDelPedido = new List<DetallePedido>();
+
+                using (SqlDataReader lector = datos.Comando.ExecuteReader())
                 {
-                    DetallePedido item = new DetallePedido();
-                    item.IDArticulo = (int)lector["IDArticulo"];
-                    item.Cantidad = (int)lector["Cantidad"];
-                    itemsAdescontar.Add(item);
+                    while (lector.Read())
+                    {
+                        DetallePedido item = new DetallePedido();
+                        item.IDArticulo = (int)lector["IDArticulo"];
+                        item.Cantidad = (int)lector["Cantidad"];
+                        itemsDelPedido.Add(item);
+                    }
                 }
-            }
-     
 
-            // -------------------------------------------------------
-            // PASO 2: DESCONTAR STOCK DE CADA ARTÍCULO
-            // -------------------------------------------------------
-            string consultaStock = "UPDATE Articulos SET StockActual = StockActual - @Cantidad WHERE IdArticulo = @IDArticulo";
+         
+                // aca revisamos uno por uno. Si a alguno le falta stock, 
+                // CANCELAMOS TODO inmediatamente.
+                foreach (var item in itemsDelPedido)
+                {
+                    datos.Comando.Parameters.Clear();
+                    // Consultamos cuánto hay REALMENTE en la base ahora mismo
+                    datos.Comando.CommandText = "SELECT StockActual FROM Articulos WHERE IdArticulo = @IDArt";
+                    datos.setearParametro("@IDArt", item.IDArticulo);
 
-            foreach (var item in itemsAdescontar)
-            {
+                    object resultado = datos.Comando.ExecuteScalar();
+                    int stockEnBase = (resultado != DBNull.Value) ? Convert.ToInt32(resultado) : 0;
+
+                    if (stockEnBase < item.Cantidad)
+                    {
+                       
+                        // Al lanzar esta excepción, el código salta directo al 'catch'.
+                        // NUNCA llega al paso de cambiar el estado a 'Entregado'.
+                        throw new Exception("No hay stock suficiente para el artículo ID: " + item.IDArticulo + ". Tienes " + stockEnBase + " y necesitas " + item.Cantidad);
+                    }
+                }
+
+                // -------------------------------------------------------
+                // PASO 3: SI PASÓ EL GUARDIA, DESCONTAMOS EL STOCK
+                // -------------------------------------------------------
+                string consultaDescuento = "UPDATE Articulos SET StockActual = StockActual - @Cant WHERE IdArticulo = @IDArt";
+
+                foreach (var item in itemsDelPedido)
+                {
+                    datos.Comando.Parameters.Clear();
+                    datos.Comando.CommandText = consultaDescuento;
+                    datos.setearParametro("@Cant", item.Cantidad);
+                    datos.setearParametro("@IDArt", item.IDArticulo);
+                    datos.Comando.ExecuteNonQuery();
+                }
+
+            
+                // Recién ahora, que sabemos que todo está bien, cambiamos el estado.
+                string consultaEstado = "UPDATE Pedidos SET Estado = 'Entregado', FechaEntrega = GETDATE() WHERE IDPedido = @IDPedido";
+
                 datos.Comando.Parameters.Clear();
-                datos.Comando.CommandText = consultaStock;
-
-                datos.setearParametro("@Cantidad", item.Cantidad);
-                datos.setearParametro("@IDArticulo", item.IDArticulo);
+                datos.Comando.CommandText = consultaEstado;
+                datos.setearParametro("@IDPedido", idPedido);
 
                 datos.Comando.ExecuteNonQuery();
+
+             
+                transaccion.Commit();
+                return true;
             }
-
-            // -------------------------------------------------------
-            // PASO 3: ACTUALIZAR ESTADO DEL PEDIDO A 'ENTREGADO'
-            // -------------------------------------------------------
- 
-            string consultaEstado = @"UPDATE Pedidos 
-                                  SET Estado = 'Entregado', FechaEntrega = GETDATE() 
-                                  WHERE IDPedido = @IDPedido AND Estado = 'Pendiente'";
-
-            datos.Comando.Parameters.Clear();
-            datos.Comando.CommandText = consultaEstado;
-            datos.setearParametro("@IDPedido", idPedido);
-
-            int filasAfectadas = datos.Comando.ExecuteNonQuery();
-
-            if (filasAfectadas == 0)
+            catch (Exception ex)
             {
-                // Si no afectó filas, es porque el pedido NO estaba pendiente (quizás ya se entregó o canceló)
-                // Hacemos Rollback para no descontar stock dos veces.
-                transaccion.Rollback();
-                return false;
+                // Si algo falló (incluyendo la validación de stock), deshacemos todo.
+                if (transaccion != null) transaccion.Rollback();
+
+                // Relanzamos el error para que la pantalla (el ASPX) se entere y muestre el cartel rojo.
+                throw ex;
             }
+            finally
+            {
+                if (datos.Conexion.State == System.Data.ConnectionState.Open)
+                    datos.Conexion.Close();
+            }
+        }
 
-            // -------------------------------------------------------
-            // PASO 4: CONFIRMAR TRANSACCIÓN
-            // -------------------------------------------------------
-            transaccion.Commit();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            if (transaccion != null)
-                transaccion.Rollback();
 
-            throw new Exception("Error al confirmar la entrega: " + ex.Message);
-        }
-        finally
-        {
-            if (datos.Conexion.State == System.Data.ConnectionState.Open)
-                datos.Conexion.Close();
-        }
     }
-
-
-}
 }
 
 
