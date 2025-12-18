@@ -30,9 +30,7 @@ namespace Presentacion
             if (!IsPostBack)
             {
                 ComprasNegocio negocio = new ComprasNegocio();
-                // Asumo que tienes un método listar() en ComprasNegocio
-                // dgvCompras.DataSource = negocio.listar();
-                // dgvCompras.DataBind();
+                
             }
             if (!IsPostBack)
             {

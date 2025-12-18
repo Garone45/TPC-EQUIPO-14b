@@ -29,41 +29,50 @@ namespace Presentacion
         {
             if (!IsPostBack)
             {
-                // 1. Cargar listas desplegables SIEMPRE al inicio
+                // 1. Cargar listas desplegables
                 CargarProveedores();
                 CargarProductos();
 
-                // 2. Capturar parámetros de la URL
+                // 2. Capturar parámetros
                 string idCompraStr = Request.QueryString["id"];
                 string modo = Request.QueryString["modo"];
 
-                // 3. Determinar si es modo Lectura
                 if (modo == "Ver")
                 {
                     EsModoVer = true;
                 }
 
-                // 4. Decidir: ¿Cargamos compra existente o preparamos una nueva?
+       
                 if (!string.IsNullOrEmpty(idCompraStr) && int.TryParse(idCompraStr, out int idCompra))
                 {
-
                     ViewState["CompraID"] = idCompra;
                     CargarDatosCompra(idCompra);
+
+                  
+                    ddlProveedor.Enabled = false;
+                    txtFacturaRef.Enabled = false;
+
+            
+                    txtFacturaRef.Attributes.Add("class", txtFacturaRef.CssClass + " bg-gray-100 cursor-not-allowed");
+                    ddlProveedor.Attributes.Add("class", ddlProveedor.CssClass + " bg-gray-100 cursor-not-allowed");
 
                     if (EsModoVer)
                     {
                         ConfigurarVistaSoloLectura();
-                  
                     }
                     else
                     {
-                        btnGuardarCompra.Text = "Guardar Cambios"; 
+                        btnGuardarCompra.Text = "Guardar Cambios";
                     }
                 }
                 else
                 {
-                   
+                    // MODO NUEVO
                     LimpiarFormulario();
+
+                    // Nos aseguramos de habilitarlos por si acaso
+                    ddlProveedor.Enabled = true;
+                    txtFacturaRef.Enabled = true;
                 }
             }
         }
@@ -276,7 +285,7 @@ namespace Presentacion
                     txtObservaciones.Text = compraEntidad.Observaciones;
 
                     // 2. Cargar Detalles en Sesión y Grilla
-                    // IMPORTANTE: Asignamos la lista de la BD a la Session para que el Grid la vea
+                    //  Asignamos la lista de la BD a la Session para que el Grid la vea
                     ListaCompraActual = compraEntidad.Detalles;
 
                     // 3. Refrescar Grilla
@@ -314,7 +323,7 @@ namespace Presentacion
 
             if (gvDetalleCompra.Columns.Count > 0)
             {
-                // Opción A: Ocultar toda la columna de acciones
+            
                 gvDetalleCompra.Columns[4].Visible = false;
             }
             else

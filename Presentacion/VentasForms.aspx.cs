@@ -13,7 +13,7 @@ namespace Presentacion
     public partial class VentasForms : System.Web.UI.Page
     {
         private bool EsModoVer { get; set; } = false;
-        // --- PROPIEDADES DE SESIÓN ---
+  
         private List<DetallePedido> DetalleActual
         {
             get
@@ -36,32 +36,41 @@ namespace Presentacion
                 {
                     EsModoVer = true;
                 }
+
+                // Carga inicial de productos (si aplica)
                 BindProductos(null);
 
                 if (!string.IsNullOrEmpty(idPedidoStr) && int.TryParse(idPedidoStr, out int idPedido))
                 {
-                    CargarDatosPedido(idPedido); 
+                    // 1. Cargar la venta existente
+                    CargarDatosPedido(idPedido);
+
+           
                    
+                    txtBuscarCliente.Enabled = false;
+                    txtBuscarCliente.Attributes.Add("placeholder", "Cliente ya asignado");
+                    rptClientes.Visible = false;
+
                     if (EsModoVer)
                     {
-                        // Si el modo es ver, bloqueamos todo
                         ConfigurarVistaSoloLectura();
                         mostrarMensaje("Modo Visualización: No se pueden realizar cambios.", false);
                     }
                     else
                     {
-                        // Modo Edición (Modificar)
-                        mostrarMensaje("Modo Edición: Puede modificar el pedido.", false);
+                        mostrarMensaje("Modo Edición: Puede modificar productos, pero no el cliente.", false);
                     }
                 }
                 else
                 {
-                    // Modo Nuevo: Limpieza inicial
+                  
                     Session["DetallePedido"] = null;
                     Session["ClienteSeleccionado"] = null;
                     ViewState["IDPedidoEditar"] = null;
 
+
                     BindClientes(null);
+
 
                     // Limpiar campos visuales
                     txtClientName.Text = "";
@@ -81,6 +90,7 @@ namespace Presentacion
         {
             string filtro = txtBuscarCliente.Text.Trim();
 
+
             if (string.IsNullOrEmpty(filtro) || filtro.Length < 2)
             {
                 // Si borra el texto, ocultamos el dropdown
@@ -88,6 +98,7 @@ namespace Presentacion
                 pnlSinResultadosClientes.Visible = false;
                 rptClientes.DataSource = null;
                 rptClientes.DataBind();
+
             }
             else
             {
@@ -121,10 +132,12 @@ namespace Presentacion
             }
             else
             {
+
                 rptClientes.DataSource = null;
                 rptClientes.DataBind();
                 pnlResultadosClientes.Visible = true; // Mostrar panel vacío
                 pnlSinResultadosClientes.Visible = true; // Mostrar mensaje "No encontrado"
+
             }
         }
 
@@ -132,7 +145,9 @@ namespace Presentacion
         {
             if (e.CommandName == "Seleccionar")
             {
+
                 int idCliente = Convert.ToInt32(e.CommandArgument);
+
                 Session["ClienteSeleccionado"] = idCliente;
 
                 ClienteNegocio negocio = new ClienteNegocio();
@@ -244,6 +259,10 @@ namespace Presentacion
                 }
             }
             upProductos.Update();
+        
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "FocusScript",
+                $"document.getElementById('{txtBuscarProductos.ClientID}').focus();", true);
+
         }
 
 
@@ -316,8 +335,6 @@ namespace Presentacion
 
 
         /// METODO DE DETALLES
-
-
         // --- GESTIÓN DE GRILLA CARRITO (SUMAR/RESTAR) ---
         protected void gvDetallePedido_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -332,13 +349,13 @@ namespace Presentacion
                     switch (e.CommandName)
                     {
                         case "Eliminar":
-                            // 🗑️ Lógica de Eliminar
+                           
                             DetalleActual.Remove(detalle);
                             mostrarMensaje("Producto eliminado del pedido.", false);
                             break;
 
                         case "Sumar":
-                            // ➕ Lógica de Sumar (Validando Stock)
+                          
                             ArticuloNegocio negocio = new ArticuloNegocio();
                             Articulo art = negocio.obtenerPorId(idArticulo);
 
@@ -353,7 +370,7 @@ namespace Presentacion
                             break;
 
                         case "Restar":
-                            // ➖ Lógica de Restar
+                            
                             if (detalle.Cantidad > 1)
                             {
                                 detalle.Cantidad--;
@@ -366,7 +383,7 @@ namespace Presentacion
                             break;
                     }
 
-                    // ⭐ IMPORTANTE: Guardar cambios y refrescar la pantalla
+                    
                     DetalleActual = DetalleActual; // Actualiza la Session
                     ActualizarDetalleYTotales();   // Recalcula subtotales y repinta la grilla
                 }
@@ -390,8 +407,8 @@ namespace Presentacion
                 TextBox txtCantidad = (TextBox)e.Row.FindControl("txtQuantity");
                 if (txtCantidad != null)
                 {
-                    txtCantidad.BorderStyle = BorderStyle.None; // Sin bordes
-                    txtCantidad.BackColor = System.Drawing.Color.Transparent; // Fondo transparente
+                    txtCantidad.BorderStyle = BorderStyle.None;
+                    txtCantidad.BackColor = System.Drawing.Color.Transparent; 
                     txtCantidad.ReadOnly = true;
                     // Opcional: Centrarlo visualmente
                     txtCantidad.Style.Add("text-align", "center");
@@ -405,7 +422,7 @@ namespace Presentacion
             gvDetallePedido.DataBind();
 
             decimal subtotal = DetalleActual.Sum(d => d.TotalParcial);
-            decimal iva = subtotal * 0.21m; // Ejemplo IVA 21%
+            decimal iva = subtotal * 0.21m; 
             decimal total = subtotal + iva;
 
             lblSubtotal.Text = subtotal.ToString("C");
@@ -525,22 +542,18 @@ namespace Presentacion
 
             if (esError)
             {
-                // Estilo Rojo (Error)
+               
                 lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800";
             }
             else
             {
-                // Estilo Verde (Éxito)
+              
                 lblMensaje.CssClass = "block w-full p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800";
             }
 
             // IMPORTANTE: Actualizar el panel para que se vea el mensaje
             updMensajes.Update();
         }
-
-        /// METODOS
-        /// 
-
         private void ConfigurarVistaSoloLectura()
         {
       

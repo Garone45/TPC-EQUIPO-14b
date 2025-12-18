@@ -23,7 +23,7 @@ namespace Negocio
                 datos.setearProcedimiento("SP_ListarArticulos"); // 
                 datos.ejecutarLectura();
 
-                 // Mapeo de daots  
+             
                 while (datos.Lector.Read())
                 {
                     
@@ -50,7 +50,7 @@ namespace Negocio
                     }
                     else
                     {
-                        // Si es NULL en la BD, mostramos un texto por defecto o lo dejamos vacío
+                       
                         aux.Proveedor.RazonSocial = "Sin Asignar";
                     }
 
@@ -86,7 +86,7 @@ namespace Negocio
                     aux.Categorias = new Categoria();
                     aux.Proveedor = new Proveedor(); // Instanciamos para evitar NullReference
 
-                    // 1. Lecturas seguras de datos que NO son nulos (según tu tabla)
+                    // 1. Lecturas seguras de datos que NO son nulos 
                     aux.IDArticulo = (int)datos.Lector["IdArticulo"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
                     aux.StockActual = (int)datos.Lector["StockActual"];
@@ -102,7 +102,7 @@ namespace Negocio
                     aux.Categorias.IDCategoria = (int)datos.Lector["IdCategoria"];
                     aux.Categorias.descripcion = (string)datos.Lector["CategoriaDescripcion"];
 
-                    // 3. SECCIÓN CRÍTICA: PROVEEDOR (Puede ser NULL)
+                    
                     // Verificamos si la columna IDProveedor tiene dato real
                     if (!(datos.Lector["IDProveedor"] is DBNull))
                     {
@@ -121,10 +121,6 @@ namespace Negocio
                         aux.Proveedor.RazonSocial = "Sin Proveedor";
                     }
 
-                    // 4. EXTRA: Código de Artículo (Suele ser NULL a veces)
-                    // Si tu SP lo trae, agrégalo así para evitar otro crash:
-                    // if (!(datos.Lector["CodigoArticulo"] is DBNull))
-                    //     aux.CodigoArticulo = (string)datos.Lector["CodigoArticulo"];
 
                     return aux;
                 }
@@ -241,14 +237,18 @@ namespace Negocio
             {
                 datos.setearProcedimiento("SP_ModificarArticulo");
 
-               
                 datos.setearParametro("@IdArticulo", articuloModificado.IDArticulo);
                 datos.setearParametro("@Descripcion", articuloModificado.Descripcion);
+
+                datos.setearParametro("@CodigoArticulo", articuloModificado.CodigoArticulo);
+                // ------------------------------------
+
                 datos.setearParametro("@IdMarca", articuloModificado.Marca.IDMarca);
                 datos.setearParametro("@IdCategoria", articuloModificado.Categorias.IDCategoria);
-                datos.setearParametro("@IDProveedor", articuloModificado.Proveedor.ID);
+                datos.setearParametro("@IdProveedor", articuloModificado.Proveedor.ID); 
                 datos.setearParametro("@PrecioCostoActual", articuloModificado.PrecioCostoActual);
                 datos.setearParametro("@PorcentajeGanancia", articuloModificado.PorcentajeGanancia);
+
                 datos.setearParametro("@StockActual", articuloModificado.StockActual);
                 datos.setearParametro("@StockMinimo", articuloModificado.StockMinimo);
                 datos.setearParametro("@Activo", articuloModificado.Activo);
@@ -257,14 +257,14 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al modificar artículo en Capa de Negocio.", ex);
+                throw ex; // Lanza la excepción original para ver el mensaje real
             }
             finally
             {
                 datos.cerrarConexion();
             }
         }
-        
+
         public void eliminarLogico(int id)
         {
             AccesoDatos datos = new AccesoDatos();

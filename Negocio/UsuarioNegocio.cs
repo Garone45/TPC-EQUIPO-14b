@@ -15,15 +15,11 @@ namespace Negocio
         {
             try
             {
-                // 1. CAMBIO EN LA CONSULTA:
-                // Buscamos 'TipoUser' (INT) en lugar de 'Rol'.
-                // La tabla ahora pide 'NombreUser' y 'Contraseña'.
+               
                 datos.setearConsulta("SELECT IDUsuario, NombreUser, TipoUser, Activo FROM Usuario WHERE NombreUser = @user AND Contraseña = @pass AND Activo = 1");
 
                 datos.Comando.Parameters.Clear();
 
-                // 2. PARÁMETROS:
-                // Asignamos las propiedades de tu objeto a los parámetros de SQL
                 datos.Comando.Parameters.AddWithValue("@user", usuario.NombreUsuario);
                 datos.Comando.Parameters.AddWithValue("@pass", usuario.Contraseña);
 
@@ -31,13 +27,10 @@ namespace Negocio
 
                 if (datos.Lector.Read())
                 {
-                    // 3. MAPEO DE DATOS:
+                    
                     usuario.IDUsuario = (int)datos.Lector["IDUsuario"];
                     usuario.NombreUsuario = (string)datos.Lector["NombreUser"];
 
-                    // 4. MAGIA DEL ENUM:
-                    // Como en la BD es 1 o 2, y tu Enum es ADMIN=1, VENDEDOR=2,
-                    // hacemos un cast directo de int a TipoUsuario.
                     usuario.TipoUsuario = (TipoUsuario)(int)datos.Lector["TipoUser"];
 
                     usuario.Activo = (bool)datos.Lector["Activo"];
@@ -64,7 +57,6 @@ namespace Negocio
                 datos.setearConsulta("SELECT COUNT(*) FROM Usuario WHERE Email = @email AND Activo = 1");
                 datos.setearParametro("@email", email);
 
-                // ejecutarAccionScalar devuelve un entero (la cantidad encontrada)
                 int cantidad = datos.ejecutarAccionScalar();
 
                 return cantidad > 0; // Si es mayor a 0, devuelve TRUE (Existe)

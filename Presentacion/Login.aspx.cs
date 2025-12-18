@@ -24,13 +24,13 @@ namespace Presentacion
             try
             {
                 // ASIGNAMOS LOS VALORES DE LAS CAJAS DE TEXTO A TUS PROPIEDADES
-                usuario.NombreUsuario = txtUsuario.Text;   // Tu propiedad es 'NombreUsuario'
-                usuario.Contraseña = txtPassword.Text;     // Tu propiedad es 'Contraseña'
+                usuario.NombreUsuario = txtUsuario.Text;   
+                usuario.Contraseña = txtPassword.Text;     
 
                 // Intentamos loguear
                 if (negocio.Loguear(usuario))
                 {
-                    // Si entra aquí, 'usuario' ya tiene el ID y el TipoUsuario cargados desde la DB
+                   
                     Session.Add("usuario", usuario);
                     Response.Redirect("Default.aspx", false);
                 }

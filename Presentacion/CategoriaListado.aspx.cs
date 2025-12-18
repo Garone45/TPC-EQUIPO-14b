@@ -31,9 +31,7 @@ namespace Presentacion
             if (!IsPostBack)
             {
                 ComprasNegocio negocio = new ComprasNegocio();
-                // Asumo que tienes un método listar() en ComprasNegocio
-                // dgvCompras.DataSource = negocio.listar();
-                // dgvCompras.DataBind();
+                
             }
             if (!IsPostBack)
             {
@@ -49,7 +47,7 @@ namespace Presentacion
             try
             {
                 string filtro = txtBuscar.Text.Trim();
-                // Asumo que tu método listar acepta el filtro string
+             
                 List<Categoria> lista = negocio.listar(filtro);
 
                 gvCategorias.DataSource = lista;
@@ -67,7 +65,7 @@ namespace Presentacion
             CargarGrilla();
         }
 
-        // Este evento faltaba en tu código original, pero lo puse en el ASPX
+  
         protected void gvCategorias_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvCategorias.PageIndex = e.NewPageIndex;
@@ -85,7 +83,7 @@ namespace Presentacion
                     CategoriaNegocio negocio = new CategoriaNegocio();
                     negocio.eliminarLogico(id);
 
-                    CargarGrilla(); // Refrescamos la grilla
+                    CargarGrilla();
                 }
             }
             catch (Exception ex)

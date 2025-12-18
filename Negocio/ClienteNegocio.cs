@@ -34,12 +34,12 @@ namespace Negocio
                 datos.setearConsulta(consulta);
                 datos.ejecutarLectura();
 
-                // Leemos los resultados
+  
                 while (datos.Lector.Read())
                 {
                     Cliente aux = new Cliente();
 
-                    // Mapeamos el ID de la BD a la propiedad 'ID' de la clase Entidad
+   
                     aux.IDCliente = (int)datos.Lector["IDCliente"];
                     aux.Nombre = datos.Lector["Nombre"].ToString();
                     aux.Apellido = datos.Lector["Apellido"].ToString();
@@ -51,7 +51,6 @@ namespace Negocio
                     aux.Localidad = datos.Lector["Localidad"].ToString();
                     aux.Activo = (bool)datos.Lector["Activo"];
 
-                    // Agregamos el cliente a la lista
                     lista.Add(aux);
                 }
 
@@ -59,12 +58,12 @@ namespace Negocio
             }
             catch (Exception ex)
             {
-                // Relanzamos la excepción para que la capa de presentación la maneje
+
                 throw ex;
             }
             finally
             {
-                // Cerramos la conexión y el lector
+         
                 datos.cerrarConexion();
             }
         }
@@ -74,7 +73,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // Consulta SQL para el INSERT
+    
                 
                 string consulta = @"
                     INSERT INTO Cliente (
@@ -102,7 +101,7 @@ namespace Negocio
 
                 datos.setearConsulta(consulta);
 
-                // Mapeo de parámetros
+
                 datos.setearParametro("@Nombre", nuevo.Nombre);
                 datos.setearParametro("@Apellido", nuevo.Apellido);
                 datos.setearParametro("@Dni", nuevo.Dni);
@@ -174,7 +173,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // La consulta UPDATE
+      
                 string consulta = @"
                     UPDATE Cliente SET
                         Nombre = @Nombre,
@@ -189,7 +188,6 @@ namespace Negocio
 
                 datos.setearConsulta(consulta);
 
-                // Seteamos todos los parámetros
                 datos.setearParametro("@Nombre", cliente.Nombre);
                 datos.setearParametro("@Apellido", cliente.Apellido);
                 datos.setearParametro("@Dni", cliente.Dni);
@@ -302,7 +300,7 @@ namespace Negocio
                     aux.Apellido = (string)datos.Lector["Apellido"];
                     aux.Dni = (string)datos.Lector["Dni"];
 
-                    // Validamos nulos para evitar errores si el campo está vacío en BD
+                 
                     if (!(datos.Lector["Telefono"] is DBNull))
                         aux.Telefono = (string)datos.Lector["Telefono"];
 

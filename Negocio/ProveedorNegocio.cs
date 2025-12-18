@@ -89,7 +89,7 @@ namespace Negocio
             }
             finally
             {
-                // No cerramos conexión aquí, ejecutarAccion() ya lo hace
+                
             }
         }
 
@@ -137,7 +137,7 @@ namespace Negocio
             }
             finally
             {
-                // No cerramos conexión aquí
+                
             }
         }
 

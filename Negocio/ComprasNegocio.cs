@@ -40,7 +40,7 @@ namespace Negocio
                 {
                     Compra compra = new Compra();
                     
-                    // Mapeo de datos
+             
                     compra.IDCompra = (int)datos.Lector["IDCompra"];
                     compra.RazonSocialProveedor = datos.Lector["NombreProveedor"].ToString();
                    
@@ -229,7 +229,7 @@ namespace Negocio
         {
             AccesoDatos datos = new AccesoDatos();
 
-            // Usaremos una transacción porque son múltiples inserts
+         
             System.Data.SqlClient.SqlTransaction transaccion = null;
 
             try
@@ -304,8 +304,7 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // 1. ACTUALIZAR CABECERA (Tabla Compras)
-                // Nota: No actualizamos UsuarioCreador ni FechaRegistro porque esos son datos de origen.
+     
                 datos.setearConsulta("UPDATE Compras SET IDProveedor = @idProv, Documento = @doc, FechaCompra = @fecha, MontoTotal = @monto, Observaciones = @obs, Estado = @estado WHERE IDCompra = @id");
 
                 datos.setearParametro("@idProv", compra.IDProveedor);
@@ -319,8 +318,7 @@ namespace Negocio
                 datos.ejecutarAccion();
                 datos.cerrarConexion();
 
-                // 2. BORRAR DETALLES VIEJOS
-                // Eliminamos todo lo que había para esa compra
+       
                 datos = new AccesoDatos();
                 datos.setearConsulta("DELETE FROM CompraDetalle WHERE IDCompra = @id");
                 datos.setearParametro("@id", compra.IDCompra);
@@ -359,12 +357,11 @@ namespace Negocio
             {
                 AccesoDatos datos = new AccesoDatos();
 
-                // ADAPTAR SEGÚN TU BASE DE DATOS:
-                // Opción A: Si usas un estado de texto (ej: 'Anulada', 'Inactiva')
+        
+          
                 datos.setearConsulta("UPDATE COMPRAS SET Estado = 'Cancelado' WHERE IDCompra = @id");
 
-                // Opción B: Si usas un bit/booleano (ej: Activo = 0)
-                // datos.setearConsulta("UPDATE COMPRAS SET Activo = 0 WHERE ID = @id");
+          
 
                 datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
@@ -379,14 +376,12 @@ namespace Negocio
             try
             {
                 AccesoDatos datos = new AccesoDatos();
-                // Asegúrate que 'Entregado' coincide con tu Enum y BD
+       
                 datos.setearConsulta("UPDATE Compras SET Estado = 'Entregado' WHERE IDCompra = @id");
                 datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
 
-                // OPCIONAL PERO RECOMENDADO:
-                // Aquí deberías llamar a la lógica para sumar el stock de los artículos comprados.
-                // actualizarStock(id); 
+           
             }
             catch (Exception ex)
             {

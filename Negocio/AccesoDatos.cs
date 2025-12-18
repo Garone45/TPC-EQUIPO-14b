@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Negocio // (O el namespace de tu capa de datos)
+namespace Negocio 
 {
     public class AccesoDatos
     {

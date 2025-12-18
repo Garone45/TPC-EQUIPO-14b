@@ -64,13 +64,13 @@ namespace Presentacion
 
         protected void btnBuscarTrigger_Click(object sender, EventArgs e)
         {
-            // Reseteamos la paginación para que al buscar no quedes en la página 5 sin resultados
+          
             gvPedidos.PageIndex = 0;
 
             // Cargamos la grilla
             CargarVentas();
 
-            // Ponemos el foco de nuevo en el buscador (aunque tu JS ya hace esto, es un refuerzo)
+      
             txtBuscar.Focus();
         }
 
@@ -99,7 +99,6 @@ namespace Presentacion
                     int idPedido = int.Parse(hfIdPedidoEntregar.Value);
                     VentasNegocio negocio = new VentasNegocio();
 
-                    // ⭐ CAMBIO: Usamos el nuevo método transaccional
                     if (negocio.ConfirmarEntrega(idPedido))
                     {
                         // Éxito
@@ -111,7 +110,7 @@ namespace Presentacion
                     }
                     else
                     {
-                        // Fallo (probablemente el pedido ya no estaba pendiente)
+                
                         ScriptManager.RegisterStartupScript(this, this.GetType(), "alertError", "alert('No se pudo entregar el pedido. Verifique que esté Pendiente.');", true);
                     }
                 }
@@ -146,7 +145,6 @@ namespace Presentacion
             }
         }
 
-        // Método para colores de estado
         protected string GetEstadoClass(string estado)
         {
             switch (estado)
