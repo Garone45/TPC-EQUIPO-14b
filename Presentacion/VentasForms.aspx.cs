@@ -80,6 +80,7 @@ namespace Presentacion
                     txtClientPhone.Text = "";
 
                     ActualizarDetalleYTotales();
+                    CargarDatosCabecera();
                 }
             }
         }
@@ -222,7 +223,7 @@ namespace Presentacion
             string busqueda = txtBuscarProductos.Text.Trim();
             ArticuloNegocio negocio = new ArticuloNegocio();
 
-            if (string.IsNullOrEmpty(busqueda) || busqueda.Length < 2) // Puedes ajustar el mínimo de 2 caracteres
+            if (string.IsNullOrEmpty(busqueda) || busqueda.Length < 1) // Puedes ajustar el mínimo de 2 caracteres
             {
                 // 1. Campo vacío o muy corto: Ocultar el dropdown completamente.
                 pnlResultadosProductos.Visible = false;
@@ -474,7 +475,7 @@ namespace Presentacion
                 pedido.IDVendedor = 1; // TODO: Sacar del Login actual
                 pedido.FechaCreacion = DateTime.Now;
                 pedido.Estado = Pedido.EstadoPedido.Pendiente;
-                pedido.MetodoPago = "Efectivo"; // Opcional: Podrías poner un DropDown de pago
+                pedido.MetodoPago = ddlMetodoPago.Text;
                 pedido.Detalles = DetalleActual;
 
                 // Totales
@@ -554,6 +555,7 @@ namespace Presentacion
             // IMPORTANTE: Actualizar el panel para que se vea el mensaje
             updMensajes.Update();
         }
+
         private void ConfigurarVistaSoloLectura()
         {
       
@@ -571,5 +573,27 @@ namespace Presentacion
                 gvDetallePedido.Columns[ultimaColumna].Visible = false;
             }
         }
+
+       
+
+        private void CargarDatosCabecera()
+        {
+           
+            lblFechaActual.Text = DateTime.Now.ToString("dd/MM/yyyy");
+
+            // 2. Cargar el Próximo Número de Pedido
+            try
+            {
+                VentasNegocio negocio = new VentasNegocio();
+                int proximoId = negocio.obtenerProximoId();
+                lblNumeroPedido.Text = proximoId.ToString("D4");
+            }
+            catch (Exception ex)
+            {
+                lblNumeroPedido.Text = "----";
+            }
+
+        }
+
     }
 }

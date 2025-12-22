@@ -547,6 +547,37 @@ namespace Negocio
             }
         }
 
+        public int obtenerProximoId()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Consultamos el ID máximo actual. Si no hay ventas, devuelve NULL (lo manejamos).
+                datos.setearConsulta("SELECT MAX(IDPedido) FROM Pedidos");
+                // ¡OJO! Asegúrate que tu tabla se llame 'Ventas' y la columna 'Id' o 'IdVenta'
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    if (!(datos.Lector[0] is DBNull))
+                    {
+                        // Si encontramos un numero, lo convertimos y le sumamos 1
+                        return (int)datos.Lector[0] + 1;
+                    }
+                }
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
     }
 }
