@@ -363,6 +363,7 @@ namespace Presentacion
                             if (art != null && detalle.Cantidad + 1 <= art.StockActual)
                             {
                                 detalle.Cantidad++;
+                   
                             }
                             else
                             {
@@ -375,6 +376,7 @@ namespace Presentacion
                             if (detalle.Cantidad > 1)
                             {
                                 detalle.Cantidad--;
+                             
                             }
                             else
                             {
@@ -430,6 +432,7 @@ namespace Presentacion
             lblIVA.Text = iva.ToString("C");
             lblTotalFinal.Text = total.ToString("C");
 
+            upTotales.Update();
             upDetalleVenta.Update();
         }
 

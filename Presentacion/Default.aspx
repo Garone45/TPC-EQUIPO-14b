@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Presentacion._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-
+    <%-- Mensaje de error --%>
   <div class="w-full">
         <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-8 shadow-sm rounded-r flex items-start gap-3" role="alert">
             <span class="material-symbols-outlined text-red-500 text-xl mt-0.5">error</span>
@@ -11,7 +11,7 @@
             </div>
         </asp:Panel>
     </div>
-
+    <%-- TITULOS --%>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -60,17 +60,33 @@
             <p class="text-xs font-medium text-orange-600 bg-orange-50 w-fit px-2 py-1 rounded-md">Requieren atención</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all group">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all group relative">
+            
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-wider">Stock Bajo</h3>
                 <div class="p-2 bg-red-50 text-red-600 rounded-lg group-hover:bg-red-500 group-hover:text-white transition-colors">
                     <span class="material-symbols-outlined">inventory_2</span>
                 </div>
             </div>
-            <p class="text-3xl font-black text-slate-900 dark:text-white mb-1">
+
+            <p class="text-3xl font-black text-slate-900 dark:text-white mb-2">
                 <asp:Label ID="lblAlertasStock" runat="server" Text="0"></asp:Label>
             </p>
-            <p class="text-xs font-medium text-red-600 bg-red-50 w-fit px-2 py-1 rounded-md">Reponer urgente</p>
+
+            <div class="flex items-center justify-between">
+                
+                <p class="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-md">
+                    Reponer urgente
+                </p>
+
+                <asp:HyperLink ID="btnVerBajoStock" runat="server" 
+                    NavigateUrl="~/ProductosListados.aspx?filtro=stockbajo" 
+                    CssClass="text-xs font-bold text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors cursor-pointer group/btn">
+                    Ver lista 
+                    <span class="material-symbols-outlined text-[16px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+                </asp:HyperLink>
+
+            </div>
         </div>
 
         <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all group">

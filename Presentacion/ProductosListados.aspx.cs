@@ -36,6 +36,8 @@ namespace Presentacion
             }
         }
 
+     
+
         // --- PROPIEDADES NUEVAS PARA ORDENAMIENTO ---
         private string SortDirection
         {
@@ -64,33 +66,51 @@ namespace Presentacion
             }
         }
 
-      
+
         private void CargarGrilla()
         {
             ArticuloNegocio negocio = new ArticuloNegocio();
             try
             {
-                string filtro = txtBuscar.Text.Trim();
+                // 1. Capturamos los dos posibles filtros
+                string busquedaTexto = txtBuscar.Text.Trim();
+                string filtroURL = Request.QueryString["filtro"];
+
                 List<Articulo> listaTemp;
 
-                // 1. Obtener datos
-                if (string.IsNullOrEmpty(filtro))
-                    listaTemp = negocio.listar();
+                // 2. Lógica de prioridad:
+                // Si el usuario escribió en el buscador, priorizamos eso.
+                if (!string.IsNullOrEmpty(busquedaTexto))
+                {
+                    listaTemp = negocio.filtrar(busquedaTexto);
+                }
+                // Si no escribió, pero vino con el filtro "bajoStock" desde el Dashboard
+                else if (!string.IsNullOrEmpty(filtroURL) && filtroURL == "stockbajo")
+                {
+                    // Traemos todo y filtramos en memoria
+                    listaTemp = negocio.listar().Where(x => x.StockActual <= x.StockMinimo).ToList();
+                    
+                }
                 else
-                    listaTemp = negocio.filtrar(filtro);
+                {
+                    // Carga normal (sin filtros)
+                    listaTemp = negocio.listar();
+                }
 
-                // 2. Aplicar ordenamiento si existe expresión
+                // 3. Aplicar ordenamiento (Si el usuario hizo clic en las cabeceras)
                 if (!string.IsNullOrEmpty(SortExpression))
                 {
                     listaTemp = AplicarOrdenamiento(listaTemp);
                 }
 
-                // 3. Guardar en ViewState y Enlazar
+                // 4. IMPORTANTE: Guardar en la propiedad Productos (ViewState)
+                // Esto asegura que si cambias de página, se mantenga el filtro.
                 Productos = listaTemp;
+
+                // 5. Enlazar
                 gvProductos.DataSource = Productos;
                 gvProductos.DataBind();
 
-                // 4. Agregar flechitas visuales
                 AgregarFlechasOrdenamiento();
             }
             catch (Exception ex)

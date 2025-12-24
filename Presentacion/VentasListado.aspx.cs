@@ -23,44 +23,7 @@ namespace Presentacion
           
         }
 
-        private List<Pedido> ListaPedidos
-        {
-            get
-            {
-                if (ViewState["Pedidos"] == null)
-                    ViewState["Pedidos"] = new List<Pedido>();
-                return (List<Pedido>)ViewState["Pedidos"];
-            }
-            set 
-            {
-                gvPedidos.DataSource = null;
-                gvPedidos.DataBind();
-                ViewState["Pedidos"] = value; 
-            }
-        }
-
-        private void CargarVentas()
-        {
-            VentasNegocio negocio = new VentasNegocio();
-            try
-            {
-                string filtro = txtBuscar.Text.Trim();
-                List<Pedido> lista;
-
-                if (string.IsNullOrEmpty(filtro))
-                    lista = negocio.ListarPedidos();
-                else
-                    lista = negocio.Filtrar(filtro);
-
-                ListaPedidos = lista;
-                gvPedidos.DataSource = lista;
-                gvPedidos.DataBind();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Error al cargar ventas: " + ex.Message);
-            }
-        }
+        /// EVENTOS
 
         protected void btnBuscarTrigger_Click(object sender, EventArgs e)
         {
@@ -104,9 +67,6 @@ namespace Presentacion
                         // Éxito
                         CargarVentas(); // Recargar la grilla para ver el estado "Entregado"
                         updVentas.Update();
-
-                        // Opcional: Mostrar mensaje de éxito
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertSuccess", "alert('Pedido entregado y stock actualizado.');", true);
                     }
                     else
                     {
@@ -145,6 +105,48 @@ namespace Presentacion
             }
         }
 
+        
+
+        /// FUNCIONES
+        /// 
+        private List<Pedido> ListaPedidos
+        {
+            get
+            {
+                if (ViewState["Pedidos"] == null)
+                    ViewState["Pedidos"] = new List<Pedido>();
+                return (List<Pedido>)ViewState["Pedidos"];
+            }
+            set
+            {
+                gvPedidos.DataSource = null;
+                gvPedidos.DataBind();
+                ViewState["Pedidos"] = value;
+            }
+        }
+
+        private void CargarVentas()
+        {
+            VentasNegocio negocio = new VentasNegocio();
+            try
+            {
+                string filtro = txtBuscar.Text.Trim();
+                List<Pedido> lista;
+
+                if (string.IsNullOrEmpty(filtro))
+                    lista = negocio.ListarPedidos();
+                else
+                    lista = negocio.Filtrar(filtro);
+
+                ListaPedidos = lista;
+                gvPedidos.DataSource = lista;
+                gvPedidos.DataBind();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error al cargar ventas: " + ex.Message);
+            }
+        }
         protected string GetEstadoClass(string estado)
         {
             switch (estado)
